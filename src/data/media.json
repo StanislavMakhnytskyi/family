@@ -1,0 +1,30 @@
+[
+  { "id": "m-ivan-1", "personId": "ivan", "url": "/images/placeholders/photo-1.svg", "caption": "1953, перед весіллям", "type": "photo", "year": 1953 },
+  { "id": "m-ivan-2", "personId": "ivan", "url": "/images/placeholders/photo-2.svg", "caption": "У майстерні, 1968", "type": "photo", "year": 1968 },
+  { "id": "m-ivan-3", "personId": "ivan", "url": "/images/placeholders/photo-3.svg", "caption": "Родинне свято, 1979", "type": "photo", "year": 1979 },
+  { "id": "m-ivan-4", "personId": "ivan", "url": "/images/placeholders/document-1.svg", "caption": "Метрична книга, запис про народження", "type": "document", "year": 1928 },
+
+  { "id": "m-hanna-1", "personId": "hanna", "url": "/images/placeholders/photo-1.svg", "caption": "1955, перший рік у школі", "type": "photo", "year": 1955 },
+  { "id": "m-hanna-2", "personId": "hanna", "url": "/images/placeholders/photo-4.svg", "caption": "Випуск 1971 року", "type": "photo", "year": 1971 },
+
+  { "id": "m-petro-1", "personId": "petro", "url": "/images/placeholders/photo-2.svg", "caption": "Весілля, 1978", "type": "photo", "year": 1978 },
+  { "id": "m-petro-2", "personId": "petro", "url": "/images/placeholders/photo-3.svg", "caption": "Студентські роки, 1975", "type": "photo", "year": 1975 },
+  { "id": "m-petro-3", "personId": "petro", "url": "/images/placeholders/photo-1.svg", "caption": "На роботі, 1984", "type": "photo", "year": 1984 },
+  { "id": "m-petro-4", "personId": "petro", "url": "/images/placeholders/photo-4.svg", "caption": "З дітьми в Калинівці, 1989", "type": "photo", "year": 1989 },
+  { "id": "m-petro-5", "personId": "petro", "url": "/images/placeholders/photo-2.svg", "caption": "Родинний дім, 1994", "type": "photo", "year": 1994 },
+  { "id": "m-petro-6", "personId": "petro", "url": "/images/placeholders/photo-3.svg", "caption": "60 років, 2015", "type": "photo", "year": 2015 },
+
+  { "id": "m-oksana-1", "personId": "oksana", "url": "/images/placeholders/photo-1.svg", "caption": "1977", "type": "photo", "year": 1977 },
+  { "id": "m-oksana-2", "personId": "oksana", "url": "/images/placeholders/photo-2.svg", "caption": "З дітьми, 1990", "type": "photo", "year": 1990 },
+  { "id": "m-oksana-3", "personId": "oksana", "url": "/images/placeholders/photo-4.svg", "caption": "У саду, 2018", "type": "photo", "year": 2018 },
+
+  { "id": "m-andrii-1", "personId": "andrii", "url": "/images/placeholders/photo-3.svg", "caption": "2005", "type": "photo", "year": 2005 },
+  { "id": "m-andrii-2", "personId": "andrii", "url": "/images/placeholders/photo-1.svg", "caption": "З дітьми, 2016", "type": "photo", "year": 2016 },
+
+  { "id": "m-iryna-1", "personId": "iryna", "url": "/images/placeholders/photo-2.svg", "caption": "Випускний, 2001", "type": "photo", "year": 2001 },
+  { "id": "m-iryna-2", "personId": "iryna", "url": "/images/placeholders/photo-4.svg", "caption": "Київ, 2014", "type": "photo", "year": 2014 },
+
+  { "id": "m-taras-1", "personId": "taras", "url": "/images/placeholders/photo-3.svg", "caption": "Майстерня, 2021", "type": "photo", "year": 2021 },
+
+  { "id": "m-sofia-1", "personId": "sofia", "url": "/images/placeholders/photo-1.svg", "caption": "2023", "type": "photo", "year": 2023 }
+]

@@ -1,0 +1,34 @@
+{
+  "Common": {
+    "appName": "Family History",
+    "footerNote": "A family archive. No registration required."
+  },
+  "Gate": {
+    "title": "Family History",
+    "subtitle": "Answer a question to continue",
+    "answerPlaceholder": "Your answer",
+    "submit": "Enter",
+    "otherQuestion": "Another question",
+    "errorEmpty": "Enter an answer",
+    "errorWrong": "Wrong answer. Attempts left: __REMAINING__",
+    "lockedPrefix": "Try again in"
+  },
+  "Tree": {
+    "logout": "Log out",
+    "hint": "drag · scroll / pinch to zoom"
+  },
+  "Person": {
+    "biography": "Biography",
+    "burialPlace": "Burial place",
+    "openMap": "Open on map",
+    "family": "Family",
+    "parents": "Parents",
+    "spouses": "Spouses",
+    "children": "Children",
+    "gallery": "Photo gallery",
+    "backToTree": "Tree"
+  },
+  "Map": {
+    "close": "Close"
+  }
+}

@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Родинна історія
 
-## Getting Started
+Приватний сімейний архів: дерево родини, сторінки людей із біографією, місцем поховання на карті та фотогалереєю. Доступ захищений одним спільним запитанням (без реєстрації).
 
-First, run the development server:
+## Технології
+
+- Next.js 16 (App Router) + React 19, TypeScript (strict)
+- Tailwind CSS v4 + власні shadcn-стилізовані компоненти (Radix UI під капотом)
+- [`family-chart`](https://github.com/donatso/family-chart) — інтерактивне дерево (D3)
+- `maplibre-gl` — карта місця поховання
+- `next-intl` — інтернаціоналізація (наразі активна лише `uk`, структура готова під інші мови)
+- `zod` — валідація JSON-даних
+- `vitest` — юніт-тести, `@playwright/test` — smoke-тест
+
+## Запуск
+
+Потрібен [pnpm](https://pnpm.io) (`corepack enable` увімкне його автоматично, якщо ще не встановлений).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Відкрити [http://localhost:3000](http://localhost:3000) — має перекинути на `/gate`. Правильні відповіді дивіться в [src/data/questions.json](src/data/questions.json).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Інші команди
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm build       # продакшн-збірка
+pnpm start       # запуск продакшн-збірки
+pnpm lint        # ESLint
+pnpm test        # юніт-тести (vitest)
+pnpm test:e2e    # smoke-тест (playwright; перший раз: pnpm exec playwright install chromium)
+```
 
-## Learn More
+## Дані
 
-To learn more about Next.js, take a look at the following resources:
+Увесь контент — у JSON-файлах під [src/data/](src/data/), валідованих Zod-схемами з [src/lib/schemas.ts](src/lib/schemas.ts):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `people.json` — люди (id, ім'я, прізвище, дати, біографія абзацами, фото)
+- `relationships.json` — зв'язки `parent-child` (person1Id — батько/мати, person2Id — дитина) та `spouse`
+- `graves.json` — місця поховань (координати, адреса)
+- `media.json` — фотогалерея по людях
+- `questions.json` — запитання для входу (`normalizedAnswer` + необов'язкові `variants`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Щоб додати нову людину — просто розширте ці файли; сторінки й дерево підхоплять зміни автоматично. Фото людей не обов'язкові: якщо `avatar` не вказано, показується заглушка з ініціалами.
 
-## Deploy on Vercel
+## Структура
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+  app/            — маршрути (App Router), Server Actions (app/actions)
+  components/
+    ui/            — базові примітиви (button, input, card, dialog, avatar, skeleton)
+    client/        — інтерактивні "use client" компоненти (дерево, карта, форма входу)
+  lib/            — Zod-схеми, читання даних, утиліти, сесія/кукі
+  data/           — приклади даних (JSON)
+  i18n/           — конфігурація next-intl
+messages/         — переклади (uk.json, en.json)
+src/proxy.ts      — перевірка сесійної куки (замінює middleware.ts у Next.js 16)
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Безпека
+
+- Усі сторінки, крім `/gate`, мають `noindex`; `public/robots.txt` забороняє індексацію повністю.
+- Сесійна кука `family-session` — HttpOnly, Secure, SameSite=Lax, 7 днів.
+- Ліміт спроб входу — 3, після чого блокування на 15 хвилин (кука `family-gate-attempts`).

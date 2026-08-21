@@ -1,0 +1,14 @@
+[
+  { "id": "r1", "type": "spouse", "person1Id": "ivan", "person2Id": "hanna" },
+  { "id": "r2", "type": "parent-child", "person1Id": "ivan", "person2Id": "petro" },
+  { "id": "r3", "type": "parent-child", "person1Id": "hanna", "person2Id": "petro" },
+  { "id": "r4", "type": "spouse", "person1Id": "petro", "person2Id": "oksana" },
+  { "id": "r5", "type": "parent-child", "person1Id": "petro", "person2Id": "andrii" },
+  { "id": "r6", "type": "parent-child", "person1Id": "oksana", "person2Id": "andrii" },
+  { "id": "r7", "type": "parent-child", "person1Id": "petro", "person2Id": "iryna" },
+  { "id": "r8", "type": "parent-child", "person1Id": "oksana", "person2Id": "iryna" },
+  { "id": "r9", "type": "parent-child", "person1Id": "petro", "person2Id": "taras" },
+  { "id": "r10", "type": "parent-child", "person1Id": "oksana", "person2Id": "taras" },
+  { "id": "r11", "type": "parent-child", "person1Id": "andrii", "person2Id": "sofia" },
+  { "id": "r12", "type": "parent-child", "person1Id": "andrii", "person2Id": "maksym" }
+]

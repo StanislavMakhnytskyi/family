@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <pattern id="stripes" width="12" height="12" patternTransform="rotate(135)" patternUnits="userSpaceOnUse">
+      <rect width="12" height="12" fill="#f7f0e0"/>
+      <rect width="6" height="12" fill="#efe5cb"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="300" fill="url(#stripes)"/>
+  <rect x="1" y="1" width="398" height="298" fill="none" stroke="#e3d8c0" stroke-width="2"/>
+  <text x="200" y="155" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" fill="#97886f">фото</text>
+</svg>
