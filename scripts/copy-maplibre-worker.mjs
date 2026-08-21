@@ -6,6 +6,11 @@
 // ("Failed to load module script: ... non-JavaScript MIME type"). Serving
 // our own copy from public/ and pointing maplibre-gl at it via
 // setWorkerUrl() (see src/components/client/MapModal.tsx) sidesteps this.
+//
+// public/maplibre-gl-worker.mjs is committed to git (not gitignored) so the
+// deployed build always has it regardless of whether a hosting platform's
+// install cache re-runs this postinstall script. Re-run this script (or
+// `pnpm install`) and commit the result after bumping maplibre-gl.
 import { copyFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 
