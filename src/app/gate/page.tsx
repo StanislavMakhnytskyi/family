@@ -16,7 +16,6 @@ export default async function GatePage() {
 
   return (
     <div className="relative min-h-screen">
-      <div className="paper-texture pointer-events-none fixed inset-0 z-[60] opacity-50" />
       <div className="flex min-h-screen items-center justify-center px-[18px] py-6 pb-10">
         <div className="w-full max-w-[440px] animate-fade-up">
           <div className="rounded-xl border border-border bg-surface px-7 pt-[34px] pb-7 shadow-login">

@@ -10,7 +10,7 @@ export function SiteHeader({
   right: ReactNode;
 }) {
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-border-divider bg-cream/92 px-5 py-3.5 backdrop-blur-sm">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-border-divider bg-cream/92 px-5 backdrop-blur-sm">
       {left}
       {right}
     </header>

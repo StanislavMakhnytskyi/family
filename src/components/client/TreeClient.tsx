@@ -6,7 +6,8 @@ import * as f3 from "family-chart";
 import type { TreeDatum } from "family-chart";
 
 import type { FamilyChartDatum } from "@/lib/family-chart-adapter";
-import { initials, lifespan } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { clampZoom, initials, lifespan } from "@/lib/utils";
 
 const CARD_CLASS =
   "flex h-[132px] w-[190px] flex-col items-center justify-center gap-2 rounded-lg border border-border bg-surface p-3.5 shadow-tree-card transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-[3px] hover:border-border-hover hover:shadow-card-hover animate-pop-in-tree";
@@ -27,6 +28,8 @@ function cardTemplate(node: TreeDatum) {
   `;
 }
 
+const ZOOM_STEP = 1.2;
+
 export function TreeClient({
   data,
   hint,
@@ -35,6 +38,7 @@ export function TreeClient({
   hint: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<ReturnType<typeof f3.createChart> | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -42,31 +46,86 @@ export function TreeClient({
     if (!container || data.length === 0) return;
 
     const chart = f3.createChart(container, data);
+    chartRef.current = chart;
     chart.setCardXSpacing(220);
     chart.setCardYSpacing(230);
     chart.setSingleParentEmptyCard(false);
-    const card = chart
+    chart
       .setCardHtml()
       .setCardDim({ w: 190, h: 132 })
       .setCardInnerHtmlCreator(cardTemplate)
       .setOnCardClick((_event: MouseEvent, node: TreeDatum) => {
         router.push(`/person/${node.data.id}`);
       });
-    void card;
 
-    chart.updateTree({ initial: true });
+    chart.updateTree({ initial: true, tree_position: "fit" });
+
+    function handleResize() {
+      chartRef.current?.updateTree({
+        tree_position: "fit",
+        transition_time: 0,
+      });
+    }
+    window.addEventListener("resize", handleResize);
 
     return () => {
+      window.removeEventListener("resize", handleResize);
+      chartRef.current = null;
       container.innerHTML = "";
     };
   }, [data, router]);
 
+  function zoomBy(factor: number) {
+    const chart = chartRef.current;
+    if (!chart) return;
+    const current = f3.handlers.getCurrentZoom(chart.svg).k;
+    f3.handlers.zoomTo(chart.svg, clampZoom(current * factor));
+  }
+
+  function resetZoom() {
+    chartRef.current?.updateTree({ tree_position: "fit", transition_time: 300 });
+  }
+
   return (
-    <div className="relative flex-1 overflow-hidden">
+    <div
+      className="relative h-[calc(100vh-64px)] flex-1 overflow-hidden"
+      data-testid="tree-viewport"
+    >
       <div
         ref={containerRef}
-        className="h-full min-h-[calc(100vh-56px)] w-full cursor-grab touch-none active:cursor-grabbing"
+        data-testid="tree-canvas"
+        className="f3 absolute inset-0 h-full w-full cursor-grab touch-none active:cursor-grabbing"
       />
+      <div className="absolute right-4 bottom-5 z-20 flex flex-col gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Збільшити"
+          onClick={() => zoomBy(ZOOM_STEP)}
+        >
+          +
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Зменшити"
+          onClick={() => zoomBy(1 / ZOOM_STEP)}
+        >
+          −
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Скинути масштаб"
+          className="text-xs font-semibold"
+          onClick={resetZoom}
+        >
+          100%
+        </Button>
+      </div>
       <p className="pointer-events-none absolute bottom-3 left-5 z-20 m-0 rounded-xs bg-cream/90 px-2.5 py-1.5 font-mono text-xs text-faint">
         {hint}
       </p>

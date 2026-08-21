@@ -30,3 +30,14 @@ export function lifespan(birthDate: string, deathDate?: string): string {
 export function formatCoords(latitude: number, longitude: number): string {
   return `${latitude.toFixed(4)}° N, ${longitude.toFixed(4)}° E`;
 }
+
+export const ZOOM_MIN = 0.3;
+export const ZOOM_MAX = 2;
+
+export function clampZoom(
+  scale: number,
+  min: number = ZOOM_MIN,
+  max: number = ZOOM_MAX,
+): number {
+  return Math.min(max, Math.max(min, scale));
+}

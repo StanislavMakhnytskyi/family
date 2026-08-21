@@ -37,6 +37,7 @@ export default async function RootLayout({
       className={`${literata.variable} ${nunitoSans.variable} h-full`}
     >
       <body className="min-h-full font-sans antialiased">
+        <div className="paper-texture pointer-events-none fixed inset-0 z-[60] opacity-50" />
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
