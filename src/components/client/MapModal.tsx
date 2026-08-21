@@ -1,8 +1,19 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Map as MapLibreMap, Marker, NavigationControl } from "maplibre-gl";
+import {
+  Map as MapLibreMap,
+  Marker,
+  NavigationControl,
+  setWorkerUrl,
+} from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+
+// maplibre-gl resolves its worker script relative to its own bundled chunk
+// URL by default, which breaks under Turbopack/Webpack (the worker ends up
+// requested at a path Next.js doesn't serve). Point it at our own copy
+// instead — see scripts/copy-maplibre-worker.mjs.
+setWorkerUrl("/maplibre-gl-worker.mjs");
 
 import {
   Dialog,

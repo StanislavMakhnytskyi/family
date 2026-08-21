@@ -18,7 +18,9 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|robots.txt|images/).*)",
-  ],
+  // Excludes Next internals and any path with a file extension (robots.txt,
+  // favicon.ico, everything under public/ — images, the maplibre-gl worker
+  // script, etc.) so static assets are never redirected to /gate, which
+  // module workers in particular won't reliably follow.
+  matcher: ["/((?!_next/static|_next/image|.*\\..*).*)"],
 };

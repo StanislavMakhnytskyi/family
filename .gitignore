@@ -44,3 +44,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# copied at install-time by scripts/copy-maplibre-worker.mjs
+/public/maplibre-gl-worker.mjs
