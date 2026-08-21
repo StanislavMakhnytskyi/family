@@ -15,8 +15,8 @@ export default async function GatePage() {
   }));
 
   return (
-    <div className="relative min-h-screen">
-      <div className="flex min-h-screen items-center justify-center px-[18px] py-6 pb-10">
+    <div className="relative min-h-dvh">
+      <div className="flex min-h-dvh items-center justify-center px-[18px] py-6 pb-10">
         <div className="w-full max-w-[440px] animate-fade-up">
           <div className="rounded-xl border border-border bg-surface px-7 pt-[34px] pb-7 shadow-login">
             <div className="flex flex-col items-center gap-2.5 text-center">
@@ -37,6 +37,7 @@ export default async function GatePage() {
               messages={{
                 answerPlaceholder: t("Gate.answerPlaceholder"),
                 submit: t("Gate.submit"),
+                submitting: t("Gate.submitting"),
                 otherQuestion: t("Gate.otherQuestion"),
                 errorEmpty: t("Gate.errorEmpty"),
                 errorWrong: t("Gate.errorWrong"),

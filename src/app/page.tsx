@@ -16,7 +16,7 @@ export default async function TreePage() {
   const data = toFamilyChartData(people, relationships);
 
   return (
-    <div className="flex h-screen animate-fade-in flex-col overflow-hidden">
+    <div className="flex h-dvh animate-fade-in flex-col overflow-hidden">
       <SiteHeader
         left={
           <div className="flex min-w-0 items-center gap-2.5">

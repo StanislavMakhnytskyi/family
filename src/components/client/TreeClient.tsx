@@ -88,7 +88,7 @@ export function TreeClient({
 
   return (
     <div
-      className="relative h-[calc(100vh-64px)] flex-1 overflow-hidden"
+      className="relative h-[calc(100dvh-64px)] flex-1 overflow-hidden"
       data-testid="tree-viewport"
     >
       <div

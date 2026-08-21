@@ -9,12 +9,14 @@
     "lint": "eslint",
     "test": "vitest run",
     "pretest:e2e": "next build",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "global-config:build-patch": "node scripts/push-global-config.mjs"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.2.6",
     "@radix-ui/react-dialog": "^1.1.23",
     "@radix-ui/react-slot": "^1.3.3",
+    "@vercel/global-config": "^1.5.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "d3": "^7.9.0",

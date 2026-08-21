@@ -35,6 +35,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+/.vercel-global-config/
 
 # playwright
 /playwright-report/

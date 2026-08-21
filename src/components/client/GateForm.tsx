@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
+import { Loader2 } from "lucide-react";
 
 import { verifyAnswer, type GateState } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ type QuestionOption = { id: string; question: string };
 type Messages = {
   answerPlaceholder: string;
   submit: string;
+  submitting: string;
   otherQuestion: string;
   errorEmpty: string;
   errorWrong: string;
@@ -65,7 +67,7 @@ export function GateForm({
   }
 
   return (
-    <form action={formAction} className="contents">
+    <form action={formAction} className="contents" aria-busy={isPending}>
       <input type="hidden" name="questionId" value={questionId} />
 
       <p className="mb-4 text-pretty font-serif text-[21px] font-semibold leading-snug text-ink">
@@ -113,7 +115,8 @@ export function GateForm({
           disabled={locked || isPending}
           className="flex-1 basis-[150px]"
         >
-          {messages.submit}
+          {isPending && <Loader2 className="size-4 animate-spin" />}
+          {isPending ? messages.submitting : messages.submit}
         </Button>
         <Button
           type="button"

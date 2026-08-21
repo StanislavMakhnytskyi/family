@@ -32,7 +32,7 @@ export default async function PersonPage({
   ]);
 
   return (
-    <div className="min-h-screen animate-fade-in">
+    <div className="min-h-dvh animate-fade-in">
       <SiteHeader
         left={
           <Button variant="ghost" asChild className="text-sm">

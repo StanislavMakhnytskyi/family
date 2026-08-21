@@ -8,6 +8,7 @@
     "subtitle": "Answer a question to continue",
     "answerPlaceholder": "Your answer",
     "submit": "Enter",
+    "submitting": "Please wait…",
     "otherQuestion": "Another question",
     "errorEmpty": "Enter an answer",
     "errorWrong": "Wrong answer. Attempts left: __REMAINING__",

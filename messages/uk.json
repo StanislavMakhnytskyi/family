@@ -8,6 +8,7 @@
     "subtitle": "Щоб продовжити, дайте відповідь на запитання",
     "answerPlaceholder": "Ваша відповідь",
     "submit": "Увійти",
+    "submitting": "Зачекайте…",
     "otherQuestion": "Інше питання",
     "errorEmpty": "Введіть відповідь",
     "errorWrong": "Неправильна відповідь. Залишилось спроб: __REMAINING__",
