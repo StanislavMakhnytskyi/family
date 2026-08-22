@@ -1,23 +1,9 @@
 [
   {
-    "personId": "ivan",
-    "latitude": 49.4534,
-    "longitude": 28.5178,
-    "address": "Сільське кладовище, Калинівка",
-    "description": "ділянка 3, ряд 2"
-  },
-  {
-    "personId": "hanna",
-    "latitude": 49.4535,
-    "longitude": 28.518,
-    "address": "Сільське кладовище, Калинівка",
-    "description": "ділянка 3, ряд 4"
-  },
-  {
-    "personId": "petro",
-    "latitude": 48.4237,
-    "longitude": 35.021,
-    "address": "Центральне кладовище, Дніпро",
-    "description": "ділянка 14, ряд 6"
+    "personId": "bohdan-savchenko",
+    "latitude": 49.5883,
+    "longitude": 34.5514,
+    "address": "Сільське кладовище, Полтавська область",
+    "description": "ділянка 2, ряд 5"
   }
 ]

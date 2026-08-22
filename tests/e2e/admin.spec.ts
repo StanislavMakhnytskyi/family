@@ -45,6 +45,6 @@ test.describe("admin panel", () => {
     await page.getByRole("button", { name: "Обрати" }).first().click();
 
     await expect(page).toHaveURL(/\/admin\/people$/);
-    await expect(page.getByText("Іван Ковальський")).toBeVisible();
+    await expect(page.getByText("Богдан Савченко")).toBeVisible();
   });
 });
