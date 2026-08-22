@@ -7,7 +7,6 @@
 - Next.js 16 (App Router) + React 19, TypeScript (strict)
 - Tailwind CSS v4 + власні shadcn-стилізовані компоненти (Radix UI під капотом)
 - [`family-chart`](https://github.com/donatso/family-chart) — інтерактивне дерево (D3)
-- `maplibre-gl` — карта місця поховання
 - `next-intl` — інтернаціоналізація (наразі активна лише `uk`, структура готова під інші мови)
 - `zod` — валідація JSON-даних
 - `vitest` — юніт-тести, `@playwright/test` — smoke-тест

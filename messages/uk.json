@@ -21,15 +21,12 @@
   "Person": {
     "biography": "Біографія",
     "burialPlace": "Місце поховання",
-    "openMap": "Відкрити на карті",
+    "openMap": "Відкрити в Google Картах",
     "family": "Родина",
     "parents": "Батьки",
     "spouses": "Подружжя",
     "children": "Діти",
     "gallery": "Фотогалерея",
     "backToTree": "Дерево"
-  },
-  "Map": {
-    "close": "Закрити"
   }
 }
