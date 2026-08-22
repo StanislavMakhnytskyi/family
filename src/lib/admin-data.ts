@@ -145,6 +145,32 @@ export function validateRawData(value: unknown): ValidationResult {
   return { success: true, data: { people, relationships, graves, media, questions } };
 }
 
+/**
+ * Renames a person's id everywhere it's referenced — relationships,
+ * graves, and media all store a foreign-key-style personId, and nothing
+ * enforces that automatically, so a rename has to cascade explicitly.
+ */
+export function renamePersonId(data: FullData, oldId: string, newId: string): FullData {
+  if (oldId === newId) return data;
+  return {
+    ...data,
+    people: data.people.map((person) =>
+      person.id === oldId ? { ...person, id: newId } : person,
+    ),
+    relationships: data.relationships.map((rel) => ({
+      ...rel,
+      person1Id: rel.person1Id === oldId ? newId : rel.person1Id,
+      person2Id: rel.person2Id === oldId ? newId : rel.person2Id,
+    })),
+    graves: data.graves.map((grave) =>
+      grave.personId === oldId ? { ...grave, personId: newId } : grave,
+    ),
+    media: data.media.map((item) =>
+      item.personId === oldId ? { ...item, personId: newId } : item,
+    ),
+  };
+}
+
 /** What references a person, for the delete-guard UI. Empty array = safe to delete. */
 export function findPersonReferences(data: FullData, personId: string): string[] {
   const refs: string[] = [];
@@ -210,6 +236,28 @@ async function writeLocalData(value: FullData): Promise<void> {
   );
 }
 
+async function patchGlobalConfigItem(
+  operation: "create" | "update" | "upsert",
+  value: FullData,
+): Promise<Response> {
+  const token = process.env.VERCEL_API_TOKEN;
+  const storeId = process.env.VERCEL_GLOBAL_CONFIG_STORE_ID;
+  const teamId = process.env.VERCEL_TEAM_ID;
+  const url = new URL(`https://api.vercel.com/v1/global-config/${storeId}/items`);
+  if (teamId) url.searchParams.set("teamId", teamId);
+
+  return fetch(url, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      items: [{ operation, key: GLOBAL_CONFIG_KEY, value }],
+    }),
+  });
+}
+
 async function writeGlobalConfigData(value: FullData): Promise<void> {
   const token = process.env.VERCEL_API_TOKEN;
   const storeId = process.env.VERCEL_GLOBAL_CONFIG_STORE_ID;
@@ -218,22 +266,16 @@ async function writeGlobalConfigData(value: FullData): Promise<void> {
       "VERCEL_API_TOKEN та VERCEL_GLOBAL_CONFIG_STORE_ID мають бути задані, щоб зберігати в Global Config.",
     );
   }
-  const teamId = process.env.VERCEL_TEAM_ID;
-  const url = new URL(
-    `https://api.vercel.com/v1/global-config/${storeId}/items`,
-  );
-  if (teamId) url.searchParams.set("teamId", teamId);
 
-  const response = await fetch(url, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      items: [{ operation: "upsert", key: GLOBAL_CONFIG_KEY, value }],
-    }),
-  });
+  let response = await patchGlobalConfigItem("upsert", value);
+
+  // A brand-new store has no "data" item yet. "upsert" is documented to
+  // create-or-update, but if the store has never had this key written to
+  // it, fall back to an explicit "create" once rather than surfacing a
+  // confusing "item not found" error on someone's very first save.
+  if (!response.ok && response.status === 404) {
+    response = await patchGlobalConfigItem("create", value);
+  }
 
   if (!response.ok) {
     const text = await response.text().catch(() => "");

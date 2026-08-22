@@ -6,6 +6,7 @@ import {
   readData,
   writeData,
   findPersonReferences,
+  renamePersonId,
 } from "@/lib/admin-data";
 import { uploadPrivateFile } from "@/lib/blob";
 import { textareaValueToBio } from "@/lib/admin-forms";
@@ -20,6 +21,7 @@ export async function savePerson(
   if (!source) redirect("/admin");
 
   const isNew = formData.get("mode") === "new";
+  const originalId = String(formData.get("originalId") ?? "").trim();
   const id = String(formData.get("id") ?? "").trim();
   const firstName = String(formData.get("firstName") ?? "").trim();
   const lastName = String(formData.get("lastName") ?? "").trim();
@@ -36,16 +38,23 @@ export async function savePerson(
   }
 
   const data = await readData(source);
-  const exists = data.people.some((person) => person.id === id);
 
-  if (isNew && exists) {
-    return { error: `Людина з id "${id}" вже існує.` };
-  }
-  if (!isNew && !exists) {
-    return { error: `Людину з id "${id}" не знайдено.` };
+  if (isNew) {
+    if (data.people.some((person) => person.id === id)) {
+      return { error: `Людина з id "${id}" вже існує.` };
+    }
+  } else {
+    if (!data.people.some((person) => person.id === originalId)) {
+      return { error: `Людину з id "${originalId}" не знайдено.` };
+    }
+    if (id !== originalId && data.people.some((person) => person.id === id)) {
+      return { error: `Людина з id "${id}" вже існує.` };
+    }
   }
 
-  let avatar = data.people.find((person) => person.id === id)?.avatar;
+  let avatar = isNew
+    ? undefined
+    : data.people.find((person) => person.id === originalId)?.avatar;
   if (removeAvatar) {
     avatar = undefined;
   } else if (avatarFile instanceof File && avatarFile.size > 0) {
@@ -71,10 +80,15 @@ export async function savePerson(
 
   const nextPeople = isNew
     ? [...data.people, person]
-    : data.people.map((existing) => (existing.id === id ? person : existing));
+    : data.people.map((existing) => (existing.id === originalId ? person : existing));
+
+  let nextData = { ...data, people: nextPeople };
+  if (!isNew && id !== originalId) {
+    nextData = renamePersonId(nextData, originalId, id);
+  }
 
   try {
-    await writeData(source, { ...data, people: nextPeople });
+    await writeData(source, nextData);
   } catch (error) {
     return { error: error instanceof Error ? error.message : String(error) };
   }
