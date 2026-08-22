@@ -6,6 +6,26 @@ function person(id: string, birthDate = "2000"): Person {
   return { id, firstName: id, lastName: id, birthDate };
 }
 
+/**
+ * The real invariant that matters for avoiding visual overlap: two people
+ * on the *same row* (generation) must never land on the same column.
+ * People on different rows sharing a column is fine — they render at
+ * different heights and can't collide.
+ */
+function expectNoOverlapWithinGeneration(nodes: ReturnType<typeof computeFamilyTreeLayout>["nodes"]) {
+  const byGeneration = new Map<number, number[]>();
+  for (const node of nodes.values()) {
+    const list = byGeneration.get(node.generation) ?? [];
+    list.push(node.column);
+    byGeneration.set(node.generation, list);
+  }
+  for (const [generation, columns] of byGeneration) {
+    expect(new Set(columns).size, `generation ${generation} has overlapping columns`).toBe(
+      columns.length,
+    );
+  }
+}
+
 describe("computeFamilyTreeLayout", () => {
   it("places every person on exactly one generation below their parents", () => {
     const people = [person("gramps"), person("gran"), person("parent"), person("child")];
@@ -150,9 +170,7 @@ describe("computeFamilyTreeLayout", () => {
     expect(nodes.get("child-from-first")!.generation).toBe(
       nodes.get("parent")!.generation + 1,
     );
-    // Everyone gets a distinct column, including the childless second spouse.
-    const columns = [...nodes.values()].map((n) => n.column);
-    expect(new Set(columns).size).toBe(columns.length);
+    expectNoOverlapWithinGeneration(nodes);
   });
 
   it("keeps children with their own parent when siblings only share one parent (half-siblings)", () => {
@@ -188,15 +206,79 @@ describe("computeFamilyTreeLayout", () => {
     expect(nodes.get("child-b")!.generation).toBe(nodes.get("parent")!.generation + 1);
   });
 
-  it("gives every person a distinct column", () => {
+  it("gives every person on the same row a distinct column", () => {
     const people = [person("a"), person("b"), person("c")];
     const relationships: Relationship[] = [
       { id: "r1", type: "parent-child", person1Id: "a", person2Id: "b" },
       { id: "r2", type: "parent-child", person1Id: "a", person2Id: "c" },
     ];
     const { nodes } = computeFamilyTreeLayout(people, relationships);
-    const columns = [...nodes.values()].map((n) => n.column);
-    expect(new Set(columns).size).toBe(columns.length);
+    expectNoOverlapWithinGeneration(nodes);
+  });
+
+  it("keeps spouses exactly one column apart, however wide their children turn out", () => {
+    const people = [
+      person("husband"),
+      person("wife"),
+      person("child-a"),
+      person("child-b"),
+      person("child-c"),
+      person("child-d"),
+    ];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "spouse", person1Id: "husband", person2Id: "wife" },
+      { id: "r2", type: "parent-child", person1Id: "husband", person2Id: "child-a" },
+      { id: "r3", type: "parent-child", person1Id: "wife", person2Id: "child-a" },
+      { id: "r4", type: "parent-child", person1Id: "husband", person2Id: "child-b" },
+      { id: "r5", type: "parent-child", person1Id: "wife", person2Id: "child-b" },
+      { id: "r6", type: "parent-child", person1Id: "husband", person2Id: "child-c" },
+      { id: "r7", type: "parent-child", person1Id: "wife", person2Id: "child-c" },
+      { id: "r8", type: "parent-child", person1Id: "husband", person2Id: "child-d" },
+      { id: "r9", type: "parent-child", person1Id: "wife", person2Id: "child-d" },
+    ];
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+    const gap = Math.abs(nodes.get("husband")!.column - nodes.get("wife")!.column);
+    expect(gap).toBe(1);
+    expectNoOverlapWithinGeneration(nodes);
+  });
+
+  it("doesn't reserve extra width for a single-child chain (compaction)", () => {
+    // grandparent -> parent -> child, no branching at all: should take no
+    // more horizontal room than a single leaf, regardless of depth.
+    const people = [person("grandparent"), person("parent"), person("child")];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "parent-child", person1Id: "grandparent", person2Id: "parent" },
+      { id: "r2", type: "parent-child", person1Id: "parent", person2Id: "child" },
+    ];
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+    const columns = new Set([...nodes.values()].map((n) => n.column));
+    expect(columns.size).toBe(1);
+  });
+
+  it("centers a couple above their combined children instead of sitting at the left edge", () => {
+    const people = [
+      person("husband"),
+      person("wife"),
+      person("child-a"),
+      person("child-b"),
+      person("child-c"),
+    ];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "spouse", person1Id: "husband", person2Id: "wife" },
+      { id: "r2", type: "parent-child", person1Id: "husband", person2Id: "child-a" },
+      { id: "r3", type: "parent-child", person1Id: "wife", person2Id: "child-a" },
+      { id: "r4", type: "parent-child", person1Id: "husband", person2Id: "child-b" },
+      { id: "r5", type: "parent-child", person1Id: "wife", person2Id: "child-b" },
+      { id: "r6", type: "parent-child", person1Id: "husband", person2Id: "child-c" },
+      { id: "r7", type: "parent-child", person1Id: "wife", person2Id: "child-c" },
+    ];
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+    const childColumns = ["child-a", "child-b", "child-c"].map((id) => nodes.get(id)!.column);
+    const minChild = Math.min(...childColumns);
+    const maxChild = Math.max(...childColumns);
+    const coupleCenter = (nodes.get("husband")!.column + nodes.get("wife")!.column) / 2;
+    expect(coupleCenter).toBeGreaterThanOrEqual(minChild);
+    expect(coupleCenter).toBeLessThanOrEqual(maxChild);
   });
 
   it("is deterministic across repeated calls with the same input", () => {

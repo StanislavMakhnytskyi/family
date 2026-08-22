@@ -2,73 +2,199 @@
   {
     "id": "r1",
     "type": "spouse",
-    "person1Id": "ivan",
-    "person2Id": "hanna"
+    "person1Id": "bohdan-savchenko",
+    "person2Id": "halyna-savchenko"
   },
   {
     "id": "r2",
     "type": "parent-child",
-    "person1Id": "ivan",
-    "person2Id": "petro"
+    "person1Id": "bohdan-savchenko",
+    "person2Id": "yaroslav-savchenko"
   },
   {
     "id": "r3",
     "type": "parent-child",
-    "person1Id": "hanna",
-    "person2Id": "petro"
+    "person1Id": "halyna-savchenko",
+    "person2Id": "yaroslav-savchenko"
   },
   {
     "id": "r4",
-    "type": "spouse",
-    "person1Id": "petro",
-    "person2Id": "oksana"
+    "type": "parent-child",
+    "person1Id": "bohdan-savchenko",
+    "person2Id": "natalia-savchenko"
   },
   {
     "id": "r5",
     "type": "parent-child",
-    "person1Id": "petro",
-    "person2Id": "andrii"
+    "person1Id": "halyna-savchenko",
+    "person2Id": "natalia-savchenko"
   },
   {
     "id": "r6",
-    "type": "parent-child",
-    "person1Id": "oksana",
-    "person2Id": "andrii"
+    "type": "spouse",
+    "person1Id": "yaroslav-savchenko",
+    "person2Id": "yaroslav-wife"
   },
   {
     "id": "r7",
     "type": "parent-child",
-    "person1Id": "petro",
-    "person2Id": "iryna"
+    "person1Id": "yaroslav-savchenko",
+    "person2Id": "yuliia-bondarenko"
   },
   {
     "id": "r8",
     "type": "parent-child",
-    "person1Id": "oksana",
-    "person2Id": "iryna"
+    "person1Id": "yaroslav-wife",
+    "person2Id": "yuliia-bondarenko"
   },
   {
     "id": "r9",
     "type": "parent-child",
-    "person1Id": "petro",
-    "person2Id": "taras"
+    "person1Id": "yaroslav-savchenko",
+    "person2Id": "kateryna"
   },
   {
     "id": "r10",
     "type": "parent-child",
-    "person1Id": "oksana",
-    "person2Id": "taras"
+    "person1Id": "yaroslav-wife",
+    "person2Id": "kateryna"
   },
   {
     "id": "r11",
-    "type": "parent-child",
-    "person1Id": "andrii",
-    "person2Id": "sofia"
+    "type": "spouse",
+    "person1Id": "yuliia-bondarenko",
+    "person2Id": "dmytro-bondarenko"
   },
   {
     "id": "r12",
     "type": "parent-child",
-    "person1Id": "andrii",
-    "person2Id": "maksym"
+    "person1Id": "yuliia-bondarenko",
+    "person2Id": "solomiia-bondarenko"
+  },
+  {
+    "id": "r13",
+    "type": "parent-child",
+    "person1Id": "dmytro-bondarenko",
+    "person2Id": "solomiia-bondarenko"
+  },
+  {
+    "id": "r14",
+    "type": "parent-child",
+    "person1Id": "yuliia-bondarenko",
+    "person2Id": "nazar-bondarenko"
+  },
+  {
+    "id": "r15",
+    "type": "parent-child",
+    "person1Id": "dmytro-bondarenko",
+    "person2Id": "nazar-bondarenko"
+  },
+  {
+    "id": "r16",
+    "type": "spouse",
+    "person1Id": "kateryna",
+    "person2Id": "kateryna-husband"
+  },
+  {
+    "id": "r17",
+    "type": "parent-child",
+    "person1Id": "kateryna",
+    "person2Id": "veronika"
+  },
+  {
+    "id": "r18",
+    "type": "parent-child",
+    "person1Id": "kateryna-husband",
+    "person2Id": "veronika"
+  },
+  {
+    "id": "r19",
+    "type": "spouse",
+    "person1Id": "natalia-savchenko",
+    "person2Id": "yurii-kovalenko"
+  },
+  {
+    "id": "r20",
+    "type": "parent-child",
+    "person1Id": "natalia-savchenko",
+    "person2Id": "sofiia-kovalenko"
+  },
+  {
+    "id": "r21",
+    "type": "parent-child",
+    "person1Id": "yurii-kovalenko",
+    "person2Id": "sofiia-kovalenko"
+  },
+  {
+    "id": "r22",
+    "type": "spouse",
+    "person1Id": "sofiia-kovalenko",
+    "person2Id": "denys-poliakov"
+  },
+  {
+    "id": "r23",
+    "type": "parent-child",
+    "person1Id": "sofiia-kovalenko",
+    "person2Id": "maksym-poliakov"
+  },
+  {
+    "id": "r24",
+    "type": "parent-child",
+    "person1Id": "denys-poliakov",
+    "person2Id": "maksym-poliakov"
+  },
+  {
+    "id": "r25",
+    "type": "parent-child",
+    "person1Id": "viktor-poliakov",
+    "person2Id": "denys-poliakov"
+  },
+  {
+    "id": "r26",
+    "type": "parent-child",
+    "person1Id": "oksana-poliakova",
+    "person2Id": "denys-poliakov"
+  },
+  {
+    "id": "r27",
+    "type": "spouse",
+    "person1Id": "viktor-poliakov",
+    "person2Id": "oksana-poliakova"
+  },
+  {
+    "id": "r28",
+    "type": "parent-child",
+    "person1Id": "vira-marchenko",
+    "person2Id": "oksana-poliakova"
+  },
+  {
+    "id": "r29",
+    "type": "parent-child",
+    "person1Id": "petro-marchenko",
+    "person2Id": "oksana-poliakova"
+  },
+  {
+    "id": "r30",
+    "type": "parent-child",
+    "person1Id": "vira-marchenko",
+    "person2Id": "lesia-marchenko"
+  },
+  {
+    "id": "r31",
+    "type": "parent-child",
+    "person1Id": "petro-marchenko",
+    "person2Id": "lesia-marchenko"
+  },
+  {
+    "id": "r32",
+    "type": "spouse",
+    "person1Id": "petro-marchenko",
+    "person2Id": "vira-marchenko"
+  },
+  {
+    "id": "r33",
+    "type": "spouse",
+    "person1Id": "olha",
+    "person2Id": "yaroslav-savchenko"
   }
 ]
