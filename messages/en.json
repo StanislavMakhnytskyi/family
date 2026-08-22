@@ -14,6 +14,16 @@
     "errorWrong": "Wrong answer. Attempts left: __REMAINING__",
     "lockedPrefix": "Try again in"
   },
+  "GateYears": {
+    "title": "One more check",
+    "subtitle": "Enter the birth years of any three family members",
+    "yearPlaceholder": "YYYY",
+    "submit": "Enter",
+    "submitting": "Please wait…",
+    "errorIncomplete": "Fill in all three fields",
+    "errorWrong": "Not all years match. Attempts left: __REMAINING__",
+    "lockedPrefix": "Try again in"
+  },
   "Tree": {
     "logout": "Log out",
     "hint": "drag · scroll / pinch to zoom"

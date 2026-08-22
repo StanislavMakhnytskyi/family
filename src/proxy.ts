@@ -17,7 +17,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname === "/gate") {
+  // /gate/years (second login stage) checks for the stage-one cookie
+  // itself and redirects back to /gate if it's missing — no need to
+  // duplicate that check here.
+  if (pathname === "/gate" || pathname === "/gate/years") {
     return NextResponse.next();
   }
 
