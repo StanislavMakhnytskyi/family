@@ -5,7 +5,6 @@ import { LogoMark, SiteHeader } from "@/components/SiteHeader";
 import { TreeClient } from "@/components/client/TreeClient";
 import { Button } from "@/components/ui/button";
 import { getPeople, getRelationships } from "@/lib/data";
-import { toFamilyChartData } from "@/lib/family-chart-adapter";
 
 export default async function TreePage() {
   const t = await getTranslations();
@@ -13,7 +12,6 @@ export default async function TreePage() {
     getPeople(),
     getRelationships(),
   ]);
-  const data = toFamilyChartData(people, relationships);
 
   return (
     <div className="flex h-dvh animate-fade-in flex-col overflow-hidden">
@@ -34,7 +32,7 @@ export default async function TreePage() {
           </form>
         }
       />
-      <TreeClient data={data} hint={t("Tree.hint")} />
+      <TreeClient people={people} relationships={relationships} hint={t("Tree.hint")} />
     </div>
   );
 }
