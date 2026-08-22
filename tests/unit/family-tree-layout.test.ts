@@ -118,6 +118,76 @@ describe("computeFamilyTreeLayout", () => {
     expect(nodes.get("aunt")!.generation).toBe(nodes.get("stanislav-mother")!.generation);
   });
 
+  it("handles remarriage: a person with two spouses, children only from one marriage", () => {
+    const people = [
+      person("parent"),
+      person("first-spouse"),
+      person("second-spouse"),
+      person("child-from-first"),
+    ];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "spouse", person1Id: "parent", person2Id: "first-spouse" },
+      { id: "r2", type: "spouse", person1Id: "parent", person2Id: "second-spouse" },
+      {
+        id: "r3",
+        type: "parent-child",
+        person1Id: "parent",
+        person2Id: "child-from-first",
+      },
+      {
+        id: "r4",
+        type: "parent-child",
+        person1Id: "first-spouse",
+        person2Id: "child-from-first",
+      },
+    ];
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+
+    expect(nodes.size).toBe(people.length);
+    // The second spouse has no children — must still get a node, and must
+    // not somehow pull child-from-first into being "their" child too.
+    expect(nodes.get("second-spouse")!.generation).toBe(nodes.get("parent")!.generation);
+    expect(nodes.get("child-from-first")!.generation).toBe(
+      nodes.get("parent")!.generation + 1,
+    );
+    // Everyone gets a distinct column, including the childless second spouse.
+    const columns = [...nodes.values()].map((n) => n.column);
+    expect(new Set(columns).size).toBe(columns.length);
+  });
+
+  it("keeps children with their own parent when siblings only share one parent (half-siblings)", () => {
+    const people = [
+      person("parent"),
+      person("first-spouse"),
+      person("second-spouse"),
+      person("child-a"),
+      person("child-b"),
+    ];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "spouse", person1Id: "parent", person2Id: "first-spouse" },
+      { id: "r2", type: "spouse", person1Id: "parent", person2Id: "second-spouse" },
+      { id: "r3", type: "parent-child", person1Id: "parent", person2Id: "child-a" },
+      {
+        id: "r4",
+        type: "parent-child",
+        person1Id: "first-spouse",
+        person2Id: "child-a",
+      },
+      { id: "r5", type: "parent-child", person1Id: "parent", person2Id: "child-b" },
+      {
+        id: "r6",
+        type: "parent-child",
+        person1Id: "second-spouse",
+        person2Id: "child-b",
+      },
+    ];
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+
+    expect(nodes.size).toBe(people.length);
+    expect(nodes.get("child-a")!.generation).toBe(nodes.get("parent")!.generation + 1);
+    expect(nodes.get("child-b")!.generation).toBe(nodes.get("parent")!.generation + 1);
+  });
+
   it("gives every person a distinct column", () => {
     const people = [person("a"), person("b"), person("c")];
     const relationships: Relationship[] = [
