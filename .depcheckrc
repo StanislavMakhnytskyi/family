@@ -1,0 +1,5 @@
+ignores:
+  # Used only via postcss.config.mjs / globals.css `@import "tailwindcss"`,
+  # not a JS/TS import — depcheck can't see either usage.
+  - "@tailwindcss/postcss"
+  - "tailwindcss"
