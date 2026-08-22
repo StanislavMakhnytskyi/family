@@ -11,6 +11,7 @@
     "test": "vitest run",
     "pretest:e2e": "next build",
     "test:e2e": "playwright test",
+    "check:deps": "depcheck",
     "global-config:build-patch": "node scripts/push-global-config.mjs"
   },
   "dependencies": {
@@ -21,7 +22,6 @@
     "@vercel/global-config": "^1.5.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "d3": "^7.9.0",
     "family-chart": "^0.9.0",
     "lucide-react": "^1.33.0",
     "maplibre-gl": "^6.4.1",
@@ -36,18 +36,19 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.3.3",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/node": "^20.19.43",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",
-    "eslint": "^9",
+    "depcheck": "^1.4.7",
+    "eslint": "^9.39.5",
     "eslint-config-next": "16.3.1",
     "jsdom": "^30.0.1",
-    "tailwindcss": "^4",
-    "typescript": "^5",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
     "vitest": "^4.1.11"
   },
   "packageManager": "pnpm@11.22.0"
