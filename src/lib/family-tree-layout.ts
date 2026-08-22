@@ -88,71 +88,178 @@ function assignGenerations(people: Person[], graph: Graph): Map<string, number> 
   return generation;
 }
 
+type ChildGroup = { children: string[] };
+
 /**
- * Orders everyone left-to-right via depth-first traversal (couples
- * together, then their children), so that closely related people end up
- * near each other on screen. Every person is guaranteed a column: if the
- * primary traversal from blood-line roots doesn't reach someone (a
- * married-in spouse's own parents, for instance), a fallback pass seeds a
- * fresh traversal from whoever is left, preferring people whose own
- * parents are already placed.
+ * Orders everyone left-to-right with a compact, two-pass tree layout —
+ * the same technique classic tree-drawing algorithms use (compute each
+ * subtree's actual width bottom-up, then place it centered within exactly
+ * that width top-down). This is what makes the difference between "every
+ * branch reserves a full column whether it needs one or not" (a person at
+ * the left edge of a subtree that fans out far to their right) and "a
+ * couple sits centered above their own descendants, and a lone
+ * single-child chain takes no more room than one column."
+ *
+ * Guarantees, by construction:
+ * - No two subtrees' reserved ranges ever overlap (each is exactly as
+ *   wide as `computeWidth` said, and children are placed back-to-back
+ *   within their parent's reservation).
+ * - A person and each of their spouses always land exactly one column
+ *   apart, however their combined children end up centered.
+ * - Someone with multiple spouses (remarriage) only has *that specific
+ *   spouse's* shared children counted toward centering them — not every
+ *   spouse's children pooled together — so a blended family doesn't drag
+ *   one marriage's kids under the wrong parent.
  */
 function assignColumns(people: Person[], graph: Graph): Map<string, number> {
-  const column = new Map<string, number>();
-  const visited = new Set<string>();
-  let next = 0;
-
   function byBirthDate(a: string, b: string): number {
     const personA = people.find((p) => p.id === a);
     const personB = people.find((p) => p.id === b);
     return (personA?.birthDate ?? "").localeCompare(personB?.birthDate ?? "");
   }
 
-  function visit(id: string) {
-    if (visited.has(id)) return;
-    visited.add(id);
-    column.set(id, next++);
-
-    const spouses = graph.spousesOf.get(id) ?? [];
-    const idChildren = new Set(graph.childrenOf.get(id) ?? []);
-    const attributed = new Set<string>();
-
-    // Someone with multiple spouses (remarriage) may have children with only
-    // one of them — group each spouse's shared children with that spouse
-    // specifically, rather than pooling every spouse's children together,
-    // so a blended family doesn't misattribute kids to the wrong marriage.
-    for (const spouseId of spouses) {
-      if (!visited.has(spouseId)) {
-        visited.add(spouseId);
-        column.set(spouseId, next++);
+  function discoverOrder(): string[] {
+    const visited = new Set<string>();
+    const order: string[] = [];
+    function visit(id: string) {
+      if (visited.has(id)) return;
+      visited.add(id);
+      order.push(id);
+      const spouses = graph.spousesOf.get(id) ?? [];
+      const idChildren = new Set(graph.childrenOf.get(id) ?? []);
+      const attributed = new Set<string>();
+      for (const spouseId of spouses) {
+        if (!visited.has(spouseId)) {
+          visited.add(spouseId);
+          order.push(spouseId);
+        }
+        const spouseChildren = new Set(graph.childrenOf.get(spouseId) ?? []);
+        const coupleChildren = [...idChildren].filter((c) => spouseChildren.has(c));
+        for (const c of coupleChildren) attributed.add(c);
+        for (const childId of coupleChildren.sort(byBirthDate)) visit(childId);
       }
-      const spouseChildren = new Set(graph.childrenOf.get(spouseId) ?? []);
-      const coupleChildren = [...idChildren].filter((c) => spouseChildren.has(c));
-      for (const c of coupleChildren) attributed.add(c);
-      for (const childId of coupleChildren.sort(byBirthDate)) visit(childId);
+      const remaining = [...idChildren].filter((c) => !attributed.has(c));
+      for (const childId of remaining.sort(byBirthDate)) visit(childId);
     }
 
-    // Any of id's children not covered above — a single parent, or a second
-    // parent who isn't recorded as id's spouse — still need to be placed.
-    const remainingChildren = [...idChildren].filter((c) => !attributed.has(c));
-    for (const childId of remainingChildren.sort(byBirthDate)) visit(childId);
+    const roots = people.filter((p) => (graph.parentsOf.get(p.id) ?? []).length === 0);
+    for (const root of roots) visit(root.id);
+
+    // Fallback: anyone left is only reachable through a marriage bridge
+    // (e.g. a married-in spouse's own parents). Keep seeding fresh
+    // traversals, preferring people whose own parents are already placed,
+    // until everyone has been discovered.
+    let remaining = people.filter((p) => !visited.has(p.id));
+    while (remaining.length > 0) {
+      const next =
+        remaining.find((p) =>
+          (graph.parentsOf.get(p.id) ?? []).every((parentId) => visited.has(parentId)),
+        ) ?? remaining[0];
+      visit(next.id);
+      remaining = people.filter((p) => !visited.has(p.id));
+    }
+    return order;
   }
 
-  const roots = people.filter((p) => (graph.parentsOf.get(p.id) ?? []).length === 0);
-  for (const root of roots) visit(root.id);
+  // Same grouping/traversal shape as before, just split into two passes:
+  // the discovery walk fixes which spouses belong to which unit and which
+  // children belong to which marriage, and both passes below reuse that
+  // exact same grouping so they stay in agreement.
+  const claimed = new Set<string>();
+  const membersOf = new Map<string, string[]>();
+  const groupsOf = new Map<string, ChildGroup[]>();
+  const widthOf = new Map<string, number>();
 
-  // Fallback: anyone left is only reachable through a marriage bridge
-  // (e.g. a married-in spouse's own parents). Keep seeding fresh
-  // traversals, preferring people whose parents are already placed, until
-  // everyone has a column.
-  let remaining = people.filter((p) => !visited.has(p.id));
-  while (remaining.length > 0) {
-    const next_ =
-      remaining.find((p) =>
-        (graph.parentsOf.get(p.id) ?? []).every((parentId) => visited.has(parentId)),
-      ) ?? remaining[0];
-    visit(next_.id);
-    remaining = people.filter((p) => !visited.has(p.id));
+  function computeWidth(id: string): number {
+    if (widthOf.has(id)) return widthOf.get(id)!;
+    claimed.add(id);
+    const spouses = (graph.spousesOf.get(id) ?? []).filter((s) => !claimed.has(s));
+    for (const s of spouses) claimed.add(s);
+    membersOf.set(id, [id, ...spouses]);
+
+    const idChildren = new Set(graph.childrenOf.get(id) ?? []);
+    const attributed = new Set<string>();
+    const groups: ChildGroup[] = [];
+    let childrenWidth = 0;
+
+    // A child already `claimed` elsewhere is someone who turned out to be
+    // both this person's blood child *and* already positioned as another
+    // unit's spouse (e.g. an in-law bridge: X's parent also happens to be
+    // Y's child from a totally different branch). They're already
+    // correctly placed via that marriage — counting them here too would
+    // double their width contribution and pull this unit's centering
+    // toward a position that has nothing to do with it. The connector
+    // line to them still draws correctly regardless, since that's driven
+    // by raw relationship data, not this grouping.
+    for (const spouseId of spouses) {
+      const spouseChildren = new Set(graph.childrenOf.get(spouseId) ?? []);
+      const coupleChildren = [...idChildren]
+        .filter((c) => spouseChildren.has(c) && !claimed.has(c))
+        .sort(byBirthDate);
+      for (const c of coupleChildren) attributed.add(c);
+      groups.push({ children: coupleChildren });
+      childrenWidth += coupleChildren.reduce((sum, c) => sum + computeWidth(c), 0);
+    }
+    const remaining = [...idChildren]
+      .filter((c) => !attributed.has(c) && !claimed.has(c))
+      .sort(byBirthDate);
+    groups.push({ children: remaining });
+    childrenWidth += remaining.reduce((sum, c) => sum + computeWidth(c), 0);
+
+    groupsOf.set(id, groups);
+    const width = Math.max(membersOf.get(id)!.length, childrenWidth);
+    widthOf.set(id, width);
+    return width;
+  }
+
+  const column = new Map<string, number>();
+
+  function place(id: string, leftEdge: number) {
+    if (column.has(id)) return;
+    const members = membersOf.get(id) ?? [id];
+    const groups = groupsOf.get(id) ?? [];
+    const width = widthOf.get(id) ?? 1;
+    const childrenWidth = groups.reduce(
+      (sum, g) => sum + g.children.reduce((s, c) => s + (widthOf.get(c) ?? 1), 0),
+      0,
+    );
+
+    // Center the children as a block within this unit's reserved width
+    // when the couple itself needs more room than its children do (e.g. a
+    // remarried person with three spouses but only one child).
+    let cursor = leftEdge + Math.max(0, (width - childrenWidth) / 2);
+    const groupCenters: number[] = [];
+    for (const group of groups) {
+      if (group.children.length === 0) continue;
+      const childPositions: number[] = [];
+      for (const child of group.children) {
+        place(child, cursor);
+        childPositions.push(column.get(child)!);
+        cursor += widthOf.get(child) ?? 1;
+      }
+      groupCenters.push(average(childPositions));
+    }
+
+    const blockCenter = groupCenters.length > 0 ? average(groupCenters) : leftEdge + width / 2;
+    const startX = blockCenter - (members.length - 1) / 2;
+    members.forEach((memberId, i) => column.set(memberId, startX + i));
+  }
+
+  function average(values: number[]): number {
+    return values.reduce((a, b) => a + b, 0) / values.length;
+  }
+
+  const order = discoverOrder();
+  let cursor = 0;
+  for (const id of order) {
+    // `claimed` (not `widthOf`) is what marks someone as already absorbed
+    // into a unit — a childless, parentless placeholder spouse never gets
+    // their own `widthOf` entry any other way, since they're neither a
+    // top-level root themselves nor ever reached as someone's child.
+    if (claimed.has(id)) continue;
+    const width = computeWidth(id);
+    place(id, cursor);
+    cursor += width;
   }
 
   return column;
