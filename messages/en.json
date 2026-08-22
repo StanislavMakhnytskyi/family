@@ -21,15 +21,12 @@
   "Person": {
     "biography": "Biography",
     "burialPlace": "Burial place",
-    "openMap": "Open on map",
+    "openMap": "Open in Google Maps",
     "family": "Family",
     "parents": "Parents",
     "spouses": "Spouses",
     "children": "Children",
     "gallery": "Photo gallery",
     "backToTree": "Tree"
-  },
-  "Map": {
-    "close": "Close"
   }
 }
