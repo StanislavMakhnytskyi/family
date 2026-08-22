@@ -34,10 +34,9 @@ test.describe("family tree layout", () => {
     await expect(zoomOut).toBeVisible();
     await expect(reset).toBeVisible();
 
-    // family-chart applies the pan/zoom transform as a CSS `style.transform`
-    // on the `.view` group (not an SVG `transform` attribute), so it must be
-    // read via computed style.
-    const view = page.locator(".view").first();
+    // The pan/zoom transform is applied as a CSS `style.transform` on the
+    // tree-world element, so it must be read via computed style.
+    const view = page.getByTestId("tree-world");
     const readTransform = () =>
       view.evaluate((el) => getComputedStyle(el).transform);
 
@@ -50,6 +49,14 @@ test.describe("family tree layout", () => {
 
     await zoomOut.click();
     await expect.poll(readTransform).not.toBe(zoomedInTransform);
+    const zoomedOutTransform = await readTransform();
+
+    // Zoom in again so we're definitely not sitting back at the natural
+    // fit-to-screen transform — zooming in then out by the same factor is a
+    // perfect inverse and would otherwise coincidentally already match it,
+    // making the reset assertion below meaningless.
+    await zoomIn.click();
+    await expect.poll(readTransform).not.toBe(zoomedOutTransform);
 
     const beforeReset = await readTransform();
     await reset.click();
@@ -62,17 +69,15 @@ test.describe("family tree layout", () => {
     await login(page);
     await expect(page.getByText("Іван Ковальський")).toBeVisible();
 
-    const linkCount = await page.locator("path.link").count();
+    const linkCount = await page.getByTestId("tree-connector").count();
     // 9 people / 8 parent-child + spouse relationships in the seed data.
     expect(linkCount).toBeGreaterThan(0);
 
     const strokes = await page
-      .locator("path.link")
+      .getByTestId("tree-connector")
       .evaluateAll((links) => links.map((el) => getComputedStyle(el).stroke));
 
     for (const stroke of strokes) {
-      // family-chart's default link color is white (#fff), which is
-      // invisible against our cream page background unless overridden.
       expect(stroke).not.toBe("rgb(255, 255, 255)");
       expect(stroke).not.toBe("rgba(0, 0, 0, 0)");
       expect(stroke).not.toBe("none");
