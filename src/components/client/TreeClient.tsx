@@ -57,6 +57,13 @@ export function TreeClient({
     origY: number;
     moved: boolean;
   } | null>(null);
+  const activePointersRef = useRef(new Map<number, { x: number; y: number }>());
+  const pinchRef = useRef<{
+    startDistance: number;
+    startScale: number;
+    anchorWorldX: number;
+    anchorWorldY: number;
+  } | null>(null);
 
   const layout = useMemo(
     () => computeFamilyTreeLayout(people, relationships),
@@ -168,18 +175,74 @@ export function TreeClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalWidth, totalHeight]);
 
-  function handlePointerDown(event: React.PointerEvent) {
+  function distanceBetween(a: { x: number; y: number }, b: { x: number; y: number }) {
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  }
+
+  function midpoint(a: { x: number; y: number }, b: { x: number; y: number }) {
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  }
+
+  function startDragFrom(point: { x: number; y: number }) {
     dragRef.current = {
-      startX: event.clientX,
-      startY: event.clientY,
+      startX: point.x,
+      startY: point.y,
       origX: transformRef.current.x,
       origY: transformRef.current.y,
       moved: false,
     };
-    (event.target as HTMLElement).setPointerCapture(event.pointerId);
+  }
+
+  function handlePointerDown(event: React.PointerEvent) {
+    activePointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    try {
+      (event.target as HTMLElement).setPointerCapture(event.pointerId);
+    } catch {
+      // Capture can fail (e.g. pointer already released) — harmless, we
+      // still track the pointer manually via activePointersRef.
+    }
+
+    const pointers = [...activePointersRef.current.values()];
+    if (pointers.length === 2) {
+      dragRef.current = null;
+      const viewport = viewportRef.current;
+      if (!viewport) return;
+      const rect = viewport.getBoundingClientRect();
+      const mid = midpoint(pointers[0], pointers[1]);
+      const { x, y, scale } = transformRef.current;
+      pinchRef.current = {
+        startDistance: distanceBetween(pointers[0], pointers[1]),
+        startScale: scale,
+        anchorWorldX: (mid.x - rect.left - x) / scale,
+        anchorWorldY: (mid.y - rect.top - y) / scale,
+      };
+    } else if (pointers.length === 1) {
+      startDragFrom(pointers[0]);
+    }
   }
 
   function handlePointerMove(event: React.PointerEvent) {
+    if (!activePointersRef.current.has(event.pointerId)) return;
+    activePointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const pointers = [...activePointersRef.current.values()];
+
+    if (pointers.length === 2 && pinchRef.current) {
+      const viewport = viewportRef.current;
+      if (!viewport) return;
+      const rect = viewport.getBoundingClientRect();
+      const mid = midpoint(pointers[0], pointers[1]);
+      const distance = distanceBetween(pointers[0], pointers[1]);
+      const factor = distance / pinchRef.current.startDistance;
+      const newScale = clampZoom(pinchRef.current.startScale * factor);
+      transformRef.current = {
+        x: mid.x - rect.left - pinchRef.current.anchorWorldX * newScale,
+        y: mid.y - rect.top - pinchRef.current.anchorWorldY * newScale,
+        scale: newScale,
+      };
+      applyTransform(false);
+      return;
+    }
+
     const drag = dragRef.current;
     if (!drag) return;
     const dx = event.clientX - drag.startX;
@@ -190,8 +253,18 @@ export function TreeClient({
     applyTransform(false);
   }
 
-  function handlePointerUp() {
-    dragRef.current = null;
+  function handlePointerUp(event: React.PointerEvent) {
+    activePointersRef.current.delete(event.pointerId);
+    const pointers = [...activePointersRef.current.values()];
+
+    if (pointers.length < 2) pinchRef.current = null;
+    if (pointers.length === 1) {
+      // One finger lifted mid-pinch — resume panning with the remaining
+      // finger from where it currently is, instead of jumping.
+      startDragFrom(pointers[0]);
+    } else if (pointers.length === 0) {
+      dragRef.current = null;
+    }
   }
 
   function handleWheel(event: React.WheelEvent) {

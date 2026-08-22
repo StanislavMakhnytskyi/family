@@ -31,7 +31,9 @@ export function formatCoords(latitude: number, longitude: number): string {
   return `${latitude.toFixed(4)}° N, ${longitude.toFixed(4)}° E`;
 }
 
-export const ZOOM_MIN = 0.3;
+// 0.3 kept the tree from ever fitting a whole large/wide family on a narrow
+// mobile viewport, since fit-to-screen couldn't zoom out past this floor.
+export const ZOOM_MIN = 0.1;
 export const ZOOM_MAX = 2;
 
 export function clampZoom(
