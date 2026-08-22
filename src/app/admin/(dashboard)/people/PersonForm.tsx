@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { bioToTextareaValue } from "@/lib/admin-forms";
+import { slugifyName } from "@/lib/slug";
 import type { Person } from "@/lib/schemas";
 
 const initialState: PersonFormState = {};
@@ -20,19 +21,40 @@ export function PersonForm({ person }: { person?: Person }) {
   );
   const isNew = !person;
 
+  const [firstName, setFirstName] = useState(person?.firstName ?? "");
+  const [lastName, setLastName] = useState(person?.lastName ?? "");
+  const [id, setId] = useState(person?.id ?? "");
+  // Once someone types directly into the id field, stop overwriting it —
+  // otherwise a deliberate custom id would keep getting clobbered by the
+  // next keystroke in firstName/lastName.
+  const idTouchedRef = useRef(false);
+
+  function handleFirstNameChange(value: string) {
+    setFirstName(value);
+    if (!idTouchedRef.current) setId(slugifyName(value, lastName));
+  }
+
+  function handleLastNameChange(value: string) {
+    setLastName(value);
+    if (!idTouchedRef.current) setId(slugifyName(firstName, value));
+  }
+
   return (
     <form action={formAction} className="flex max-w-[560px] flex-col gap-4">
       <input type="hidden" name="mode" value={isNew ? "new" : "edit"} />
+      {!isNew && (
+        <input type="hidden" name="originalId" value={person.id} />
+      )}
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">
-          ID {isNew ? "" : "(незмінний)"}
-        </span>
+        <span className="text-[13px] font-semibold text-muted-4">ID</span>
         <Input
           name="id"
-          defaultValue={person?.id}
-          readOnly={!isNew}
-          disabled={!isNew}
+          value={id}
+          onChange={(event) => {
+            idTouchedRef.current = true;
+            setId(event.target.value);
+          }}
           required
         />
       </label>
@@ -40,11 +62,21 @@ export function PersonForm({ person }: { person?: Person }) {
       <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1.5">
           <span className="text-[13px] font-semibold text-muted-4">Ім&apos;я</span>
-          <Input name="firstName" defaultValue={person?.firstName} required />
+          <Input
+            name="firstName"
+            value={firstName}
+            onChange={(event) => handleFirstNameChange(event.target.value)}
+            required
+          />
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="text-[13px] font-semibold text-muted-4">Прізвище</span>
-          <Input name="lastName" defaultValue={person?.lastName} required />
+          <Input
+            name="lastName"
+            value={lastName}
+            onChange={(event) => handleLastNameChange(event.target.value)}
+            required
+          />
         </label>
       </div>
 
