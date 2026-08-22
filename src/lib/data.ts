@@ -16,10 +16,10 @@ import {
   type Question,
 } from "@/lib/schemas";
 
-const DATA_DIR = path.join(process.cwd(), "src", "data");
-const GLOBAL_CONFIG_KEY = "data";
+export const DATA_DIR = path.join(process.cwd(), "src", "data");
+export const GLOBAL_CONFIG_KEY = "data";
 
-type RawData = {
+export type RawData = {
   people: unknown;
   relationships: unknown;
   graves: unknown;
@@ -33,7 +33,7 @@ async function readLocalJson(fileName: string): Promise<unknown> {
   return JSON.parse(raw);
 }
 
-async function readLocalData(): Promise<RawData> {
+export async function readLocalData(): Promise<RawData> {
   const [people, relationships, graves, media, questions] = await Promise.all([
     readLocalJson("people.json"),
     readLocalJson("relationships.json"),
