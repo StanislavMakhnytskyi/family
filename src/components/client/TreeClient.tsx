@@ -8,16 +8,16 @@ import { computeFamilyTreeLayout } from "@/lib/family-tree-layout";
 import { Button } from "@/components/ui/button";
 import { clampZoom, initials, lifespan } from "@/lib/utils";
 
-const CARD_WIDTH = 190;
-const CARD_HEIGHT = 132;
-const COLUMN_WIDTH = CARD_WIDTH + 40;
-const ROW_HEIGHT = CARD_HEIGHT + 90;
+const CARD_WIDTH = 156;
+const CARD_HEIGHT = 108;
+const COLUMN_WIDTH = CARD_WIDTH + 22;
+const ROW_HEIGHT = CARD_HEIGHT + 64;
 const ZOOM_STEP = 1.2;
 
 const CARD_CLASS =
-  "absolute flex h-[132px] w-[190px] flex-col items-center justify-center gap-2 rounded-lg border border-border bg-surface p-3.5 shadow-tree-card transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-[3px] hover:border-border-hover hover:shadow-card-hover animate-pop-in-tree cursor-pointer select-none";
+  "absolute flex h-[108px] w-[156px] flex-col items-center justify-center gap-1.5 rounded-lg border border-border bg-surface p-2.5 shadow-tree-card transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-[3px] hover:border-border-hover hover:shadow-card-hover animate-pop-in-tree cursor-pointer select-none";
 const AVATAR_CLASS =
-  "avatar-placeholder flex size-[60px] shrink-0 items-center justify-center rounded-full border border-border-strong font-mono text-xs text-avatar-text";
+  "avatar-placeholder flex size-[42px] shrink-0 items-center justify-center rounded-full border border-border-strong font-mono text-[11px] text-avatar-text";
 
 type Positioned = { id: string; x: number; y: number };
 
@@ -293,10 +293,10 @@ export function TreeClient({
                   {initials(person.firstName, person.lastName)}
                 </div>
                 <div className="text-center leading-tight">
-                  <div className="text-[14.5px] font-bold text-ink">
+                  <div className="text-[12.5px] font-bold text-ink">
                     {person.firstName} {person.lastName}
                   </div>
-                  <div className="mt-[3px] text-[12.5px] tabular-nums text-muted-2">
+                  <div className="mt-[2px] text-[11px] tabular-nums text-muted-2">
                     {lifespan(person.birthDate, person.deathDate)}
                   </div>
                 </div>
