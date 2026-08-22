@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import { getQuestions } from "@/lib/data";
+import { getPeople, getQuestions } from "@/lib/data";
 import { normalizeAnswer } from "@/lib/utils";
 import {
   createSession,
@@ -10,7 +10,14 @@ import {
   getAttemptState,
   recordFailedAttempt,
   resetAttempts,
+  markStageOnePassed,
+  hasPassedStageOne,
+  clearStageOne,
+  getYearsAttemptState,
+  recordYearsFailedAttempt,
+  resetYearsAttempts,
   MAX_ATTEMPTS,
+  YEARS_MAX_ATTEMPTS,
 } from "@/lib/session";
 
 export type GateStatus = "idle" | "error-empty" | "error-wrong" | "locked";
@@ -56,6 +63,54 @@ export async function verifyAnswer(
   }
 
   await resetAttempts();
+  await markStageOnePassed();
+  redirect("/gate/years");
+}
+
+export type YearsStatus = "idle" | "error-incomplete" | "error-wrong" | "locked";
+
+export type YearsState = {
+  status: YearsStatus;
+  remaining?: number;
+  lockUntil?: number;
+};
+
+export async function verifyYears(
+  _prevState: YearsState,
+  formData: FormData,
+): Promise<YearsState> {
+  if (!(await hasPassedStageOne())) {
+    redirect("/gate");
+  }
+
+  const attemptState = await getYearsAttemptState();
+  if (attemptState.lockUntil > Date.now()) {
+    return { status: "locked", lockUntil: attemptState.lockUntil };
+  }
+
+  const submitted = [
+    String(formData.get("year1") ?? "").trim(),
+    String(formData.get("year2") ?? "").trim(),
+    String(formData.get("year3") ?? "").trim(),
+  ];
+  if (submitted.some((year) => !year)) {
+    return { status: "error-incomplete" };
+  }
+
+  const people = await getPeople();
+  const validYears = new Set(people.map((person) => person.birthDate.slice(0, 4)));
+  const isCorrect = submitted.every((year) => validYears.has(year));
+
+  if (!isCorrect) {
+    const next = await recordYearsFailedAttempt();
+    if (next.lockUntil > Date.now()) {
+      return { status: "locked", lockUntil: next.lockUntil };
+    }
+    return { status: "error-wrong", remaining: YEARS_MAX_ATTEMPTS - next.count };
+  }
+
+  await resetYearsAttempts();
+  await clearStageOne();
   await createSession();
   redirect("/");
 }
