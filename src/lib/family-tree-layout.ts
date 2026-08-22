@@ -102,31 +102,40 @@ function assignColumns(people: Person[], graph: Graph): Map<string, number> {
   const visited = new Set<string>();
   let next = 0;
 
+  function byBirthDate(a: string, b: string): number {
+    const personA = people.find((p) => p.id === a);
+    const personB = people.find((p) => p.id === b);
+    return (personA?.birthDate ?? "").localeCompare(personB?.birthDate ?? "");
+  }
+
   function visit(id: string) {
     if (visited.has(id)) return;
     visited.add(id);
     column.set(id, next++);
 
     const spouses = graph.spousesOf.get(id) ?? [];
+    const idChildren = new Set(graph.childrenOf.get(id) ?? []);
+    const attributed = new Set<string>();
+
+    // Someone with multiple spouses (remarriage) may have children with only
+    // one of them — group each spouse's shared children with that spouse
+    // specifically, rather than pooling every spouse's children together,
+    // so a blended family doesn't misattribute kids to the wrong marriage.
     for (const spouseId of spouses) {
       if (!visited.has(spouseId)) {
         visited.add(spouseId);
         column.set(spouseId, next++);
       }
+      const spouseChildren = new Set(graph.childrenOf.get(spouseId) ?? []);
+      const coupleChildren = [...idChildren].filter((c) => spouseChildren.has(c));
+      for (const c of coupleChildren) attributed.add(c);
+      for (const childId of coupleChildren.sort(byBirthDate)) visit(childId);
     }
 
-    const children = new Set<string>();
-    for (const parentId of [id, ...spouses]) {
-      for (const childId of graph.childrenOf.get(parentId) ?? []) {
-        children.add(childId);
-      }
-    }
-    const orderedChildren = [...children].sort((a, b) => {
-      const personA = people.find((p) => p.id === a);
-      const personB = people.find((p) => p.id === b);
-      return (personA?.birthDate ?? "").localeCompare(personB?.birthDate ?? "");
-    });
-    for (const childId of orderedChildren) visit(childId);
+    // Any of id's children not covered above — a single parent, or a second
+    // parent who isn't recorded as id's spouse — still need to be placed.
+    const remainingChildren = [...idChildren].filter((c) => !attributed.has(c));
+    for (const childId of remainingChildren.sort(byBirthDate)) visit(childId);
   }
 
   const roots = people.filter((p) => (graph.parentsOf.get(p.id) ?? []).length === 0);
