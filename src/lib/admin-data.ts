@@ -2,6 +2,7 @@ import "server-only";
 import { writeFile, rename } from "node:fs/promises";
 import path from "node:path";
 import { cookies } from "next/headers";
+import { get as getGlobalConfigItem } from "@vercel/global-config";
 import {
   peopleSchema,
   relationshipsSchema,
@@ -192,31 +193,23 @@ function globalConfigItemsUrl(storeId: string): URL {
 }
 
 /**
- * Reads via the Vercel REST API rather than the `@vercel/global-config` SDK.
- * The SDK reads from a CDN-optimized cache that (per Vercel's own docs) can
- * lag a few seconds after a write — fine for the public site, but the admin
- * panel needs to see its own just-saved changes immediately after redirect.
+ * Reads via the `@vercel/global-config` SDK. An earlier version of this
+ * function read through the REST API instead, chasing a few seconds of
+ * post-write staleness — but Vercel's docs don't actually publish a
+ * response shape for that endpoint's GET (the flat {key: value} example in
+ * their docs is for a *different* endpoint, global-config.vercel.com, which
+ * needs its own separate read token), and it turned out to return a shape
+ * this code didn't parse correctly, breaking every admin read outright.
+ * The SDK is what Vercel's own docs recommend for reads; a few seconds of
+ * staleness after a save is a far smaller problem than that was.
  */
 async function readRemoteData(): Promise<RawData> {
-  const token = process.env.VERCEL_API_TOKEN;
-  const storeId = process.env.VERCEL_GLOBAL_CONFIG_STORE_ID;
-  if (!token || !storeId) {
+  if (!process.env.GLOBAL_CONFIG) {
     throw new Error(
-      "VERCEL_API_TOKEN та VERCEL_GLOBAL_CONFIG_STORE_ID мають бути задані, щоб читати з Global Config.",
+      "GLOBAL_CONFIG не задано — неможливо прочитати з Vercel Global Config.",
     );
   }
-
-  const response = await fetch(globalConfigItemsUrl(storeId), {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: "no-store",
-  });
-  if (!response.ok) {
-    const text = await response.text().catch(() => "");
-    throw new Error(`Не вдалося прочитати Global Config (${response.status}): ${text}`);
-  }
-
-  const items = (await response.json()) as Record<string, unknown>;
-  const remote = items[GLOBAL_CONFIG_KEY] as RawData | undefined;
+  const remote = await getGlobalConfigItem<RawData>(GLOBAL_CONFIG_KEY);
   if (!remote) {
     throw new Error(`У Global Config немає елемента "${GLOBAL_CONFIG_KEY}".`);
   }
