@@ -33,8 +33,7 @@ export function proxy(request: NextRequest) {
   }
 
   // Static assets (robots.txt, favicon.ico, everything under public/ —
-  // images, the maplibre-gl worker script, etc.) — never gated, since
-  // module workers in particular won't reliably follow a redirect.
+  // images, etc.) — never gated.
   if (/\.[^/]+$/.test(pathname)) {
     return NextResponse.next();
   }

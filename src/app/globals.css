@@ -124,7 +124,3 @@ body {
 .f3 .link {
   stroke: var(--color-connector);
 }
-
-.maplibregl-canvas-container canvas {
-  filter: saturate(0.6) sepia(0.1);
-}
