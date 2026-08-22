@@ -8,18 +8,13 @@ vi.mock("next/navigation", () => ({
 
 afterEach(cleanup);
 
-// data=[] short-circuits TreeClient's effect before it touches family-chart,
-// so these assert the component's own static contract (classes/markup it
-// always renders) without needing to mock the charting library.
+// Empty people/relationships short-circuits the fit-to-screen effect (no
+// nodes means totalWidth/totalHeight stay 0), so these assert the
+// component's own static contract (classes/markup it always renders)
+// without needing real layout data or a DOM with real element sizes.
 describe("TreeClient", () => {
-  it("puts the family-chart 'f3' class on the chart canvas so the library's own stylesheet (e.g. link stroke color) applies", () => {
-    render(<TreeClient data={[]} hint="перетягніть" />);
-    const canvas = screen.getByTestId("tree-canvas");
-    expect(canvas.className.split(" ")).toContain("f3");
-  });
-
   it("renders zoom in, zoom out, and reset controls", () => {
-    render(<TreeClient data={[]} hint="перетягніть" />);
+    render(<TreeClient people={[]} relationships={[]} hint="перетягніть" />);
     expect(screen.getByRole("button", { name: "Збільшити" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Зменшити" })).toBeTruthy();
     expect(
@@ -28,14 +23,20 @@ describe("TreeClient", () => {
   });
 
   it("renders the given hint text", () => {
-    render(<TreeClient data={[]} hint="перетягніть · колесо для масштабу" />);
+    render(
+      <TreeClient
+        people={[]}
+        relationships={[]}
+        hint="перетягніть · колесо для масштабу"
+      />,
+    );
     expect(
       screen.getByText("перетягніть · колесо для масштабу"),
     ).toBeTruthy();
   });
 
   it("sizes the chart viewport to fill its flex parent instead of collapsing to content size", () => {
-    render(<TreeClient data={[]} hint="перетягніть" />);
+    render(<TreeClient people={[]} relationships={[]} hint="перетягніть" />);
     const viewport = screen.getByTestId("tree-viewport");
     const canvas = screen.getByTestId("tree-canvas");
     // flex-1 on the outer viewport + absolute inset-0 on the canvas is what

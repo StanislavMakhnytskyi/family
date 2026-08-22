@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "family-chart/styles/family-chart.css";
 
 @theme {
   --color-cream: #f6f0e4;
@@ -119,8 +118,6 @@ body {
   }
 }
 
-/* family-chart renders its own SVG connector lines and card DOM outside our
-   component tree, so its color can only be reached via a global override. */
-.f3 .link {
+.tree-connector {
   stroke: var(--color-connector);
 }
