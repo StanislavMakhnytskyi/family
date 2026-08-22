@@ -6,7 +6,7 @@ test.describe("family tree layout", () => {
     page,
   }) => {
     await login(page);
-    await expect(page.getByText("Іван Ковальський")).toBeVisible();
+    await expect(page.getByText("Богдан Савченко")).toBeVisible();
 
     const hasNoPageScroll = await page.evaluate(
       () => document.documentElement.scrollHeight <= window.innerHeight + 1,
@@ -25,7 +25,7 @@ test.describe("family tree layout", () => {
     page,
   }) => {
     await login(page);
-    await expect(page.getByText("Іван Ковальський")).toBeVisible();
+    await expect(page.getByText("Богдан Савченко")).toBeVisible();
 
     const zoomIn = page.getByRole("button", { name: "Збільшити" });
     const zoomOut = page.getByRole("button", { name: "Зменшити" });
@@ -67,10 +67,10 @@ test.describe("family tree layout", () => {
     page,
   }) => {
     await login(page);
-    await expect(page.getByText("Іван Ковальський")).toBeVisible();
+    await expect(page.getByText("Богдан Савченко")).toBeVisible();
 
     const linkCount = await page.getByTestId("tree-connector").count();
-    // 9 people / 8 parent-child + spouse relationships in the seed data.
+    // 22 people / 33 parent-child + spouse relationships in the seed data.
     expect(linkCount).toBeGreaterThan(0);
 
     const strokes = await page
