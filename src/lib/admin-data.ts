@@ -2,7 +2,6 @@ import "server-only";
 import { writeFile, rename } from "node:fs/promises";
 import path from "node:path";
 import { cookies } from "next/headers";
-import { get as getGlobalConfigItem } from "@vercel/global-config";
 import {
   peopleSchema,
   relationshipsSchema,
@@ -185,13 +184,39 @@ export function findPersonReferences(data: FullData, personId: string): string[]
   return refs;
 }
 
+function globalConfigItemsUrl(storeId: string): URL {
+  const teamId = process.env.VERCEL_TEAM_ID;
+  const url = new URL(`https://api.vercel.com/v1/global-config/${storeId}/items`);
+  if (teamId) url.searchParams.set("teamId", teamId);
+  return url;
+}
+
+/**
+ * Reads via the Vercel REST API rather than the `@vercel/global-config` SDK.
+ * The SDK reads from a CDN-optimized cache that (per Vercel's own docs) can
+ * lag a few seconds after a write — fine for the public site, but the admin
+ * panel needs to see its own just-saved changes immediately after redirect.
+ */
 async function readRemoteData(): Promise<RawData> {
-  if (!process.env.GLOBAL_CONFIG) {
+  const token = process.env.VERCEL_API_TOKEN;
+  const storeId = process.env.VERCEL_GLOBAL_CONFIG_STORE_ID;
+  if (!token || !storeId) {
     throw new Error(
-      "GLOBAL_CONFIG не задано — неможливо прочитати з Vercel Global Config.",
+      "VERCEL_API_TOKEN та VERCEL_GLOBAL_CONFIG_STORE_ID мають бути задані, щоб читати з Global Config.",
     );
   }
-  const remote = await getGlobalConfigItem<RawData>(GLOBAL_CONFIG_KEY);
+
+  const response = await fetch(globalConfigItemsUrl(storeId), {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(`Не вдалося прочитати Global Config (${response.status}): ${text}`);
+  }
+
+  const items = (await response.json()) as Record<string, unknown>;
+  const remote = items[GLOBAL_CONFIG_KEY] as RawData | undefined;
   if (!remote) {
     throw new Error(`У Global Config немає елемента "${GLOBAL_CONFIG_KEY}".`);
   }
@@ -241,12 +266,9 @@ async function patchGlobalConfigItem(
   value: FullData,
 ): Promise<Response> {
   const token = process.env.VERCEL_API_TOKEN;
-  const storeId = process.env.VERCEL_GLOBAL_CONFIG_STORE_ID;
-  const teamId = process.env.VERCEL_TEAM_ID;
-  const url = new URL(`https://api.vercel.com/v1/global-config/${storeId}/items`);
-  if (teamId) url.searchParams.set("teamId", teamId);
+  const storeId = process.env.VERCEL_GLOBAL_CONFIG_STORE_ID as string;
 
-  return fetch(url, {
+  return fetch(globalConfigItemsUrl(storeId), {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,

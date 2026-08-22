@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { LogoMark, SiteHeader } from "@/components/SiteHeader";
-import { MapModalTrigger } from "@/components/client/MapModalTrigger";
 import { PersonCard } from "@/components/PersonCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -98,13 +97,15 @@ export default async function PersonPage({
                   {grave.description ? ` · ${grave.description}` : ""}
                 </p>
               </div>
-              <MapModalTrigger
-                label={t("Person.openMap")}
-                address={grave.address ?? person.firstName}
-                coordsLabel={formatCoords(grave.latitude, grave.longitude)}
-                latitude={grave.latitude}
-                longitude={grave.longitude}
-              />
+              <Button variant="primary" asChild>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${grave.latitude},${grave.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("Person.openMap")}
+                </a>
+              </Button>
             </div>
           </Card>
         )}
