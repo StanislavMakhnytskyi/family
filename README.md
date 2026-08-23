@@ -30,6 +30,7 @@ pnpm start       # запуск продакшн-збірки
 pnpm lint        # ESLint
 pnpm test        # юніт-тести (vitest)
 pnpm test:e2e    # smoke-тест (playwright; перший раз: pnpm exec playwright install chromium)
+pnpm review      # локальне AI-рев'ю staged-змін через CodeRabbit CLI (опціонально, див. AGENTS.md)
 ```
 
 ## Дані
