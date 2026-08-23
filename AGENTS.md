@@ -60,3 +60,18 @@ This file is read by multiple coding agents (Claude Code, GitHub Copilot, Google
 - A private Vercel Blob store connected to the project auto-provides `BLOB_READ_WRITE_TOKEN` for photo uploads — nothing to set by hand.
 - After changing any env var on Vercel, redeploy — an existing deployment doesn't pick up changes retroactively.
 
+## Local code review (CodeRabbit CLI, optional)
+
+[CodeRabbit CLI](https://docs.coderabbit.ai/cli) can review a diff locally before it's pushed — free, separate from CodeRabbit's PR-comment rate limits. It's optional tooling, not a required dependency: nothing in the repo assumes it's installed, and `pnpm install` never touches it.
+
+**One-time setup (each contributor runs this themselves — installing a binary and logging into a personal account isn't something to script or delegate):**
+
+1. Install the CLI:
+   - Windows (PowerShell): `irm https://cli.coderabbit.ai/install.ps1 | iex`
+   - macOS/Linux: `curl -fsSL https://cli.coderabbit.ai/install.sh | sh`
+   - or via Homebrew: `brew install coderabbit`
+2. Authenticate: `cr auth login` (opens a browser; `--region eu` if your org is EU-hosted).
+3. Opt into the repo's pre-commit hook (per clone, not global — this repo doesn't force it on anyone): `git config core.hooksPath .githooks`
+
+Once set up, every `git commit` runs [.githooks/pre-commit](.githooks/pre-commit), which reviews staged changes with `cr review --uncommitted --plain` and prints findings to the terminal — **informational only, it never blocks the commit** (skips silently if the CLI isn't installed/authenticated). Run it manually anytime with `pnpm review`, or on a full branch diff with `cr --base master`.
+
