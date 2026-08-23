@@ -29,7 +29,7 @@ test.describe("family tree layout", () => {
 
     const zoomIn = page.getByRole("button", { name: "Збільшити" });
     const zoomOut = page.getByRole("button", { name: "Зменшити" });
-    const reset = page.getByRole("button", { name: "Скинути масштаб" });
+    const reset = page.getByRole("button", { name: "Скинути масштаб до 100%" });
     await expect(zoomIn).toBeVisible();
     await expect(zoomOut).toBeVisible();
     await expect(reset).toBeVisible();

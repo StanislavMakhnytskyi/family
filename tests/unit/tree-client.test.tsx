@@ -18,7 +18,7 @@ describe("TreeClient", () => {
     expect(screen.getByRole("button", { name: "Збільшити" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Зменшити" })).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: "Скинути масштаб" }),
+      screen.getByRole("button", { name: "Скинути масштаб до 100%" }),
     ).toBeTruthy();
   });
 

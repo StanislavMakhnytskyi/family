@@ -12,7 +12,8 @@
     "test:e2e": "playwright test",
     "check:deps": "depcheck",
     "review": "coderabbit review --uncommitted --plain",
-    "global-config:build-patch": "node scripts/push-global-config.mjs"
+    "global-config:build-patch": "node scripts/push-global-config.mjs",
+    "migrate:avatars": "node --env-file=.env.local scripts/migrate-legacy-avatars.mjs"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.2.6",
