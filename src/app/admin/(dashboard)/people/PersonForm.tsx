@@ -120,7 +120,7 @@ export function PersonForm({ person }: { person?: Person }) {
         {person?.avatar && (
           <div className="relative size-20 overflow-hidden rounded-full border border-border-strong">
             <Image
-              src={person.avatar}
+              src={person.avatar.small}
               alt=""
               fill
               unoptimized

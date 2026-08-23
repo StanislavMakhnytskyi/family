@@ -366,7 +366,7 @@ export function TreeClient({
                 {person.avatar ? (
                   <div className="relative size-[42px] shrink-0 overflow-hidden rounded-full border border-border-strong">
                     <Image
-                      src={person.avatar}
+                      src={person.avatar.small}
                       alt=""
                       fill
                       unoptimized
