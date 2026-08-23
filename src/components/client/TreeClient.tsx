@@ -416,7 +416,7 @@ export function TreeClient({
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Скинути масштаб"
+          aria-label="Скинути масштаб до 100%"
           className="text-xs font-semibold"
           onClick={() => fitToScreen(true)}
         >
