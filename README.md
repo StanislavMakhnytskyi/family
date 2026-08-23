@@ -32,6 +32,7 @@ pnpm lint        # ESLint
 pnpm test        # юніт-тести (vitest)
 pnpm test:e2e    # smoke-тест (playwright; перший раз: pnpm exec playwright install chromium)
 pnpm review      # локальне AI-рев'ю staged-змін через CodeRabbit CLI (опціонально, див. AGENTS.md)
+pnpm migrate:avatars  # перекодовує старі (домиграційні) аватари в компактні small/large-варіанти (потрібен .env.local з реальними Blob-креденшлами)
 ```
 
 ## Дані
