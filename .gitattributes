@@ -1,0 +1,4 @@
+# Git hook scripts are executed via sh even on Windows checkouts (Git Bash);
+# a CRLF-mangled shebang line breaks that, so force LF regardless of the
+# platform's core.autocrlf setting.
+.githooks/* text eol=lf

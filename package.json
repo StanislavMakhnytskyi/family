@@ -11,6 +11,7 @@
     "pretest:e2e": "next build",
     "test:e2e": "playwright test",
     "check:deps": "depcheck",
+    "review": "coderabbit review --uncommitted --plain",
     "global-config:build-patch": "node scripts/push-global-config.mjs"
   },
   "dependencies": {

@@ -1,0 +1,20 @@
+#!/bin/sh
+# Runs a local CodeRabbit CLI review of staged changes before commit.
+# Informational only — never blocks the commit (CodeRabbit CLI is optional
+# tooling, not everyone has it installed/authenticated, and its own network
+# calls can be slow or unavailable). See AGENTS.md's "Local code review"
+# section for install/auth instructions.
+#
+# Enabled once per clone via: git config core.hooksPath .githooks
+
+if ! command -v coderabbit >/dev/null 2>&1 && ! command -v cr >/dev/null 2>&1; then
+  exit 0
+fi
+
+BIN=coderabbit
+command -v cr >/dev/null 2>&1 && BIN=cr
+
+echo "Running CodeRabbit review of staged changes (informational, non-blocking)..."
+"$BIN" review --uncommitted --plain || true
+
+exit 0
