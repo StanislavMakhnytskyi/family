@@ -28,7 +28,7 @@ export function GraveForm({
       <label className="flex flex-col gap-1.5">
         <span className="text-[13px] font-semibold text-muted-4">Людина</span>
         <Select
-          name="personId"
+          name={isNew ? "personId" : undefined}
           defaultValue={grave?.personId ?? ""}
           disabled={!isNew}
         >
@@ -41,6 +41,7 @@ export function GraveForm({
             </option>
           ))}
         </Select>
+        {!isNew && <input type="hidden" name="personId" value={grave.personId} />}
       </label>
 
       <div className="grid grid-cols-2 gap-3">
