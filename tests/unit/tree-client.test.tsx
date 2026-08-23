@@ -14,7 +14,14 @@ afterEach(cleanup);
 // without needing real layout data or a DOM with real element sizes.
 describe("TreeClient", () => {
   it("renders zoom in, zoom out, and reset controls", () => {
-    render(<TreeClient people={[]} relationships={[]} hint="перетягніть" />);
+    render(
+      <TreeClient
+        people={[]}
+        relationships={[]}
+        hint="перетягніть"
+        lifespanLabels={{ born: "нар.", died: "пом." }}
+      />,
+    );
     expect(screen.getByRole("button", { name: "Збільшити" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Зменшити" })).toBeTruthy();
     expect(
@@ -28,6 +35,7 @@ describe("TreeClient", () => {
         people={[]}
         relationships={[]}
         hint="перетягніть · колесо для масштабу"
+        lifespanLabels={{ born: "нар.", died: "пом." }}
       />,
     );
     expect(
@@ -36,7 +44,14 @@ describe("TreeClient", () => {
   });
 
   it("sizes the chart viewport to fill its flex parent instead of collapsing to content size", () => {
-    render(<TreeClient people={[]} relationships={[]} hint="перетягніть" />);
+    render(
+      <TreeClient
+        people={[]}
+        relationships={[]}
+        hint="перетягніть"
+        lifespanLabels={{ born: "нар.", died: "пом." }}
+      />,
+    );
     const viewport = screen.getByTestId("tree-viewport");
     const canvas = screen.getByTestId("tree-canvas");
     // flex-1 on the outer viewport + absolute inset-0 on the canvas is what

@@ -1,0 +1,15 @@
+[
+  { "id": "r1", "type": "spouse", "person1Id": "james-anderson", "person2Id": "mary-anderson" },
+  { "id": "r2", "type": "parent-child", "person1Id": "james-anderson", "person2Id": "robert-anderson" },
+  { "id": "r3", "type": "parent-child", "person1Id": "mary-anderson", "person2Id": "robert-anderson" },
+  { "id": "r4", "type": "parent-child", "person1Id": "james-anderson", "person2Id": "susan-clark" },
+  { "id": "r5", "type": "parent-child", "person1Id": "mary-anderson", "person2Id": "susan-clark" },
+  { "id": "r6", "type": "spouse", "person1Id": "robert-anderson", "person2Id": "linda-anderson" },
+  { "id": "r7", "type": "spouse", "person1Id": "susan-clark", "person2Id": "michael-clark" },
+  { "id": "r8", "type": "parent-child", "person1Id": "robert-anderson", "person2Id": "emily-anderson" },
+  { "id": "r9", "type": "parent-child", "person1Id": "linda-anderson", "person2Id": "emily-anderson" },
+  { "id": "r10", "type": "parent-child", "person1Id": "robert-anderson", "person2Id": "daniel-anderson" },
+  { "id": "r11", "type": "parent-child", "person1Id": "linda-anderson", "person2Id": "daniel-anderson" },
+  { "id": "r12", "type": "parent-child", "person1Id": "susan-clark", "person2Id": "sophia-clark" },
+  { "id": "r13", "type": "parent-child", "person1Id": "michael-clark", "person2Id": "sophia-clark" }
+]

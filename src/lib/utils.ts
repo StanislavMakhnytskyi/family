@@ -25,12 +25,16 @@ export function pickRandomItem<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-export function lifespan(birthDate?: string, deathDate?: string): string {
+export function lifespan(
+  birthDate: string | undefined,
+  deathDate: string | undefined,
+  labels: { born: string; died: string },
+): string {
   const birthYear = birthDate?.slice(0, 4);
   const deathYear = deathDate?.slice(0, 4);
   if (birthYear && deathYear) return `${birthYear} – ${deathYear}`;
-  if (birthYear) return `нар. ${birthYear}`;
-  if (deathYear) return `пом. ${deathYear}`;
+  if (birthYear) return `${labels.born} ${birthYear}`;
+  if (deathYear) return `${labels.died} ${deathYear}`;
   return "";
 }
 

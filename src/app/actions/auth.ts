@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { getPeople, getQuestions } from "@/lib/data";
 import { normalizeAnswer } from "@/lib/utils";
+import { demoModeFlag } from "@/lib/flags";
 import {
   createSession,
   destroySession,
@@ -32,6 +33,14 @@ export async function verifyAnswer(
   _prevState: GateState,
   formData: FormData,
 ): Promise<GateState> {
+  // The demo deployment has nothing private to protect -- let anyone
+  // through regardless of what (if anything) they typed, so a stranger
+  // trying the site doesn't need to guess a real family's answer.
+  if (await demoModeFlag()) {
+    await markStageOnePassed();
+    redirect("/gate/years");
+  }
+
   const attemptState = await getAttemptState();
   if (attemptState.lockUntil > Date.now()) {
     return { status: "locked", lockUntil: attemptState.lockUntil };
@@ -81,6 +90,13 @@ export async function verifyYears(
 ): Promise<YearsState> {
   if (!(await hasPassedStageOne())) {
     redirect("/gate");
+  }
+
+  if (await demoModeFlag()) {
+    await resetYearsAttempts();
+    await clearStageOne();
+    await createSession();
+    redirect("/");
   }
 
   const attemptState = await getYearsAttemptState();

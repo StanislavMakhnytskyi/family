@@ -4,9 +4,11 @@ import { GateForm } from "@/components/client/GateForm";
 import { LogoMark } from "@/components/SiteHeader";
 import { getQuestions } from "@/lib/data";
 import { pickRandomItem } from "@/lib/utils";
+import { demoModeFlag } from "@/lib/flags";
 
 export default async function GatePage() {
   const t = await getTranslations();
+  const isDemo = await demoModeFlag();
   const questions = await getQuestions();
   const initialQuestion = pickRandomItem(questions);
   const questionOptions = questions.map(({ id, question }) => ({
@@ -27,6 +29,11 @@ export default async function GatePage() {
               <p className="m-0 max-w-[300px] text-[14.5px] leading-normal text-muted">
                 {t("Gate.subtitle")}
               </p>
+              {isDemo && (
+                <p className="m-0 max-w-[300px] rounded-xs border border-border-divider bg-[#f7ede0] px-3 py-2 text-[13px] leading-normal text-muted-4">
+                  {t("Gate.demoHint")}
+                </p>
+              )}
             </div>
 
             <div className="mt-[26px] -mx-7 mb-6 h-px bg-border-divider" />

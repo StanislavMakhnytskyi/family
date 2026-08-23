@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Person } from "@/lib/schemas";
 import { initials, lifespan } from "@/lib/utils";
 
-export function PersonCard({ person }: { person: Person }) {
+export async function PersonCard({ person }: { person: Person }) {
+  const t = await getTranslations();
   return (
     <Link
       href={`/person/${person.id}`}
@@ -21,7 +23,10 @@ export function PersonCard({ person }: { person: Person }) {
           {person.firstName} {person.lastName}
         </div>
         <div className="text-[12.5px] tabular-nums text-muted-3">
-          {lifespan(person.birthDate, person.deathDate)}
+          {lifespan(person.birthDate, person.deathDate, {
+            born: t("Common.bornPrefix"),
+            died: t("Common.diedPrefix"),
+          })}
         </div>
       </div>
     </Link>
