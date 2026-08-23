@@ -32,7 +32,7 @@ export async function uploadPrivateFile(
       const blob = await putImage(`${prefix}/${file.name}`, file, {
         access: "private",
         addRandomSuffix: true,
-        optimizeImage: { width: maxWidth, quality: 82, format: "webp" },
+        optimizeImage: { width: maxWidth, quality: 80, format: "webp" },
       });
       return { url: `/api/media/${blob.pathname}`, pathname: blob.pathname };
     } catch {
