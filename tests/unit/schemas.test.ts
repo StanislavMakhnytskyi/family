@@ -24,6 +24,37 @@ describe("personSchema", () => {
     const result = peopleSchema.safeParse([{ id: "p1", firstName: "Іван" }]);
     expect(result.success).toBe(true);
   });
+
+  it("normalizes a legacy single-URL avatar into {small, large} using the same URL for both", () => {
+    const result = peopleSchema.safeParse([
+      { id: "p1", firstName: "Іван", avatar: "/api/media/legacy.jpg" },
+    ]);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data[0].avatar).toEqual({
+        small: "/api/media/legacy.jpg",
+        large: "/api/media/legacy.jpg",
+      });
+    }
+  });
+
+  it("accepts a {small, large} avatar", () => {
+    const result = peopleSchema.safeParse([
+      {
+        id: "p1",
+        firstName: "Іван",
+        avatar: { small: "/api/media/s.jpg", large: "/api/media/l.jpg" },
+      },
+    ]);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an avatar object missing small or large", () => {
+    const result = peopleSchema.safeParse([
+      { id: "p1", firstName: "Іван", avatar: { small: "/api/media/s.jpg" } },
+    ]);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("relationshipSchema", () => {

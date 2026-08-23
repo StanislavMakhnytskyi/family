@@ -1,5 +1,17 @@
 import { z } from "zod";
 
+// Avatars are stored as two resolutions: a small one for the tree/relative
+// cards, a larger one for the person detail hero. Older data may still have
+// a single `avatar: string` (one resolution used everywhere) -- normalize
+// that into the same shape on read rather than forcing a data migration.
+const avatarSchema = z
+  .union([
+    z.string().min(1).transform((url) => ({ small: url, large: url })),
+    z.object({ small: z.string().min(1), large: z.string().min(1) }),
+  ])
+  .optional();
+export type Avatar = { small: string; large: string };
+
 export const personSchema = z.object({
   id: z.string().min(1),
   firstName: z.string().min(1),
@@ -7,7 +19,7 @@ export const personSchema = z.object({
   birthDate: z.string().optional(),
   deathDate: z.string().optional(),
   bio: z.array(z.string().min(1)).optional(),
-  avatar: z.string().optional(),
+  avatar: avatarSchema,
 });
 export type Person = z.infer<typeof personSchema>;
 export const peopleSchema = z.array(personSchema);
