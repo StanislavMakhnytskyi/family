@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 
-import { cn } from "@/lib/utils";
-
 export function SiteHeader({
   left,
   right,
@@ -19,18 +17,21 @@ export function SiteHeader({
 
 export function LogoMark({ size = 26 }: { size?: 26 | 34 }) {
   return (
-    <div
-      className={cn(
-        "grid shrink-0 place-items-center rounded-full border border-border-hover bg-[#f7f0e0]",
-        size === 34 ? "size-[34px]" : "size-[26px]",
-      )}
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 200 200"
+      className="shrink-0"
+      aria-hidden="true"
     >
-      <div
-        className={cn(
-          "rounded-full bg-terracotta",
-          size === 34 ? "size-2.5" : "size-2",
-        )}
-      />
-    </div>
+      <g fill="none" strokeLinecap="round">
+        <path d="M15,178 C15,95 65,95 65,178" stroke="#FFD500" strokeWidth={16} />
+        <path d="M135,178 C135,95 185,95 185,178" stroke="#FFD500" strokeWidth={16} />
+        <path d="M70,178 C70,58 130,58 130,178" stroke="#005BBB" strokeWidth={16} />
+      </g>
+      <circle cx={40} cy={88} r={12} fill="#FFD500" />
+      <circle cx={160} cy={88} r={12} fill="#FFD500" />
+      <circle cx={100} cy={50} r={15} fill="#005BBB" />
+    </svg>
   );
 }
