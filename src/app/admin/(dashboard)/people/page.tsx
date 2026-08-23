@@ -46,7 +46,10 @@ export default async function AdminPeoplePage({
                 {person.firstName} {person.lastName}
               </td>
               <td className="py-2.5 tabular-nums text-muted">
-                {lifespan(person.birthDate, person.deathDate)}
+                {lifespan(person.birthDate, person.deathDate, {
+                  born: "нар.",
+                  died: "пом.",
+                })}
               </td>
               <td className="py-2.5 text-right whitespace-nowrap">
                 <Link

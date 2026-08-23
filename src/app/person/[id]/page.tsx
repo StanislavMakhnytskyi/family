@@ -61,7 +61,10 @@ export default async function PersonPage({
               {person.firstName} {person.lastName}
             </h1>
             <p className="m-0 tabular-nums text-base text-muted">
-              {lifespan(person.birthDate, person.deathDate)}
+              {lifespan(person.birthDate, person.deathDate, {
+                born: t("Common.bornPrefix"),
+                died: t("Common.diedPrefix"),
+              })}
             </p>
           </div>
         </Card>

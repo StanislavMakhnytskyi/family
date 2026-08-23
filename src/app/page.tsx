@@ -32,7 +32,12 @@ export default async function TreePage() {
           </form>
         }
       />
-      <TreeClient people={people} relationships={relationships} hint={t("Tree.hint")} />
+      <TreeClient
+        people={people}
+        relationships={relationships}
+        hint={t("Tree.hint")}
+        lifespanLabels={{ born: t("Common.bornPrefix"), died: t("Common.diedPrefix") }}
+      />
     </div>
   );
 }

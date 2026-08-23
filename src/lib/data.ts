@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { cache } from "react";
 import { get as getGlobalConfigItem } from "@vercel/global-config";
+import { demoModeFlag } from "@/lib/flags";
 import {
   peopleSchema,
   relationshipsSchema,
@@ -16,7 +17,13 @@ import {
   type Question,
 } from "@/lib/schemas";
 
+// DATA_DIR is the real app's directory -- used unconditionally by the admin
+// panel's local-source read/write path, which is entirely unreachable in
+// demo mode (proxy.ts 404s every /admin/* request there), so it never needs
+// to be demo-aware itself. The public read path below (readLocalData) picks
+// between this and DEMO_DATA_DIR per-request via the demo-mode flag instead.
 export const DATA_DIR = path.join(process.cwd(), "src", "data");
+const DEMO_DATA_DIR = path.join(process.cwd(), "src", "data", "demo");
 export const GLOBAL_CONFIG_KEY = "data";
 
 export type RawData = {
@@ -27,19 +34,20 @@ export type RawData = {
   questions: unknown;
 };
 
-async function readLocalJson(fileName: string): Promise<unknown> {
-  const filePath = path.join(DATA_DIR, fileName);
+async function readLocalJson(dir: string, fileName: string): Promise<unknown> {
+  const filePath = path.join(dir, fileName);
   const raw = await readFile(filePath, "utf-8");
   return JSON.parse(raw);
 }
 
 export async function readLocalData(): Promise<RawData> {
+  const dir = (await demoModeFlag()) ? DEMO_DATA_DIR : DATA_DIR;
   const [people, relationships, graves, media, questions] = await Promise.all([
-    readLocalJson("people.json"),
-    readLocalJson("relationships.json"),
-    readLocalJson("graves.json"),
-    readLocalJson("media.json"),
-    readLocalJson("questions.json"),
+    readLocalJson(dir, "people.json"),
+    readLocalJson(dir, "relationships.json"),
+    readLocalJson(dir, "graves.json"),
+    readLocalJson(dir, "media.json"),
+    readLocalJson(dir, "questions.json"),
   ]);
   return { people, relationships, graves, media, questions };
 }
@@ -49,8 +57,11 @@ export async function readLocalData(): Promise<RawData> {
 // production and in local dev after `vercel env pull`), falling back to the
 // local src/data/*.json files otherwise — keeps them usable offline and as
 // seed data. See scripts/push-global-config.mjs to push local edits up.
+// Demo mode never reads Global Config, no matter how it's configured on that
+// project -- it always reads the fictional demo dataset instead.
 const loadRawData = cache(async (): Promise<RawData> => {
-  if (process.env.GLOBAL_CONFIG) {
+  const isDemo = await demoModeFlag();
+  if (!isDemo && process.env.GLOBAL_CONFIG) {
     try {
       const remote = await getGlobalConfigItem<RawData>(GLOBAL_CONFIG_KEY);
       if (remote) return remote;

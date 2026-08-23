@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { YearsGateForm } from "@/components/client/YearsGateForm";
 import { LogoMark } from "@/components/SiteHeader";
 import { hasPassedStageOne } from "@/lib/session";
+import { demoModeFlag } from "@/lib/flags";
 
 export default async function GateYearsPage() {
   if (!(await hasPassedStageOne())) {
@@ -11,6 +12,7 @@ export default async function GateYearsPage() {
   }
 
   const t = await getTranslations();
+  const isDemo = await demoModeFlag();
 
   return (
     <div className="relative min-h-dvh">
@@ -25,6 +27,11 @@ export default async function GateYearsPage() {
               <p className="m-0 max-w-[300px] text-[14.5px] leading-normal text-muted">
                 {t("GateYears.subtitle")}
               </p>
+              {isDemo && (
+                <p className="m-0 max-w-[300px] rounded-xs border border-border-divider bg-[#f7ede0] px-3 py-2 text-[13px] leading-normal text-muted-4">
+                  {t("GateYears.demoHint")}
+                </p>
+              )}
             </div>
 
             <div className="mt-[26px] -mx-7 mb-6 h-px bg-border-divider" />
