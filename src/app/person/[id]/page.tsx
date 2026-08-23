@@ -51,7 +51,7 @@ export default async function PersonPage({
       <main className="mx-auto flex max-w-[780px] flex-col gap-[18px] px-[18px] py-7 pb-20">
         <Card className="flex flex-wrap items-center gap-[22px] p-[26px] animate-fade-up">
           <Avatar className="size-[120px]">
-            {person.avatar && <AvatarImage src={person.avatar} alt="" />}
+            {person.avatar && <AvatarImage src={person.avatar.large} alt="" />}
             <AvatarFallback className="text-[13px]">
               {initials(person.firstName, person.lastName)}
             </AvatarFallback>

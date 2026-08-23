@@ -11,7 +11,7 @@ export function PersonCard({ person }: { person: Person }) {
       className="group flex items-center gap-3 rounded-md border border-border bg-surface px-3.5 py-2.5 transition-colors hover:border-border-hover hover:bg-surface-hover"
     >
       <Avatar className="size-10">
-        {person.avatar && <AvatarImage src={person.avatar} alt="" />}
+        {person.avatar && <AvatarImage src={person.avatar.small} alt="" />}
         <AvatarFallback className="text-[10px]">
           {initials(person.firstName, person.lastName)}
         </AvatarFallback>

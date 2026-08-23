@@ -8,7 +8,8 @@ import {
   findPersonReferences,
   renamePersonId,
 } from "@/lib/admin-data";
-import { uploadPrivateFile } from "@/lib/blob";
+import { uploadAvatarImage } from "@/lib/blob";
+import type { Avatar } from "@/lib/schemas";
 import { textareaValueToBio } from "@/lib/admin-forms";
 
 export type PersonFormState = { error?: string };
@@ -52,17 +53,15 @@ export async function savePerson(
     }
   }
 
-  let avatar = isNew
+  let avatar: Avatar | undefined = isNew
     ? undefined
     : data.people.find((person) => person.id === originalId)?.avatar;
   if (removeAvatar) {
     avatar = undefined;
   } else if (avatarFile instanceof File && avatarFile.size > 0) {
     try {
-      const uploaded = await uploadPrivateFile(`people/${id}`, avatarFile, {
-        maxWidth: 400,
-      });
-      avatar = uploaded.url;
+      const uploaded = await uploadAvatarImage(`people/${id}`, avatarFile);
+      avatar = { small: uploaded.small.url, large: uploaded.large.url };
     } catch (error) {
       return {
         error: `Не вдалося завантажити фото: ${error instanceof Error ? error.message : String(error)}`,
