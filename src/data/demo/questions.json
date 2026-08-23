@@ -1,5 +1,5 @@
 [
-  { "id": "q1", "question": "What was James's favorite pastime?", "normalizedAnswer": "woodworking" },
-  { "id": "q2", "question": "Which city did the Andersons call home?", "normalizedAnswer": "springfield" },
-  { "id": "q3", "question": "What did the family always have for Thanksgiving?", "normalizedAnswer": "turkey" }
+  { "id": "q1", "question": "What was Walter's trade in town?", "normalizedAnswer": "feed store" },
+  { "id": "q2", "question": "Which town did the Hughes family call home?", "normalizedAnswer": "millbrook" },
+  { "id": "q3", "question": "What did Eleanor bake from memory?", "normalizedAnswer": "bread" }
 ]

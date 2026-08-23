@@ -1,15 +1,32 @@
 [
-  { "id": "r1", "type": "spouse", "person1Id": "james-anderson", "person2Id": "mary-anderson" },
-  { "id": "r2", "type": "parent-child", "person1Id": "james-anderson", "person2Id": "robert-anderson" },
-  { "id": "r3", "type": "parent-child", "person1Id": "mary-anderson", "person2Id": "robert-anderson" },
-  { "id": "r4", "type": "parent-child", "person1Id": "james-anderson", "person2Id": "susan-clark" },
-  { "id": "r5", "type": "parent-child", "person1Id": "mary-anderson", "person2Id": "susan-clark" },
-  { "id": "r6", "type": "spouse", "person1Id": "robert-anderson", "person2Id": "linda-anderson" },
-  { "id": "r7", "type": "spouse", "person1Id": "susan-clark", "person2Id": "michael-clark" },
-  { "id": "r8", "type": "parent-child", "person1Id": "robert-anderson", "person2Id": "emily-anderson" },
-  { "id": "r9", "type": "parent-child", "person1Id": "linda-anderson", "person2Id": "emily-anderson" },
-  { "id": "r10", "type": "parent-child", "person1Id": "robert-anderson", "person2Id": "daniel-anderson" },
-  { "id": "r11", "type": "parent-child", "person1Id": "linda-anderson", "person2Id": "daniel-anderson" },
-  { "id": "r12", "type": "parent-child", "person1Id": "susan-clark", "person2Id": "sophia-clark" },
-  { "id": "r13", "type": "parent-child", "person1Id": "michael-clark", "person2Id": "sophia-clark" }
+  { "id": "r1", "type": "spouse", "person1Id": "walter-hughes", "person2Id": "eleanor-hughes" },
+
+  { "id": "r2", "type": "parent-child", "person1Id": "walter-hughes", "person2Id": "richard-hughes" },
+  { "id": "r3", "type": "parent-child", "person1Id": "eleanor-hughes", "person2Id": "richard-hughes" },
+  { "id": "r4", "type": "parent-child", "person1Id": "walter-hughes", "person2Id": "patricia-bennett" },
+  { "id": "r5", "type": "parent-child", "person1Id": "eleanor-hughes", "person2Id": "patricia-bennett" },
+  { "id": "r6", "type": "parent-child", "person1Id": "walter-hughes", "person2Id": "donald-hughes" },
+  { "id": "r7", "type": "parent-child", "person1Id": "eleanor-hughes", "person2Id": "donald-hughes" },
+
+  { "id": "r8", "type": "spouse", "person1Id": "richard-hughes", "person2Id": "carol-hughes" },
+  { "id": "r9", "type": "spouse", "person1Id": "patricia-bennett", "person2Id": "frank-bennett" },
+  { "id": "r10", "type": "spouse", "person1Id": "donald-hughes", "person2Id": "nancy-hughes" },
+
+  { "id": "r11", "type": "parent-child", "person1Id": "richard-hughes", "person2Id": "steven-hughes" },
+  { "id": "r12", "type": "parent-child", "person1Id": "carol-hughes", "person2Id": "steven-hughes" },
+  { "id": "r13", "type": "parent-child", "person1Id": "richard-hughes", "person2Id": "laura-chen" },
+  { "id": "r14", "type": "parent-child", "person1Id": "carol-hughes", "person2Id": "laura-chen" },
+
+  { "id": "r15", "type": "parent-child", "person1Id": "patricia-bennett", "person2Id": "michael-bennett" },
+  { "id": "r16", "type": "parent-child", "person1Id": "frank-bennett", "person2Id": "michael-bennett" },
+  { "id": "r17", "type": "parent-child", "person1Id": "patricia-bennett", "person2Id": "karen-foster" },
+  { "id": "r18", "type": "parent-child", "person1Id": "frank-bennett", "person2Id": "karen-foster" },
+
+  { "id": "r19", "type": "parent-child", "person1Id": "donald-hughes", "person2Id": "brian-hughes" },
+  { "id": "r20", "type": "parent-child", "person1Id": "nancy-hughes", "person2Id": "brian-hughes" },
+  { "id": "r21", "type": "parent-child", "person1Id": "donald-hughes", "person2Id": "diane-hughes" },
+  { "id": "r22", "type": "parent-child", "person1Id": "nancy-hughes", "person2Id": "diane-hughes" },
+
+  { "id": "r23", "type": "spouse", "person1Id": "laura-chen", "person2Id": "david-chen" },
+  { "id": "r24", "type": "spouse", "person1Id": "karen-foster", "person2Id": "james-foster" }
 ]
