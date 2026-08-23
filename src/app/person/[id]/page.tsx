@@ -1,10 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { LogoMark, SiteHeader } from "@/components/SiteHeader";
 import { PersonCard } from "@/components/PersonCard";
+import { GalleryLightbox } from "@/components/client/GalleryLightbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeading } from "@/components/ui/card";
@@ -141,26 +141,17 @@ export default async function PersonPage({
         {media.length > 0 && (
           <Card className="p-[26px] animate-fade-up">
             <CardHeading className="mb-4">{t("Person.gallery")}</CardHeading>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {media.map((item) => (
-                <figure key={item.id} className="m-0">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-border-strong shadow-gallery">
-                    <Image
-                      src={item.url}
-                      alt={item.caption ?? ""}
-                      fill
-                      unoptimized
-                      className="object-cover"
-                    />
-                  </div>
-                  {item.caption && (
-                    <figcaption className="mt-2 text-[13px] leading-snug text-muted">
-                      {item.caption}
-                    </figcaption>
-                  )}
-                </figure>
-              ))}
-            </div>
+            <GalleryLightbox
+              items={media}
+              labels={{
+                close: t("Gallery.close"),
+                previous: t("Gallery.previous"),
+                next: t("Gallery.next"),
+                zoomIn: t("Gallery.zoomIn"),
+                zoomOut: t("Gallery.zoomOut"),
+                counter: t("Gallery.counter"),
+              }}
+            />
           </Card>
         )}
       </main>

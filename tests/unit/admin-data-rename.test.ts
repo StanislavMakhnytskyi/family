@@ -12,7 +12,7 @@ function baseData(): FullData {
       { id: "r2", type: "parent-child", person1Id: "hanna", person2Id: "ivan" },
     ],
     graves: [{ personId: "ivan", latitude: 49.4, longitude: 28.5 }],
-    media: [{ id: "m1", personId: "ivan", url: "/x.svg", type: "photo" }],
+    media: [{ id: "m1", personIds: ["ivan", "hanna"], url: "/x.svg", type: "photo" }],
     questions: [],
   };
 }
@@ -30,10 +30,10 @@ describe("renamePersonId", () => {
     expect(next.relationships[1]).toMatchObject({ person1Id: "hanna", person2Id: "ivan-sidorov" });
   });
 
-  it("cascades the rename into graves and media", () => {
+  it("cascades the rename into graves and media, leaving other tagged people untouched", () => {
     const next = renamePersonId(baseData(), "ivan", "ivan-sidorov");
     expect(next.graves[0].personId).toBe("ivan-sidorov");
-    expect(next.media[0].personId).toBe("ivan-sidorov");
+    expect(next.media[0].personIds).toEqual(["ivan-sidorov", "hanna"]);
   });
 
   it("leaves references to other people untouched", () => {

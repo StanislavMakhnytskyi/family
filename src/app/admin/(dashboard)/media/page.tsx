@@ -12,10 +12,13 @@ export default async function AdminMediaPage() {
   if (!source) redirect("/admin");
   const data = await readData(source);
   const byId = new Map(data.people.map((person) => [person.id, person]));
-  const name = (id: string) => {
-    const person = byId.get(id);
-    return person ? `${person.firstName} ${person.lastName}` : id;
-  };
+  const names = (ids: string[]) =>
+    ids
+      .map((id) => {
+        const person = byId.get(id);
+        return person ? `${person.firstName} ${person.lastName}` : id;
+      })
+      .join(", ");
 
   return (
     <div>
@@ -39,7 +42,7 @@ export default async function AdminMediaPage() {
         <tbody>
           {data.media.map((item) => (
             <tr key={item.id} className="border-b border-border">
-              <td className="py-2.5 text-ink">{name(item.personId)}</td>
+              <td className="py-2.5 text-ink">{names(item.personIds)}</td>
               <td className="py-2.5 text-muted">{TYPE_LABEL[item.type]}</td>
               <td className="py-2.5 text-muted">{item.caption ?? "—"}</td>
               <td className="py-2.5 tabular-nums text-muted">{item.year ?? "—"}</td>

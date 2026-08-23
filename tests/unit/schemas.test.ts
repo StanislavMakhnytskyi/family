@@ -96,6 +96,33 @@ describe("mediaSchema", () => {
     ]);
     expect(result.success).toBe(false);
   });
+
+  it("normalizes a legacy single personId into personIds", () => {
+    const result = mediaListSchema.safeParse([
+      { id: "m1", personId: "p1", url: "/x.jpg", type: "photo" },
+    ]);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data[0].personIds).toEqual(["p1"]);
+    }
+  });
+
+  it("accepts a media item tagged with several people", () => {
+    const result = mediaListSchema.safeParse([
+      { id: "m1", personIds: ["p1", "p2"], url: "/x.jpg", type: "photo" },
+    ]);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data[0].personIds).toEqual(["p1", "p2"]);
+    }
+  });
+
+  it("rejects a media item with no one tagged", () => {
+    const result = mediaListSchema.safeParse([
+      { id: "m1", personIds: [], url: "/x.jpg", type: "photo" },
+    ]);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("questionSchema", () => {

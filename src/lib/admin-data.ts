@@ -133,8 +133,10 @@ export function validateRawData(value: unknown): ValidationResult {
     }
   }
   for (const item of media) {
-    if (!personIds.has(item.personId)) {
-      errors.push(`media "${item.id}": unknown person "${item.personId}"`);
+    for (const personId of item.personIds) {
+      if (!personIds.has(personId)) {
+        errors.push(`media "${item.id}": unknown person "${personId}"`);
+      }
     }
   }
 
@@ -166,7 +168,9 @@ export function renamePersonId(data: FullData, oldId: string, newId: string): Fu
       grave.personId === oldId ? { ...grave, personId: newId } : grave,
     ),
     media: data.media.map((item) =>
-      item.personId === oldId ? { ...item, personId: newId } : item,
+      item.personIds.includes(oldId)
+        ? { ...item, personIds: item.personIds.map((id) => (id === oldId ? newId : id)) }
+        : item,
     ),
   };
 }
@@ -180,7 +184,7 @@ export function findPersonReferences(data: FullData, personId: string): string[]
   if (relCount > 0) refs.push(`${relCount} зв'язок(ки)`);
   const graveCount = data.graves.filter((grave) => grave.personId === personId).length;
   if (graveCount > 0) refs.push(`${graveCount} запис(и) про поховання`);
-  const mediaCount = data.media.filter((item) => item.personId === personId).length;
+  const mediaCount = data.media.filter((item) => item.personIds.includes(personId)).length;
   if (mediaCount > 0) refs.push(`${mediaCount} медіа-файл(и)`);
   return refs;
 }
