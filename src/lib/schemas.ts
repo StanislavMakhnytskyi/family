@@ -43,14 +43,35 @@ export const graveSchema = z.object({
 export type Grave = z.infer<typeof graveSchema>;
 export const gravesSchema = z.array(graveSchema);
 
-export const mediaSchema = z.object({
-  id: z.string().min(1),
-  personId: z.string().min(1),
-  url: z.string().min(1),
-  caption: z.string().optional(),
-  type: z.enum(["photo", "document"]),
-  year: z.number().int().optional(),
-});
+// A photo can show several family members, so a media item is tagged with
+// one or more people rather than exactly one. Older data may still have a
+// single `personId: string` -- normalize that into `personIds: [personId]`
+// before validating, rather than forcing a data migration.
+function normalizeMediaPersonIds(raw: unknown): unknown {
+  if (
+    raw &&
+    typeof raw === "object" &&
+    !("personIds" in raw) &&
+    "personId" in raw &&
+    typeof (raw as { personId: unknown }).personId === "string"
+  ) {
+    const { personId, ...rest } = raw as { personId: string };
+    return { ...rest, personIds: [personId] };
+  }
+  return raw;
+}
+
+export const mediaSchema = z.preprocess(
+  normalizeMediaPersonIds,
+  z.object({
+    id: z.string().min(1),
+    personIds: z.array(z.string().min(1)).min(1),
+    url: z.string().min(1),
+    caption: z.string().optional(),
+    type: z.enum(["photo", "document"]),
+    year: z.number().int().optional(),
+  }),
+);
 export type Media = z.infer<typeof mediaSchema>;
 export const mediaListSchema = z.array(mediaSchema);
 

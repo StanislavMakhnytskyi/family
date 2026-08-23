@@ -27,19 +27,27 @@ export function MediaForm({
       <input type="hidden" name="mode" value={isNew ? "new" : "edit"} />
       {!isNew && <input type="hidden" name="id" value={media.id} />}
 
-      <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Людина</span>
-        <Select name="personId" defaultValue={media?.personId ?? ""}>
-          <option value="" disabled>
-            Оберіть людину
-          </option>
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[13px] font-semibold text-muted-4">
+          Люди на фото <span className="font-normal text-faint">(можна обрати декількох)</span>
+        </span>
+        <div className="grid max-h-56 grid-cols-2 gap-1.5 overflow-y-auto rounded-sm border border-border-strong bg-surface-muted p-3">
           {people.map((person) => (
-            <option key={person.id} value={person.id}>
+            <label
+              key={person.id}
+              className="flex items-center gap-2 text-[13.5px] text-ink"
+            >
+              <input
+                type="checkbox"
+                name="personIds"
+                value={person.id}
+                defaultChecked={media?.personIds.includes(person.id) ?? false}
+              />
               {person.firstName} {person.lastName}
-            </option>
+            </label>
           ))}
-        </Select>
-      </label>
+        </div>
+      </div>
 
       <label className="flex flex-col gap-1.5">
         <span className="text-[13px] font-semibold text-muted-4">Тип</span>

@@ -38,5 +38,13 @@
     "children": "Діти",
     "gallery": "Фотогалерея",
     "backToTree": "Дерево"
+  },
+  "Gallery": {
+    "close": "Закрити",
+    "previous": "Попереднє фото",
+    "next": "Наступне фото",
+    "zoomIn": "Збільшити",
+    "zoomOut": "Зменшити",
+    "counter": "__CURRENT__ з __TOTAL__"
   }
 }

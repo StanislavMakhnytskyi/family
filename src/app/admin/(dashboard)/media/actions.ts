@@ -19,14 +19,14 @@ export async function saveMedia(
 
   const isNew = formData.get("mode") === "new";
   const id = isNew ? generateId() : String(formData.get("id") ?? "");
-  const personId = String(formData.get("personId") ?? "");
+  const personIds = formData.getAll("personIds").map(String).filter(Boolean);
   const type = String(formData.get("type") ?? "");
   const caption = String(formData.get("caption") ?? "").trim();
   const yearRaw = String(formData.get("year") ?? "").trim();
   const file = formData.get("file");
 
-  if (!personId) {
-    return { error: "Оберіть людину." };
+  if (personIds.length === 0) {
+    return { error: "Оберіть хоча б одну людину." };
   }
   if (type !== "photo" && type !== "document") {
     return { error: "Оберіть тип файлу." };
@@ -42,7 +42,7 @@ export async function saveMedia(
   let url = existing?.url;
   if (file instanceof File && file.size > 0) {
     try {
-      const uploaded = await uploadPrivateFile(`media/${personId}`, file);
+      const uploaded = await uploadPrivateFile(`media/${personIds[0]}`, file);
       url = uploaded.url;
     } catch (error) {
       return {
@@ -61,7 +61,7 @@ export async function saveMedia(
 
   const media = {
     id,
-    personId,
+    personIds,
     url,
     type: type as "photo" | "document",
     caption: caption || undefined,
