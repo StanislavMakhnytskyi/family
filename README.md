@@ -1,90 +1,90 @@
-# Родинна історія
+# Родинна історія (Family History)
 
-Приватний сімейний архів: дерево родини, сторінки людей із біографією, місцем поховання та фотогалереєю. Доступ захищений двома кроками (без реєстрації): спільне запитання, а тоді роки народження трьох членів родини.
+A private family archive: a family tree, per-person pages with biography, burial place, and photo gallery. Access is protected by a two-step gate (no registration): a shared question, then the birth years of three family members.
 
-## Технології
+## Tech stack
 
 - Next.js 16 (App Router) + React 19, TypeScript (strict)
-- Tailwind CSS v4 + власні shadcn-стилізовані компоненти (Radix UI під капотом)
-- Власний компактний layout-алгоритм для дерева (`src/lib/family-tree-layout.ts`) — без сторонньої бібліотеки для дерев
-- `next-intl` — інтернаціоналізація (наразі активна лише `uk`, структура готова під інші мови)
-- `zod` — валідація JSON-даних
-- `vitest` — юніт-тести, `@playwright/test` — smoke-тест
-- `@vercel/analytics` — базова аналітика відвідувань (лише перегляди сторінок, без PII); працює тільки на реальному Vercel-деплої, у `pnpm dev`/локальному `pnpm start` нічого не надсилає
+- Tailwind CSS v4 + custom shadcn-styled components (Radix UI under the hood)
+- Custom compact layout algorithm for the tree (`src/lib/family-tree-layout.ts`) — no third-party tree library
+- `next-intl` — internationalization (only `uk` is active for now, structure ready for other languages)
+- `zod` — JSON data validation
+- `vitest` — unit tests, `@playwright/test` — smoke tests
+- `@vercel/analytics` — basic visit analytics (page views only, no PII); only active on a real Vercel deployment, sends nothing in `pnpm dev`/local `pnpm start`
 
-## Запуск
+## Getting started
 
-Потрібен [pnpm](https://pnpm.io) (`corepack enable` увімкне його автоматично, якщо ще не встановлений).
+Requires [pnpm](https://pnpm.io) (`corepack enable` will install it automatically if it isn't already).
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Відкрити [http://localhost:3000](http://localhost:3000) — має перекинути на `/gate`. Правильні відповіді дивіться в [src/data/questions.json](src/data/questions.json).
+Open [http://localhost:3000](http://localhost:3000) — it should redirect to `/gate`. See [src/data/questions.json](src/data/questions.json) for the correct answers.
 
-## Інші команди
+## Other commands
 
 ```bash
-pnpm build       # продакшн-збірка
-pnpm start       # запуск продакшн-збірки
+pnpm build       # production build
+pnpm start       # run the production build
 pnpm lint        # ESLint
-pnpm test        # юніт-тести (vitest)
-pnpm test:e2e    # smoke-тест (playwright; перший раз: pnpm exec playwright install chromium)
-pnpm review      # локальне AI-рев'ю staged-змін через CodeRabbit CLI (опціонально, див. AGENTS.md)
-pnpm migrate:avatars  # перекодовує старі (домиграційні) аватари в компактні small/large-варіанти (потрібен .env.local з реальними Blob-креденшлами)
+pnpm test        # unit tests (vitest)
+pnpm test:e2e    # smoke tests (playwright; first run: pnpm exec playwright install chromium)
+pnpm review      # local AI review of staged changes via CodeRabbit CLI (optional, see AGENTS.md)
+pnpm migrate:avatars  # re-encodes legacy (pre-migration) avatars into compact small/large variants (needs .env.local with real Blob credentials)
 ```
 
-## Дані
+## Data
 
-Увесь контент — у JSON-файлах під [src/data/](src/data/), валідованих Zod-схемами з [src/lib/schemas.ts](src/lib/schemas.ts):
+All content lives in JSON files under [src/data/](src/data/), validated by Zod schemas in [src/lib/schemas.ts](src/lib/schemas.ts):
 
-- `people.json` — люди (`id`, `firstName` обов'язкові; `lastName`, `birthDate`, `deathDate`, біографія абзацами, фото — усе необов'язкове)
-- `relationships.json` — зв'язки `parent-child` (person1Id — батько/мати, person2Id — дитина) та `spouse`
-- `graves.json` — місця поховань (координати, адреса)
-- `media.json` — фотогалерея по людях
-- `questions.json` — запитання для входу (`normalizedAnswer` + необов'язкові `variants`)
+- `people.json` — people (`id`, `firstName` required; `lastName`, `birthDate`, `deathDate`, paragraph biography, photo — all optional)
+- `relationships.json` — `parent-child` links (person1Id = parent, person2Id = child) and `spouse` links
+- `graves.json` — burial places (coordinates, address)
+- `media.json` — photo gallery per person
+- `questions.json` — login questions (`normalizedAnswer` + optional `variants`)
 
-Щоб додати нову людину — просто розширте ці файли вручну, або скористайтеся адмін-панеллю (нижче); сторінки й дерево підхоплять зміни автоматично. Фото людей не обов'язкові: якщо `avatar` не вказано, показується заглушка з ініціалами.
+To add a new person, either edit these files by hand, or use the admin panel (below) — pages and the tree pick up changes automatically. Photos aren't required: if `avatar` is unset, an initials placeholder is shown instead.
 
-Дані можна тримати або локально в цих файлах, або в єдиному об'єкті у Vercel Global Config — див. [scripts/push-global-config.mjs](scripts/push-global-config.mjs) для пуша локальних файлів туди.
+Data can live either locally in these files, or as a single object in Vercel Global Config — see [scripts/push-global-config.mjs](scripts/push-global-config.mjs) for pushing local files there.
 
-## Адмін-панель
+## Admin panel
 
-`/admin` — окрема, захищена окремим логіном/паролем панель для редагування всіх п'яти колекцій через форми (без ручного редагування JSON). При вході потрібно явно обрати джерело даних — локальні файли (лише в розробці, файлова система на Vercel доступна тільки для читання) або Vercel Global Config.
+`/admin` — a separate panel, protected by its own login/password, for editing all five collections through forms (no manual JSON editing needed). On login you explicitly pick a data source — local files (dev only, Vercel's production filesystem is read-only) or Vercel Global Config.
 
-Обов'язкові змінні середовища для адмінки:
+Required environment variables for the admin panel:
 
-- `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` — логін адмінки. Хеш генерується через `node scripts/hash-admin-password.mjs "пароль"` (формат `scrypt:сіль:хеш` — саме двокрапки, а не `$`, бо Next-овий завантажувач `.env` через dotenv-expand ламає значення з незекранованим `$`)
+- `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` — admin login. Generate the hash with `node scripts/hash-admin-password.mjs "password"` (format is `scrypt:salt:hash` — colons, not `$`, because Next's `.env` loader mangles unescaped `$` values via dotenv-expand)
 
-Потрібні лише для джерела Vercel Global Config (writes йдуть через REST API, не через SDK):
+Needed only for the Vercel Global Config source (writes go through the REST API, not the SDK):
 
-- `VERCEL_API_TOKEN` — персональний токен з правами запису, зі скоупом саме на той акаунт/команду, якій належить Global Config store
-- `VERCEL_GLOBAL_CONFIG_STORE_ID` — id стору (`ecfg_...`), `vercel global-config ls`
-- `VERCEL_TEAM_ID` — лише якщо store належить команді, не особистому акаунту
+- `VERCEL_API_TOKEN` — a personal token with write access, scoped to the account/team that owns the Global Config store
+- `VERCEL_GLOBAL_CONFIG_STORE_ID` — the store id (`ecfg_...`), `vercel global-config ls`
+- `VERCEL_TEAM_ID` — only if the store belongs to a team, not a personal account
 
-Для завантаження фото потрібен приватний Vercel Blob store, під'єднаний до проєкту (Storage → Create Database → Blob → Access: Private) — це автоматично додає `BLOB_READ_WRITE_TOKEN`, вручну нічого прописувати не треба. Фото проходять через [`putImage`](https://vercel.com/docs/storage/vercel-blob) (оптимізація/ресайз на льоту при завантаженні: аватари зберігаються у двох розмірах — 160px для дерева/карток родичів і 480px для сторінки людини, медіа — до 1600px), а не через Next-івський `<Image>`-оптимізатор — той робить запит до джерела на сервері без кук браузера, а `/api/media/...` вимагає сесійну куку, тож оптимізатор сам отримав би 401.
+Photo uploads need a private Vercel Blob store connected to the project (Storage → Create Database → Blob → Access: Private) — this automatically adds `BLOB_READ_WRITE_TOKEN`, nothing to set by hand. Photos go through [`putImage`](https://vercel.com/docs/storage/vercel-blob) (on-the-fly optimization/resizing on upload: avatars are stored at two sizes — 160px for the tree/relative cards and 480px for the person page, media up to 1600px), rather than Next's `<Image>` optimizer — that makes its request to the source server-side without the browser's cookies, and `/api/media/...` requires a session cookie, so the optimizer would just get a 401.
 
-Після зміни будь-якої зі змінних середовища на Vercel потрібен новий деплой — на вже задеплоєну збірку вони не поширюються заднім числом.
+After changing any environment variable on Vercel, redeploy — an already-deployed build doesn't pick up changes retroactively.
 
-## Структура
+## Structure
 
 ```
 src/
-  app/            — маршрути (App Router), Server Actions (app/actions, app/admin/actions)
+  app/            — routes (App Router), Server Actions (app/actions, app/admin/actions)
   components/
-    ui/            — базові примітиви (button, input, card, avatar, select, textarea, skeleton)
-    client/        — інтерактивні "use client" компоненти (дерево, форми входу)
-  lib/            — Zod-схеми, читання/запис даних, утиліти, сесія/кукі, layout дерева
-  data/           — приклади даних (JSON)
-  i18n/           — конфігурація next-intl
-messages/         — переклади (uk.json, en.json)
-src/proxy.ts      — перевірка сесійних кук (замінює middleware.ts у Next.js 16)
+    ui/            — base primitives (button, input, card, avatar, select, textarea, skeleton)
+    client/        — interactive "use client" components (tree, login forms)
+  lib/            — Zod schemas, data read/write, utilities, session/cookies, tree layout
+  data/           — sample data (JSON)
+  i18n/           — next-intl configuration
+messages/         — translations (uk.json, en.json)
+src/proxy.ts      — session cookie checks (replaces middleware.ts in this Next.js version)
 ```
 
-## Безпека
+## Security
 
-- Усі сторінки, крім `/gate` і `/gate/years`, мають `noindex`; `public/robots.txt` забороняє індексацію повністю.
-- Сесійна кука `family-session` — HttpOnly, Secure, SameSite=Lax, 7 днів.
-- Вхід — два кроки, кожен зі своїм окремим лімітом спроб (3, потім блокування на 15 хв): спільне запитання (`family-gate-attempts`), тоді три роки народження членів родини (`family-gate-years-attempts`). Провал другого кроку не впливає на лічильник першого, і навпаки.
-- Адмін-панель має власну сесію (`admin-session`) і власний ліміт спроб, повністю окремі від сімейного входу.
+- Every page except `/gate` and `/gate/years` has `noindex`; `public/robots.txt` disallows indexing entirely.
+- The `family-session` cookie is HttpOnly, Secure, SameSite=Lax, 7 days.
+- Login is two steps, each with its own independent attempt limit (3, then a 15-minute lockout): the shared question (`family-gate-attempts`), then three family members' birth years (`family-gate-years-attempts`). Failing the second step doesn't affect the first step's counter, and vice versa.
+- The admin panel has its own session (`admin-session`) and its own attempt limit, fully separate from the family login.
