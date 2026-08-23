@@ -1,7 +1,9 @@
 [
   {
     "id": "m-bohdan-savchenko-1",
-    "personId": "bohdan-savchenko",
+    "personIds": [
+      "bohdan-savchenko"
+    ],
     "url": "/images/placeholders/photo-1.svg",
     "caption": "1959, перед весіллям",
     "type": "photo",

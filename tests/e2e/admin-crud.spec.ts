@@ -71,3 +71,54 @@ test("editing a grave without changing its person still saves", async ({
     .click();
   await expect(page).toHaveURL(/\/admin\/graves$/);
 });
+
+// A photo can show several family members, so the media form tags it with
+// a checkbox per person (personIds: string[]) rather than one <select>.
+// Uploading needs a real Vercel Blob store connected -- if none is
+// available (the common case in local dev, see AGENTS.md), the form surfaces
+// that as an error rather than saving, and this test skips itself instead of
+// failing, since it's a missing-infra problem, not a code bug.
+test("tagging a media item with multiple people round-trips through local src/data files", async ({
+  page,
+}) => {
+  await loginAsAdmin(page);
+
+  await page.goto("/admin/media/new");
+  await page.locator('input[type=checkbox][value="yaroslav-savchenko"]').check();
+  await page.locator('input[type=checkbox][value="natalia-savchenko"]').check();
+  await page.setInputFiles(
+    'input[type=file][name="file"]',
+    "public/images/placeholders/photo-2.svg",
+  );
+  await page.getByLabel("Підпис").fill("E2E тестове фото");
+  await page.getByRole("button", { name: "Зберегти" }).click();
+
+  try {
+    await page.waitForURL(/\/admin\/media$/, { timeout: 5000 });
+  } catch {
+    const blobError = page.getByText(/No blob credentials/);
+    if (await blobError.isVisible().catch(() => false)) {
+      test.skip(true, "No Vercel Blob store connected -- can't exercise a real upload here");
+    }
+    throw new Error("Save did not redirect and no known blob-credentials error was shown");
+  }
+  let row = page.getByRole("row", { name: /E2E тестове фото/ });
+  await expect(row).toBeVisible();
+  await expect(row).toContainText("Ярослав Савченко");
+  await expect(row).toContainText("Наталія Савченко");
+
+  await row.getByRole("link", { name: "Редагувати" }).click();
+  await expect(page.locator('input[type=checkbox][value="yaroslav-savchenko"]')).toBeChecked();
+  await expect(page.locator('input[type=checkbox][value="natalia-savchenko"]')).toBeChecked();
+  await page.locator('input[type=checkbox][value="natalia-savchenko"]').uncheck();
+  await page.getByRole("button", { name: "Зберегти" }).click();
+
+  await expect(page).toHaveURL(/\/admin\/media$/);
+  row = page.getByRole("row", { name: /E2E тестове фото/ });
+  await expect(row).toContainText("Ярослав Савченко");
+  await expect(row).not.toContainText("Наталія Савченко");
+
+  await row.getByRole("button", { name: "Видалити" }).click();
+  await expect(page).toHaveURL(/\/admin\/media$/);
+  await expect(page.getByRole("row", { name: /E2E тестове фото/ })).toHaveCount(0);
+});

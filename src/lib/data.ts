@@ -96,7 +96,7 @@ export async function getGraveByPersonId(id: string): Promise<Grave | null> {
 
 export async function getMediaByPersonId(id: string): Promise<Media[]> {
   const media = await getMedia();
-  return media.filter((item) => item.personId === id);
+  return media.filter((item) => item.personIds.includes(id));
 }
 
 export type Relatives = {
