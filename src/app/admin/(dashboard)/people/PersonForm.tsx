@@ -70,12 +70,13 @@ export function PersonForm({ person }: { person?: Person }) {
           />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-semibold text-muted-4">Прізвище</span>
+          <span className="text-[13px] font-semibold text-muted-4">
+            Прізвище <span className="font-normal text-faint">(необов&apos;язково)</span>
+          </span>
           <Input
             name="lastName"
             value={lastName}
             onChange={(event) => handleLastNameChange(event.target.value)}
-            required
           />
         </label>
       </div>
@@ -83,13 +84,12 @@ export function PersonForm({ person }: { person?: Person }) {
       <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1.5">
           <span className="text-[13px] font-semibold text-muted-4">
-            Дата народження
+            Дата народження <span className="font-normal text-faint">(необов&apos;язково)</span>
           </span>
           <Input
             name="birthDate"
             defaultValue={person?.birthDate}
             placeholder="1928"
-            required
           />
         </label>
         <label className="flex flex-col gap-1.5">

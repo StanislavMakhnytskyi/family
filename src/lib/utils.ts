@@ -13,18 +13,25 @@ export function normalizeAnswer(value: string): string {
     .replaceAll("ї", "і");
 }
 
-export function initials(firstName: string, lastName: string): string {
-  return `${firstName.charAt(0)}.${lastName.charAt(0)}.`.toUpperCase();
+export function initials(firstName: string, lastName?: string): string {
+  return [firstName, lastName]
+    .filter((part): part is string => !!part)
+    .map((part) => `${part.charAt(0)}.`)
+    .join("")
+    .toUpperCase();
 }
 
 export function pickRandomItem<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-export function lifespan(birthDate: string, deathDate?: string): string {
-  const birthYear = birthDate.slice(0, 4);
-  if (!deathDate) return `нар. ${birthYear}`;
-  return `${birthYear} – ${deathDate.slice(0, 4)}`;
+export function lifespan(birthDate?: string, deathDate?: string): string {
+  const birthYear = birthDate?.slice(0, 4);
+  const deathYear = deathDate?.slice(0, 4);
+  if (birthYear && deathYear) return `${birthYear} – ${deathYear}`;
+  if (birthYear) return `нар. ${birthYear}`;
+  if (deathYear) return `пом. ${deathYear}`;
+  return "";
 }
 
 export function formatCoords(latitude: number, longitude: number): string {
