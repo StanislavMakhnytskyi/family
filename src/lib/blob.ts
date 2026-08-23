@@ -46,3 +46,24 @@ export async function uploadPrivateFile(
   });
   return { url: `/api/media/${blob.pathname}`, pathname: blob.pathname };
 }
+
+/**
+ * Uploads an avatar photo as two separate resized blobs -- a small one for
+ * the tree view / relative cards (displayed at ~40px, so this covers up to
+ * ~2x pixel density with room to spare) and a larger one for the person
+ * detail page's hero avatar (displayed at 120px, same headroom). Serving
+ * the small variant everywhere the photo only ever renders tiny would waste
+ * bandwidth on a family tree with dozens of cards on screen at once; serving
+ * the large variant everywhere would make the tree noticeably heavier to
+ * load for no visible benefit.
+ */
+export async function uploadAvatarImage(
+  prefix: string,
+  file: File,
+): Promise<{ small: UploadedFile; large: UploadedFile }> {
+  const [small, large] = await Promise.all([
+    uploadPrivateFile(`${prefix}/small`, file, { maxWidth: 160 }),
+    uploadPrivateFile(`${prefix}/large`, file, { maxWidth: 480 }),
+  ]);
+  return { small, large };
+}
