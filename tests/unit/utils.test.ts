@@ -13,19 +13,25 @@ describe("initials", () => {
 });
 
 describe("lifespan", () => {
+  const labels = { born: "нар.", died: "пом." };
+
   it("shows a range when both dates are present", () => {
-    expect(lifespan("1928", "1996")).toBe("1928 – 1996");
+    expect(lifespan("1928", "1996", labels)).toBe("1928 – 1996");
   });
 
-  it("shows just a birth year when there's no death date", () => {
-    expect(lifespan("1928", undefined)).toBe("нар. 1928");
+  it("shows just a birth year (with the born label) when there's no death date", () => {
+    expect(lifespan("1928", undefined, labels)).toBe("нар. 1928");
   });
 
-  it("shows just a death year when there's no birth date", () => {
-    expect(lifespan(undefined, "1996")).toBe("пом. 1996");
+  it("shows just a death year (with the died label) when there's no birth date", () => {
+    expect(lifespan(undefined, "1996", labels)).toBe("пом. 1996");
   });
 
   it("returns an empty string when neither date is present", () => {
-    expect(lifespan(undefined, undefined)).toBe("");
+    expect(lifespan(undefined, undefined, labels)).toBe("");
+  });
+
+  it("uses whatever labels are passed in, e.g. for a different locale", () => {
+    expect(lifespan("1928", undefined, { born: "b.", died: "d." })).toBe("b. 1928");
   });
 });

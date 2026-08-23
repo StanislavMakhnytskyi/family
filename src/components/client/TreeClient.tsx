@@ -42,10 +42,12 @@ export function TreeClient({
   people,
   relationships,
   hint,
+  lifespanLabels,
 }: {
   people: Person[];
   relationships: Relationship[];
   hint: string;
+  lifespanLabels: { born: string; died: string };
 }) {
   const router = useRouter();
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -384,7 +386,7 @@ export function TreeClient({
                     {person.firstName} {person.lastName}
                   </div>
                   <div className="mt-[2px] text-[11px] tabular-nums text-muted-2">
-                    {lifespan(person.birthDate, person.deathDate)}
+                    {lifespan(person.birthDate, person.deathDate, lifespanLabels)}
                   </div>
                 </div>
               </div>

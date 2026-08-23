@@ -1,0 +1,113 @@
+[
+  {
+    "id": "james-anderson",
+    "firstName": "James",
+    "lastName": "Anderson",
+    "birthDate": "1938",
+    "deathDate": "2015",
+    "bio": [
+      "Grew up on a small farm outside Springfield, the second of five children. Left school at sixteen to help support the family after his father's accident.",
+      "Spent over thirty years as a carpenter, building half the porches on his street. Never missed a Sunday dinner with the whole family."
+    ],
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/men/75.jpg",
+      "large": "https://randomuser.me/api/portraits/men/75.jpg"
+    }
+  },
+  {
+    "id": "mary-anderson",
+    "firstName": "Mary",
+    "lastName": "Anderson",
+    "birthDate": "1940",
+    "deathDate": "2019",
+    "bio": [
+      "Trained as a schoolteacher and taught third grade for over two decades. Known across the neighborhood for her apple pie recipe, which she never wrote down."
+    ],
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/women/75.jpg",
+      "large": "https://randomuser.me/api/portraits/women/75.jpg"
+    }
+  },
+  {
+    "id": "robert-anderson",
+    "firstName": "Robert",
+    "lastName": "Anderson",
+    "birthDate": "1962",
+    "bio": [
+      "James and Mary's eldest. Took over the family's small hardware store in the early '90s and still runs it today."
+    ],
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/men/32.jpg",
+      "large": "https://randomuser.me/api/portraits/men/32.jpg"
+    }
+  },
+  {
+    "id": "linda-anderson",
+    "firstName": "Linda",
+    "lastName": "Anderson",
+    "birthDate": "1964",
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/women/44.jpg",
+      "large": "https://randomuser.me/api/portraits/women/44.jpg"
+    }
+  },
+  {
+    "id": "susan-clark",
+    "firstName": "Susan",
+    "lastName": "Clark",
+    "birthDate": "1965",
+    "bio": [
+      "James and Mary's younger daughter. Moved two towns over after marrying Michael, but never missed a holiday back home."
+    ],
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/women/68.jpg",
+      "large": "https://randomuser.me/api/portraits/women/68.jpg"
+    }
+  },
+  {
+    "id": "michael-clark",
+    "firstName": "Michael",
+    "lastName": "Clark",
+    "birthDate": "1963",
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/men/54.jpg",
+      "large": "https://randomuser.me/api/portraits/men/54.jpg"
+    }
+  },
+  {
+    "id": "emily-anderson",
+    "firstName": "Emily",
+    "lastName": "Anderson",
+    "birthDate": "1990",
+    "bio": [
+      "Robert and Linda's daughter. Studies veterinary medicine and volunteers at the local animal shelter on weekends."
+    ],
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/women/21.jpg",
+      "large": "https://randomuser.me/api/portraits/women/21.jpg"
+    }
+  },
+  {
+    "id": "daniel-anderson",
+    "firstName": "Daniel",
+    "lastName": "Anderson",
+    "birthDate": "1993",
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/men/23.jpg",
+      "large": "https://randomuser.me/api/portraits/men/23.jpg"
+    }
+  },
+  {
+    "id": "sophia-clark",
+    "firstName": "Sophia",
+    "lastName": "Clark",
+    "birthDate": "1992",
+    "bio": [
+      "Susan and Michael's daughter, the family's self-appointed photo archivist -- most of the gallery here is thanks to her."
+    ],
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/women/33.jpg",
+      "large": "https://randomuser.me/api/portraits/women/33.jpg"
+    }
+  }
+]
