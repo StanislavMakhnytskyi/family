@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
 
@@ -200,16 +201,18 @@ export function GalleryLightbox({
         ))}
       </div>
 
-      {isOpen && current && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={current.caption ?? labels.counter}
-          className="fixed inset-0 z-[100] flex flex-col bg-ink/95 animate-fade-in"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) close();
-          }}
-        >
+      {isOpen &&
+        current &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={current.caption ?? labels.counter}
+            className="fixed inset-0 z-[100] flex flex-col bg-ink/95 animate-fade-in"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) close();
+            }}
+          >
           <div className="flex items-center justify-between gap-3 p-4">
             <span className="rounded-xs bg-surface/10 px-2.5 py-1 font-mono text-xs text-surface/80 tabular-nums">
               {labels.counter
@@ -309,7 +312,8 @@ export function GalleryLightbox({
               </p>
             )}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
