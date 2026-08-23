@@ -1,40 +1,110 @@
 [
   {
-    "id": "james-anderson",
-    "firstName": "James",
-    "lastName": "Anderson",
-    "birthDate": "1938",
-    "deathDate": "2015",
+    "id": "walter-hughes",
+    "firstName": "Walter",
+    "lastName": "Hughes",
+    "birthDate": "1931",
+    "deathDate": "2009",
     "bio": [
-      "Grew up on a small farm outside Springfield, the second of five children. Left school at sixteen to help support the family after his father's accident.",
-      "Spent over thirty years as a carpenter, building half the porches on his street. Never missed a Sunday dinner with the whole family."
+      "Born on a wheat farm outside Millbrook, the eldest of six. Left school at fourteen to work the land after his father was drafted.",
+      "Served two years in the Army before coming home to marry Eleanor and open a feed store on Main Street, which he ran for over forty years."
     ],
     "avatar": {
-      "small": "https://randomuser.me/api/portraits/thumb/men/75.jpg",
-      "large": "https://randomuser.me/api/portraits/men/75.jpg"
+      "small": "https://randomuser.me/api/portraits/thumb/men/21.jpg",
+      "large": "https://randomuser.me/api/portraits/men/21.jpg"
     }
   },
   {
-    "id": "mary-anderson",
-    "firstName": "Mary",
-    "lastName": "Anderson",
-    "birthDate": "1940",
-    "deathDate": "2019",
+    "id": "eleanor-hughes",
+    "firstName": "Eleanor",
+    "lastName": "Hughes",
+    "birthDate": "1933",
+    "deathDate": "2014",
     "bio": [
-      "Trained as a schoolteacher and taught third grade for over two decades. Known across the neighborhood for her apple pie recipe, which she never wrote down."
+      "Grew up above her family's bakery in town and could bake bread from memory before she could write her own name.",
+      "Raised three children while keeping the store's books, and never once missed a Sunday service at First Methodist."
     ],
     "avatar": {
-      "small": "https://randomuser.me/api/portraits/thumb/women/75.jpg",
-      "large": "https://randomuser.me/api/portraits/women/75.jpg"
+      "small": "https://randomuser.me/api/portraits/thumb/women/61.jpg",
+      "large": "https://randomuser.me/api/portraits/women/61.jpg"
     }
   },
   {
-    "id": "robert-anderson",
-    "firstName": "Robert",
-    "lastName": "Anderson",
-    "birthDate": "1962",
+    "id": "richard-hughes",
+    "firstName": "Richard",
+    "lastName": "Hughes",
+    "birthDate": "1957",
     "bio": [
-      "James and Mary's eldest. Took over the family's small hardware store in the early '90s and still runs it today."
+      "Walter and Eleanor's eldest. Took over the feed store in the late '80s and expanded it into a full hardware business."
+    ],
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/men/24.jpg",
+      "large": "https://randomuser.me/api/portraits/men/24.jpg"
+    }
+  },
+  {
+    "id": "carol-hughes",
+    "firstName": "Carol",
+    "lastName": "Hughes",
+    "birthDate": "1959",
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/women/53.jpg",
+      "large": "https://randomuser.me/api/portraits/women/53.jpg"
+    }
+  },
+  {
+    "id": "patricia-bennett",
+    "firstName": "Patricia",
+    "lastName": "Bennett",
+    "birthDate": "1960",
+    "bio": [
+      "Walter and Eleanor's middle child. Moved to Millbrook Heights after marrying Frank and taught piano out of her home for thirty years."
+    ],
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/women/14.jpg",
+      "large": "https://randomuser.me/api/portraits/women/14.jpg"
+    }
+  },
+  {
+    "id": "frank-bennett",
+    "firstName": "Frank",
+    "lastName": "Bennett",
+    "birthDate": "1958",
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/men/13.jpg",
+      "large": "https://randomuser.me/api/portraits/men/13.jpg"
+    }
+  },
+  {
+    "id": "donald-hughes",
+    "firstName": "Donald",
+    "lastName": "Hughes",
+    "birthDate": "1963",
+    "bio": [
+      "Walter and Eleanor's youngest. Left Millbrook for the city after college but still drives back every holiday."
+    ],
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/men/34.jpg",
+      "large": "https://randomuser.me/api/portraits/men/34.jpg"
+    }
+  },
+  {
+    "id": "nancy-hughes",
+    "firstName": "Nancy",
+    "lastName": "Hughes",
+    "birthDate": "1965",
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/women/64.jpg",
+      "large": "https://randomuser.me/api/portraits/women/64.jpg"
+    }
+  },
+  {
+    "id": "steven-hughes",
+    "firstName": "Steven",
+    "lastName": "Hughes",
+    "birthDate": "1983",
+    "bio": [
+      "Richard and Carol's son. Now runs the hardware store's second location on the highway."
     ],
     "avatar": {
       "small": "https://randomuser.me/api/portraits/thumb/men/32.jpg",
@@ -42,72 +112,82 @@
     }
   },
   {
-    "id": "linda-anderson",
-    "firstName": "Linda",
-    "lastName": "Anderson",
-    "birthDate": "1964",
+    "id": "laura-chen",
+    "firstName": "Laura",
+    "lastName": "Chen",
+    "birthDate": "1986",
+    "bio": [
+      "Richard and Carol's daughter. Studied architecture and now designs schools for a firm two states over."
+    ],
     "avatar": {
       "small": "https://randomuser.me/api/portraits/thumb/women/44.jpg",
       "large": "https://randomuser.me/api/portraits/women/44.jpg"
     }
   },
   {
-    "id": "susan-clark",
-    "firstName": "Susan",
-    "lastName": "Clark",
-    "birthDate": "1965",
-    "bio": [
-      "James and Mary's younger daughter. Moved two towns over after marrying Michael, but never missed a holiday back home."
-    ],
+    "id": "david-chen",
+    "firstName": "David",
+    "lastName": "Chen",
+    "birthDate": "1984",
     "avatar": {
-      "small": "https://randomuser.me/api/portraits/thumb/women/68.jpg",
-      "large": "https://randomuser.me/api/portraits/women/68.jpg"
+      "small": "https://randomuser.me/api/portraits/thumb/men/67.jpg",
+      "large": "https://randomuser.me/api/portraits/men/67.jpg"
     }
   },
   {
-    "id": "michael-clark",
+    "id": "michael-bennett",
     "firstName": "Michael",
-    "lastName": "Clark",
-    "birthDate": "1963",
+    "lastName": "Bennett",
+    "birthDate": "1985",
     "avatar": {
-      "small": "https://randomuser.me/api/portraits/thumb/men/54.jpg",
-      "large": "https://randomuser.me/api/portraits/men/54.jpg"
+      "small": "https://randomuser.me/api/portraits/thumb/men/42.jpg",
+      "large": "https://randomuser.me/api/portraits/men/42.jpg"
     }
   },
   {
-    "id": "emily-anderson",
-    "firstName": "Emily",
-    "lastName": "Anderson",
-    "birthDate": "1990",
+    "id": "karen-foster",
+    "firstName": "Karen",
+    "lastName": "Foster",
+    "birthDate": "1988",
     "bio": [
-      "Robert and Linda's daughter. Studies veterinary medicine and volunteers at the local animal shelter on weekends."
+      "Patricia and Frank's daughter. Followed her mother into music and now directs the community choir."
     ],
     "avatar": {
-      "small": "https://randomuser.me/api/portraits/thumb/women/21.jpg",
-      "large": "https://randomuser.me/api/portraits/women/21.jpg"
+      "small": "https://randomuser.me/api/portraits/thumb/women/42.jpg",
+      "large": "https://randomuser.me/api/portraits/women/42.jpg"
     }
   },
   {
-    "id": "daniel-anderson",
-    "firstName": "Daniel",
-    "lastName": "Anderson",
-    "birthDate": "1993",
+    "id": "james-foster",
+    "firstName": "James",
+    "lastName": "Foster",
+    "birthDate": "1987",
     "avatar": {
-      "small": "https://randomuser.me/api/portraits/thumb/men/23.jpg",
-      "large": "https://randomuser.me/api/portraits/men/23.jpg"
+      "small": "https://randomuser.me/api/portraits/thumb/men/18.jpg",
+      "large": "https://randomuser.me/api/portraits/men/18.jpg"
     }
   },
   {
-    "id": "sophia-clark",
-    "firstName": "Sophia",
-    "lastName": "Clark",
-    "birthDate": "1992",
+    "id": "brian-hughes",
+    "firstName": "Brian",
+    "lastName": "Hughes",
+    "birthDate": "1991",
+    "avatar": {
+      "small": "https://randomuser.me/api/portraits/thumb/men/57.jpg",
+      "large": "https://randomuser.me/api/portraits/men/57.jpg"
+    }
+  },
+  {
+    "id": "diane-hughes",
+    "firstName": "Diane",
+    "lastName": "Hughes",
+    "birthDate": "1994",
     "bio": [
-      "Susan and Michael's daughter, the family's self-appointed photo archivist -- most of the gallery here is thanks to her."
+      "Donald and Nancy's daughter, the family's self-appointed photo archivist -- most of the gallery here is thanks to her."
     ],
     "avatar": {
-      "small": "https://randomuser.me/api/portraits/thumb/women/33.jpg",
-      "large": "https://randomuser.me/api/portraits/women/33.jpg"
+      "small": "https://randomuser.me/api/portraits/thumb/women/72.jpg",
+      "large": "https://randomuser.me/api/portraits/women/72.jpg"
     }
   }
 ]
