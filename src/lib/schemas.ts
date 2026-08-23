@@ -3,8 +3,8 @@ import { z } from "zod";
 export const personSchema = z.object({
   id: z.string().min(1),
   firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  birthDate: z.string().min(1),
+  lastName: z.string().optional(),
+  birthDate: z.string().optional(),
   deathDate: z.string().optional(),
   bio: z.array(z.string().min(1)).optional(),
   avatar: z.string().optional(),

@@ -15,9 +15,14 @@ describe("personSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects a person missing required fields", () => {
+  it("rejects a person missing id or firstName", () => {
+    expect(peopleSchema.safeParse([{ firstName: "Іван" }]).success).toBe(false);
+    expect(peopleSchema.safeParse([{ id: "p1" }]).success).toBe(false);
+  });
+
+  it("accepts a person with no lastName or birthDate", () => {
     const result = peopleSchema.safeParse([{ id: "p1", firstName: "Іван" }]);
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 });
 

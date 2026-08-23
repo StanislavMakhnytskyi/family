@@ -17,7 +17,7 @@ export default defineConfig({
   webServer: {
     // Tests against a production server (not `next dev`), since dev-mode
     // React StrictMode double-invokes effects and can flake timing-sensitive
-    // interactions (e.g. clicking a family-chart card right after mount).
+    // interactions (e.g. clicking a tree card right after mount).
     command: "pnpm start",
     url: "http://localhost:3000/gate",
     reuseExistingServer: !process.env.CI,

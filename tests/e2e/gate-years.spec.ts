@@ -2,7 +2,9 @@ import { test, expect } from "@playwright/test";
 import questions from "../../src/data/questions.json";
 import people from "../../src/data/people.json";
 
-const validYears = [...new Set(people.map((p) => p.birthDate.slice(0, 4)))];
+const validYears = [
+  ...new Set(people.flatMap((p) => (p.birthDate ? [p.birthDate.slice(0, 4)] : []))),
+];
 
 async function passStageOne(page: import("@playwright/test").Page): Promise<void> {
   await page.goto("/gate");
