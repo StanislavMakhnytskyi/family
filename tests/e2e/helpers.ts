@@ -19,10 +19,9 @@ export async function login(page: Page): Promise<void> {
 
   // Second stage: three birth years of any family members.
   await expect(page).toHaveURL(/\/gate\/years$/);
-  const years = [...new Set(people.map((person) => person.birthDate.slice(0, 4)))].slice(
-    0,
-    3,
-  );
+  const years = [
+    ...new Set(people.flatMap((p) => (p.birthDate ? [p.birthDate.slice(0, 4)] : []))),
+  ].slice(0, 3);
   const yearInputs = page.getByPlaceholder("РРРР");
   for (let i = 0; i < 3; i++) {
     await yearInputs.nth(i).fill(years[i]);
