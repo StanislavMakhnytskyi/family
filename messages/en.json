@@ -38,5 +38,13 @@
     "children": "Children",
     "gallery": "Photo gallery",
     "backToTree": "Tree"
+  },
+  "Gallery": {
+    "close": "Close",
+    "previous": "Previous photo",
+    "next": "Next photo",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "counter": "__CURRENT__ of __TOTAL__"
   }
 }
