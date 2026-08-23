@@ -98,7 +98,9 @@ export async function verifyYears(
   }
 
   const people = await getPeople();
-  const validYears = new Set(people.map((person) => person.birthDate.slice(0, 4)));
+  const validYears = new Set(
+    people.flatMap((person) => (person.birthDate ? [person.birthDate.slice(0, 4)] : [])),
+  );
   const isCorrect = submitted.every((year) => validYears.has(year));
 
   if (!isCorrect) {

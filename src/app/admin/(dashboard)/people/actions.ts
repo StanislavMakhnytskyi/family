@@ -31,9 +31,9 @@ export async function savePerson(
   const removeAvatar = formData.get("removeAvatar") === "on";
   const avatarFile = formData.get("avatarFile");
 
-  if (!id || !firstName || !lastName || !birthDate) {
+  if (!id || !firstName) {
     return {
-      error: "Заповніть обов'язкові поля: id, ім'я, прізвище, дата народження.",
+      error: "Заповніть обов'язкові поля: id, ім'я.",
     };
   }
 
@@ -59,7 +59,9 @@ export async function savePerson(
     avatar = undefined;
   } else if (avatarFile instanceof File && avatarFile.size > 0) {
     try {
-      const uploaded = await uploadPrivateFile(`people/${id}`, avatarFile);
+      const uploaded = await uploadPrivateFile(`people/${id}`, avatarFile, {
+        maxWidth: 400,
+      });
       avatar = uploaded.url;
     } catch (error) {
       return {
@@ -71,8 +73,8 @@ export async function savePerson(
   const person = {
     id,
     firstName,
-    lastName,
-    birthDate,
+    lastName: lastName || undefined,
+    birthDate: birthDate || undefined,
     deathDate: deathDate || undefined,
     bio: textareaValueToBio(bioValue),
     avatar,

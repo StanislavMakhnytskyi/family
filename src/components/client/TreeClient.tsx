@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import type { Person, Relationship } from "@/lib/schemas";
 import { computeFamilyTreeLayout } from "@/lib/family-tree-layout";
@@ -362,9 +363,22 @@ export function TreeClient({
                 style={{ left: x, top: y }}
                 onClick={() => handleCardClick(id)}
               >
-                <div className={AVATAR_CLASS}>
-                  {initials(person.firstName, person.lastName)}
-                </div>
+                {person.avatar ? (
+                  <div className="relative size-[42px] shrink-0 overflow-hidden rounded-full border border-border-strong">
+                    <Image
+                      src={person.avatar}
+                      alt=""
+                      fill
+                      unoptimized
+                      sizes="42px"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className={AVATAR_CLASS}>
+                    {initials(person.firstName, person.lastName)}
+                  </div>
+                )}
                 <div className="text-center leading-tight">
                   <div className="text-[12.5px] font-bold text-ink">
                     {person.firstName} {person.lastName}
