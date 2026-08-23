@@ -6,7 +6,7 @@ A private family archive: a family tree, per-person pages with biography, burial
 
 - Next.js 16 (App Router) + React 19, TypeScript (strict)
 - Tailwind CSS v4 + custom shadcn-styled components (Radix UI under the hood)
-- Custom compact layout algorithm for the tree (`src/lib/family-tree-layout.ts`) — no third-party tree library
+- Custom compact layout algorithm for the tree (`src/lib/family-tree-layout.ts`) — no third-party tree library. [`family-chart`](https://donatso.github.io/family-chart-doc/) was evaluated and rejected: it can't render the whole family tree at once, only a single focused node with its immediate ancestors/descendants, which doesn't fit this app's "see everyone at a glance" requirement.
 - `next-intl` — internationalization (only `uk` is active for now, structure ready for other languages)
 - `zod` — JSON data validation
 - `vitest` — unit tests, `@playwright/test` — smoke tests
@@ -67,6 +67,26 @@ Photo uploads need a private Vercel Blob store connected to the project (Storage
 
 After changing any environment variable on Vercel, redeploy — an already-deployed build doesn't pick up changes retroactively.
 
+## Demo mode
+
+A public, English-language demo build can run from the same codebase, using fictional data and stock photos instead of the real family's — for showing the app off without exposing anything private.
+
+Demo mode is a single feature flag (`src/lib/flags.ts`, using the [Vercel Flags SDK](https://flags-sdk.dev)) that switches, all at once:
+
+- locale: English instead of Ukrainian
+- data: reads `src/data/demo/` (a fictional "Anderson" family, avatars from [randomuser.me](https://randomuser.me), gallery photos from [Lorem Picsum](https://picsum.photos)) instead of `src/data/` or Global Config
+- gate: both steps accept any answer, including an empty submission — clicking straight through works
+- admin panel: `/admin/*` 404s outright ([src/proxy.ts](src/proxy.ts)), and the login action itself also refuses ([src/app/admin/actions/auth.ts](src/app/admin/actions/auth.ts)) as defense in depth
+
+To turn it on, either:
+
+- Set `DEMO_MODE=true` as an environment variable (simplest — works immediately, no dashboard setup), or
+- Connect an Edge Config store to the project, add a boolean `demo-mode` key to it, and toggle it from the Vercel dashboard's Flags tab without redeploying. Edge Config is checked first; `DEMO_MODE` is the fallback if it's unset or unreachable.
+
+To let Vercel's Flags Explorer discover the flag, generate a `FLAGS_SECRET` (from the dashboard's Flags tab) and set it as an environment variable — the discovery endpoint at `/.well-known/vercel/flags` authenticates with it, not with a session cookie, so it's exempted from the gate in `proxy.ts`.
+
+The recommended setup is a second Vercel project pointed at the same repo, with `DEMO_MODE=true` (or Edge Config) set only there — keeping the real deployment's data source and admin access completely separate from the demo.
+
 ## Structure
 
 ```
@@ -75,8 +95,8 @@ src/
   components/
     ui/            — base primitives (button, input, card, avatar, select, textarea, skeleton)
     client/        — interactive "use client" components (tree, login forms)
-  lib/            — Zod schemas, data read/write, utilities, session/cookies, tree layout
-  data/           — sample data (JSON)
+  lib/            — Zod schemas, data read/write, utilities, session/cookies, tree layout, feature flags
+  data/           — sample data (JSON); data/demo/ — fictional data + stock photos for demo mode
   i18n/           — next-intl configuration
 messages/         — translations (uk.json, en.json)
 src/proxy.ts      — session cookie checks (replaces middleware.ts in this Next.js version)

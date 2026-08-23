@@ -1,7 +1,9 @@
 {
   "Common": {
     "appName": "Family History",
-    "footerNote": "A family archive. No registration required."
+    "footerNote": "A family archive. No registration required.",
+    "bornPrefix": "b.",
+    "diedPrefix": "d."
   },
   "Gate": {
     "title": "Family History",
@@ -12,7 +14,8 @@
     "otherQuestion": "Another question",
     "errorEmpty": "Enter an answer",
     "errorWrong": "Wrong answer. Attempts left: __REMAINING__",
-    "lockedPrefix": "Try again in"
+    "lockedPrefix": "Try again in",
+    "demoHint": "Demo mode — any answer gets you in, just click Enter"
   },
   "GateYears": {
     "title": "One more check",
@@ -22,7 +25,8 @@
     "submitting": "Please wait…",
     "errorIncomplete": "Fill in all three fields",
     "errorWrong": "Not all years match. Attempts left: __REMAINING__",
-    "lockedPrefix": "Try again in"
+    "lockedPrefix": "Try again in",
+    "demoHint": "Demo mode — any (or no) years work, just click Enter"
   },
   "Tree": {
     "logout": "Log out",

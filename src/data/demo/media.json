@@ -1,0 +1,26 @@
+[
+  {
+    "id": "m1",
+    "personIds": ["james-anderson", "mary-anderson"],
+    "url": "https://picsum.photos/seed/anderson-wedding/900/600",
+    "caption": "Wedding day, 1961",
+    "type": "photo",
+    "year": 1961
+  },
+  {
+    "id": "m2",
+    "personIds": ["james-anderson", "robert-anderson", "susan-clark"],
+    "url": "https://picsum.photos/seed/anderson-porch/900/600",
+    "caption": "James with the kids on the porch he built",
+    "type": "photo",
+    "year": 1975
+  },
+  {
+    "id": "m3",
+    "personIds": ["robert-anderson", "linda-anderson", "emily-anderson", "daniel-anderson"],
+    "url": "https://picsum.photos/seed/anderson-family/900/600",
+    "caption": "Family reunion",
+    "type": "photo",
+    "year": 2005
+  }
+]

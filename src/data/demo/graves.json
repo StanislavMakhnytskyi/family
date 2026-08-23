@@ -1,0 +1,16 @@
+[
+  {
+    "personId": "james-anderson",
+    "latitude": 39.7817,
+    "longitude": -89.6501,
+    "address": "Oakwood Cemetery, Springfield",
+    "description": "section 4, row 2"
+  },
+  {
+    "personId": "mary-anderson",
+    "latitude": 39.7818,
+    "longitude": -89.6503,
+    "address": "Oakwood Cemetery, Springfield",
+    "description": "section 4, row 2"
+  }
+]

@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { verifyPassword } from "@/lib/admin-password";
+import { demoModeFlag } from "@/lib/flags";
 import {
   createAdminSession,
   destroyAdminSession,
@@ -23,6 +24,14 @@ export async function verifyAdminLogin(
   _prevState: AdminLoginState,
   formData: FormData,
 ): Promise<AdminLoginState> {
+  // proxy.ts already blocks every /admin/* request with a 404 in demo mode
+  // -- this page should be unreachable -- but refuse here too rather than
+  // trust that alone, same as the private media route re-checks its own
+  // session cookie instead of relying only on proxy.ts.
+  if (await demoModeFlag()) {
+    return { status: "error-invalid" };
+  }
+
   const attemptState = await getAdminAttemptState();
   if (attemptState.lockUntil > Date.now()) {
     return { status: "locked", lockUntil: attemptState.lockUntil };
