@@ -42,6 +42,7 @@ export default async function GateYearsPage() {
                 submit: t("GateYears.submit"),
                 submitting: t("GateYears.submitting"),
                 errorIncomplete: t("GateYears.errorIncomplete"),
+                errorDuplicate: t("GateYears.errorDuplicate"),
                 errorWrong: t("GateYears.errorWrong"),
                 lockedPrefix: t("GateYears.lockedPrefix"),
               }}
