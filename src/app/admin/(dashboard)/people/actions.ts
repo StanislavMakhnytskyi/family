@@ -26,6 +26,7 @@ export async function savePerson(
   const id = String(formData.get("id") ?? "").trim();
   const firstName = String(formData.get("firstName") ?? "").trim();
   const lastName = String(formData.get("lastName") ?? "").trim();
+  const middleName = String(formData.get("middleName") ?? "").trim();
   const birthDate = String(formData.get("birthDate") ?? "").trim();
   const deathDate = String(formData.get("deathDate") ?? "").trim();
   const bioValue = String(formData.get("bio") ?? "");
@@ -73,6 +74,7 @@ export async function savePerson(
     id,
     firstName,
     lastName: lastName || undefined,
+    middleName: middleName || undefined,
     birthDate: birthDate || undefined,
     deathDate: deathDate || undefined,
     bio: textareaValueToBio(bioValue),
