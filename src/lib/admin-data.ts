@@ -229,6 +229,31 @@ export async function readData(source: DataSource): Promise<FullData> {
   return result.data;
 }
 
+export type ReadDataResult =
+  | { success: true; data: FullData }
+  | { success: false; error: string };
+
+/**
+ * Like readData(), but never throws -- for the five list pages a save
+ * action's redirect() lands on. Next renders the redirect target's RSC
+ * payload as part of the *same* Server Action response (see
+ * node_modules/next/dist/docs/01-app/02-guides/redirecting.md: "In a
+ * Server Action, redirect performs a client-side navigation..."), so an
+ * uncaught throw here doesn't cleanly hit error.tsx the way a normal page
+ * load would -- it fails the whole POST with a 500. Every list page must
+ * render a controlled fallback instead of letting readData() throw.
+ */
+export async function readDataSafe(source: DataSource): Promise<ReadDataResult> {
+  try {
+    return { success: true, data: await readData(source) };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
 async function writeLocalData(value: FullData): Promise<void> {
   if (process.env.VERCEL) {
     throw new Error(
