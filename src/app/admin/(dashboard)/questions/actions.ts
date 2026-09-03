@@ -28,7 +28,12 @@ export async function saveQuestion(
     return { error: "Заповніть питання та відповідь." };
   }
 
-  const data = await readData(source);
+  let data;
+  try {
+    data = await readData(source);
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : String(error) };
+  }
   const record = {
     id,
     question,
