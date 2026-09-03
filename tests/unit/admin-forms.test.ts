@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   bioToTextareaValue,
+  displayValueToIsoDate,
+  isoDateToDisplayValue,
   textareaValueToBio,
   textValueToVariants,
   variantsToTextValue,
@@ -62,5 +64,42 @@ describe("variants <-> comma-separated text", () => {
 
   it("returns undefined for blank input", () => {
     expect(textValueToVariants("  ")).toBeUndefined();
+  });
+});
+
+describe("stored ISO date <-> admin-panel dd.mm.yyyy display", () => {
+  it("converts a stored ISO date to dd.mm.yyyy for display", () => {
+    expect(isoDateToDisplayValue("1928-05-12")).toBe("12.05.1928");
+  });
+
+  it("leaves a bare year unchanged", () => {
+    expect(isoDateToDisplayValue("1928")).toBe("1928");
+  });
+
+  it("leaves anything else that isn't a full ISO date unchanged", () => {
+    expect(isoDateToDisplayValue("")).toBe("");
+    expect(isoDateToDisplayValue("12.05.1928")).toBe("12.05.1928");
+  });
+
+  it("converts a typed dd.mm.yyyy value back to ISO for storage", () => {
+    expect(displayValueToIsoDate("12.05.1928")).toBe("1928-05-12");
+  });
+
+  it("leaves a bare year unchanged", () => {
+    expect(displayValueToIsoDate("1928")).toBe("1928");
+  });
+
+  it("passes through partial/in-progress typing unchanged", () => {
+    expect(displayValueToIsoDate("12.05.192")).toBe("12.05.192");
+    expect(displayValueToIsoDate("12.0")).toBe("12.0");
+  });
+
+  it("round-trips through both conversions", () => {
+    expect(isoDateToDisplayValue(displayValueToIsoDate("12.05.1928"))).toBe(
+      "12.05.1928",
+    );
+    expect(displayValueToIsoDate(isoDateToDisplayValue("1928-05-12"))).toBe(
+      "1928-05-12",
+    );
   });
 });
