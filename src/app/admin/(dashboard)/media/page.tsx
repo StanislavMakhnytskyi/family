@@ -3,14 +3,19 @@ import { redirect } from "next/navigation";
 
 import { deleteMedia } from "./actions";
 import { Button } from "@/components/ui/button";
-import { getSelectedDataSource, readData } from "@/lib/admin-data";
+import { DataErrorCard } from "@/components/admin/DataErrorCard";
+import { getSelectedDataSource, readDataSafe } from "@/lib/admin-data";
 
 const TYPE_LABEL: Record<string, string> = { photo: "Фото", document: "Документ" };
 
 export default async function AdminMediaPage() {
   const source = await getSelectedDataSource();
   if (!source) redirect("/admin");
-  const data = await readData(source);
+  const result = await readDataSafe(source);
+  if (!result.success) {
+    return <DataErrorCard message={result.error} retryHref="/admin/media" />;
+  }
+  const data = result.data;
   const byId = new Map(data.people.map((person) => [person.id, person]));
   const names = (ids: string[]) =>
     ids
