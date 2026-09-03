@@ -8,19 +8,25 @@ import { savePerson, type PersonFormState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { bioToTextareaValue } from "@/lib/admin-forms";
+import {
+  bioToTextareaValue,
+  displayValueToIsoDate,
+  isoDateToDisplayValue,
+} from "@/lib/admin-forms";
 import { slugifyName } from "@/lib/slug";
 import type { Person } from "@/lib/schemas";
 
 const initialState: PersonFormState = {};
 
 // The stored value can be a bare year ("1928", the common case when only
-// that much is known) or a full date ("1928-05-12"). The public site only
-// ever shows the year (lifespan() slices the first 4 characters), so
-// widening this to a full date is purely additive -- no schema or public
-// display change needed. The visible field stays free text (so a bare year
-// stays easy to type and legacy values still display), with a native date
-// picker alongside it as a convenience for filling in the full date.
+// that much is known) or a full ISO date ("1928-05-12") -- the public site
+// only ever shows the year (lifespan() slices the first 4 characters), so
+// the stored format has to stay ISO/year regardless of what's shown here.
+// The visible field displays a full date as dd.mm.yyyy (converted at the
+// boundary via admin-forms.ts) while a bare year passes through as-is; a
+// native date picker alongside it is kept in sync with the current value
+// both ways, so opening it shows the already-entered date instead of
+// today's, and picking a date updates the visible dd.mm.yyyy field.
 function DateField({
   name,
   label,
@@ -35,6 +41,7 @@ function DateField({
   onChange: (value: string) => void;
 }) {
   const pickerRef = useRef<HTMLInputElement>(null);
+  const isoValue = /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
 
   return (
     <label className="flex flex-col gap-1.5">
@@ -45,11 +52,12 @@ function DateField({
         )}
       </span>
       <div className="relative">
+        <input type="hidden" name={name} value={value} readOnly />
         <Input
-          name={name}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder="1928 або 1928-05-12"
+          name={`${name}Display`}
+          value={isoDateToDisplayValue(value)}
+          onChange={(event) => onChange(displayValueToIsoDate(event.target.value))}
+          placeholder="1928 або 12.05.1928"
           className="pr-10"
         />
         <button
@@ -76,6 +84,7 @@ function DateField({
           tabIndex={-1}
           aria-hidden="true"
           className="absolute inset-y-0 right-0 size-0 opacity-0"
+          value={isoValue}
           onChange={(event) => {
             if (event.target.value) onChange(event.target.value);
           }}
