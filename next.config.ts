@@ -4,6 +4,17 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  // Server Actions cap request bodies at 1MB by default -- too small for a
+  // photo upload through the admin panel's Server Actions (savePerson's
+  // avatar, saveMedia's file). Raised to cover a typical phone photo;
+  // uploaded images are still re-encoded/resized down at upload time via
+  // Vercel Blob's putImage() (see src/lib/blob.ts), so this only affects
+  // what's accepted on the way in, not what's stored.
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     // Only ever referenced by the demo dataset (src/data/demo/), which uses
