@@ -35,6 +35,40 @@ test("creating and deleting a question round-trips through local src/data files"
   ).toHaveCount(0);
 });
 
+// The birth/death date fields accept a bare year (legacy convention) or a
+// full date -- the admin form's date picker is a convenience for typing the
+// latter, but the field itself stays free text either way.
+test("a person's full birth/death dates round-trip through local src/data files", async ({
+  page,
+}) => {
+  await loginAsAdmin(page);
+
+  await page.goto("/admin/people/new");
+  await page.locator('input[name="id"]').fill("e2e-full-date-person");
+  await page.locator('input[name="firstName"]').fill("E2E");
+  await page.locator('input[name="birthDate"]').fill("1928-05-12");
+  await page.locator('input[name="deathDate"]').fill("2001-11-03");
+  await page.getByRole("button", { name: "Зберегти" }).click();
+
+  await expect(page).toHaveURL(/\/admin\/people$/);
+  const row = page.getByRole("row", { name: /^E2E / });
+  await expect(row).toBeVisible();
+  // The admin list itself also only ever shows the year (lifespan()), so
+  // the full date isn't visible here -- reopen the edit form to confirm the
+  // full value, not just the year, was actually persisted.
+  await row.getByRole("link", { name: "Редагувати" }).click();
+  await expect(page.locator('input[name="birthDate"]')).toHaveValue("1928-05-12");
+  await expect(page.locator('input[name="deathDate"]')).toHaveValue("2001-11-03");
+
+  await page.goto("/admin/people");
+  await page
+    .getByRole("row", { name: /^E2E / })
+    .getByRole("button", { name: "Видалити" })
+    .click();
+  await expect(page).toHaveURL(/\/admin\/people$/);
+  await expect(page.getByRole("row", { name: /^E2E / })).toHaveCount(0);
+});
+
 // Regression test: the grave form's personId <select> is disabled on edit
 // (the person a grave belongs to can't be changed), but a disabled field
 // doesn't get included in FormData on submit -- editing a grave without
