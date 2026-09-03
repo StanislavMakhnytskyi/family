@@ -39,7 +39,12 @@ export async function savePerson(
     };
   }
 
-  const data = await readData(source);
+  let data;
+  try {
+    data = await readData(source);
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : String(error) };
+  }
 
   if (isNew) {
     if (data.people.some((person) => person.id === id)) {

@@ -32,7 +32,12 @@ export async function saveMedia(
     return { error: "Оберіть тип файлу." };
   }
 
-  const data = await readData(source);
+  let data;
+  try {
+    data = await readData(source);
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : String(error) };
+  }
   const existing = data.media.find((item) => item.id === id);
 
   if (isNew && !(file instanceof File && file.size > 0)) {

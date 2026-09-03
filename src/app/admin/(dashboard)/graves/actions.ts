@@ -29,7 +29,12 @@ export async function saveGrave(
     return { error: "Довгота має бути числом від -180 до 180." };
   }
 
-  const data = await readData(source);
+  let data;
+  try {
+    data = await readData(source);
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : String(error) };
+  }
   const exists = data.graves.some((grave) => grave.personId === personId);
   if (isNew && exists) {
     return { error: "У цієї людини вже є запис про поховання — відредагуйте його." };
