@@ -16,6 +16,9 @@ export const personSchema = z.object({
   id: z.string().min(1),
   firstName: z.string().min(1),
   lastName: z.string().optional(),
+  // По батькові. Kept in the data model and editable in the admin panel
+  // only -- never rendered on the public site (see AGENTS.md).
+  middleName: z.string().optional(),
   birthDate: z.string().optional(),
   deathDate: z.string().optional(),
   bio: z.array(z.string().min(1)).optional(),
