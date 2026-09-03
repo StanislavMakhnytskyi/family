@@ -38,7 +38,10 @@ test("creating and deleting a question round-trips through local src/data files"
 
 // The birth/death date fields accept a bare year (legacy convention) or a
 // full date -- the admin form's date picker is a convenience for typing the
-// latter, but the field itself stays free text either way.
+// latter, but the field itself stays free text either way. The visible
+// field is typed/displayed as dd.mm.yyyy; what's actually submitted and
+// stored (a hidden input of the same name) stays ISO, since the public
+// site's lifespan() relies on the stored value starting with the year.
 test("a person's full birth/death dates round-trip through local src/data files", async ({
   page,
 }) => {
@@ -47,8 +50,8 @@ test("a person's full birth/death dates round-trip through local src/data files"
   await page.goto("/admin/people/new");
   await page.locator('input[name="id"]').fill("e2e-full-date-person");
   await page.locator('input[name="firstName"]').fill("E2E");
-  await page.locator('input[name="birthDate"]').fill("1928-05-12");
-  await page.locator('input[name="deathDate"]').fill("2001-11-03");
+  await page.locator('input[name="birthDateDisplay"]').fill("12.05.1928");
+  await page.locator('input[name="deathDateDisplay"]').fill("03.11.2001");
   await page.getByRole("button", { name: "Зберегти" }).click();
 
   await expect(page).toHaveURL(/\/admin\/people$/);
@@ -56,10 +59,17 @@ test("a person's full birth/death dates round-trip through local src/data files"
   await expect(row).toBeVisible();
   // The admin list itself also only ever shows the year (lifespan()), so
   // the full date isn't visible here -- reopen the edit form to confirm the
-  // full value, not just the year, was actually persisted.
+  // full value, not just the year, was actually persisted (as ISO, in the
+  // hidden field) and displays back correctly as dd.mm.yyyy.
   await row.getByRole("link", { name: "Редагувати" }).click();
   await expect(page.locator('input[name="birthDate"]')).toHaveValue("1928-05-12");
   await expect(page.locator('input[name="deathDate"]')).toHaveValue("2001-11-03");
+  await expect(page.locator('input[name="birthDateDisplay"]')).toHaveValue(
+    "12.05.1928",
+  );
+  await expect(page.locator('input[name="deathDateDisplay"]')).toHaveValue(
+    "03.11.2001",
+  );
 
   await page.goto("/admin/people");
   await page
