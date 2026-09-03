@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { TEST_ADMIN_USERNAME, TEST_ADMIN_PASSWORD } from "./admin-test-credentials";
+import { login } from "./helpers";
 
 async function loginAsAdmin(page: import("@playwright/test").Page) {
   await page.goto("/admin/login");
@@ -59,6 +60,41 @@ test("a person's full birth/death dates round-trip through local src/data files"
   await row.getByRole("link", { name: "Редагувати" }).click();
   await expect(page.locator('input[name="birthDate"]')).toHaveValue("1928-05-12");
   await expect(page.locator('input[name="deathDate"]')).toHaveValue("2001-11-03");
+
+  await page.goto("/admin/people");
+  await page
+    .getByRole("row", { name: /^E2E / })
+    .getByRole("button", { name: "Видалити" })
+    .click();
+  await expect(page).toHaveURL(/\/admin\/people$/);
+  await expect(page.getByRole("row", { name: /^E2E / })).toHaveCount(0);
+});
+
+// По батькові is optional, stored in the model, and editable in the admin
+// panel -- but must never appear on the public site.
+test("a person's middle name round-trips through local src/data files but never appears on the public site", async ({
+  page,
+}) => {
+  await loginAsAdmin(page);
+
+  await page.goto("/admin/people/new");
+  await page.locator('input[name="id"]').fill("e2e-middle-name-person");
+  await page.locator('input[name="firstName"]').fill("E2E");
+  await page.locator('input[name="lastName"]').fill("Testenko");
+  await page.locator('input[name="middleName"]').fill("Дуже-Секретович");
+  await page.getByRole("button", { name: "Зберегти" }).click();
+
+  await expect(page).toHaveURL(/\/admin\/people$/);
+  const row = page.getByRole("row", { name: /^E2E / });
+  await expect(row).toBeVisible();
+  await row.getByRole("link", { name: "Редагувати" }).click();
+  await expect(page.locator('input[name="middleName"]')).toHaveValue("Дуже-Секретович");
+
+  // The admin session and the family gate session are independent -- pass
+  // the family gate too so the public /person page is even reachable.
+  await login(page);
+  await page.goto("/person/e2e-middle-name-person");
+  await expect(page.getByText("Дуже-Секретович")).toHaveCount(0);
 
   await page.goto("/admin/people");
   await page
