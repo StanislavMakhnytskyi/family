@@ -32,7 +32,12 @@ export async function saveRelationship(
     return { error: "Людина не може мати зв'язок сама з собою." };
   }
 
-  const data = await readData(source);
+  let data;
+  try {
+    data = await readData(source);
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : String(error) };
+  }
   const relationship = { id, type, person1Id, person2Id } as const;
 
   const nextRelationships = isNew
