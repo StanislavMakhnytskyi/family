@@ -76,7 +76,12 @@ export async function verifyAnswer(
   redirect("/gate/years");
 }
 
-export type YearsStatus = "idle" | "error-incomplete" | "error-wrong" | "locked";
+export type YearsStatus =
+  | "idle"
+  | "error-incomplete"
+  | "error-duplicate"
+  | "error-wrong"
+  | "locked";
 
 export type YearsState = {
   status: YearsStatus;
@@ -111,6 +116,13 @@ export async function verifyYears(
   ];
   if (submitted.some((year) => !year)) {
     return { status: "error-incomplete" };
+  }
+
+  // The three years are meant to name three different family members --
+  // the same valid year typed three times would otherwise satisfy the
+  // membership check below despite proving only one fact, not three.
+  if (new Set(submitted).size !== submitted.length) {
+    return { status: "error-duplicate" };
   }
 
   const people = await getPeople();

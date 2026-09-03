@@ -12,6 +12,7 @@ type Messages = {
   submit: string;
   submitting: string;
   errorIncomplete: string;
+  errorDuplicate: string;
   errorWrong: string;
   lockedPrefix: string;
 };
@@ -31,8 +32,11 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
     initialState,
   );
   const [now, setNow] = useState(() => Date.now());
+  const [values, setValues] = useState(["", "", ""]);
 
   const locked = state.status === "locked" && (state.lockUntil ?? 0) > now;
+  const filled = values.filter((year) => year !== "");
+  const hasDuplicate = filled.length !== new Set(filled).size;
 
   useEffect(() => {
     if (state.status !== "locked") return;
@@ -43,26 +47,43 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
   return (
     <form action={formAction} className="contents" aria-busy={isPending}>
       <div className="grid grid-cols-3 gap-2.5">
-        {(["year1", "year2", "year3"] as const).map((name) => (
+        {(["year1", "year2", "year3"] as const).map((name, index) => (
           <Input
             key={name}
             name={name}
+            type="text"
             inputMode="numeric"
+            pattern="[0-9]*"
             maxLength={4}
             placeholder={messages.yearPlaceholder}
             disabled={locked}
             autoComplete="off"
+            value={values[index]}
+            onChange={(event) => {
+              const digits = event.target.value.replace(/\D/g, "").slice(0, 4);
+              setValues((prev) => prev.map((v, i) => (i === index ? digits : v)));
+            }}
             className="text-center tabular-nums"
           />
         ))}
       </div>
 
-      {state.status === "error-incomplete" && (
+      {hasDuplicate && (
+        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+          {messages.errorDuplicate}
+        </p>
+      )}
+      {!hasDuplicate && state.status === "error-incomplete" && (
         <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
           {messages.errorIncomplete}
         </p>
       )}
-      {state.status === "error-wrong" && (
+      {!hasDuplicate && state.status === "error-duplicate" && (
+        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+          {messages.errorDuplicate}
+        </p>
+      )}
+      {!hasDuplicate && state.status === "error-wrong" && (
         <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
           {messages.errorWrong.replace(
             "__REMAINING__",
@@ -87,7 +108,7 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
         <Button
           type="submit"
           variant="primary"
-          disabled={locked || isPending}
+          disabled={locked || isPending || hasDuplicate}
           className="w-full"
         >
           {isPending && <Loader2 className="size-4 animate-spin" />}
