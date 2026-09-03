@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 
 import { deletePerson } from "./actions";
 import { Button } from "@/components/ui/button";
-import { getSelectedDataSource, readData } from "@/lib/admin-data";
+import { DataErrorCard } from "@/components/admin/DataErrorCard";
+import { getSelectedDataSource, readDataSafe } from "@/lib/admin-data";
 import { lifespan } from "@/lib/utils";
 
 export default async function AdminPeoplePage({
@@ -14,7 +15,11 @@ export default async function AdminPeoplePage({
   const { error } = await searchParams;
   const source = await getSelectedDataSource();
   if (!source) redirect("/admin");
-  const data = await readData(source);
+  const result = await readDataSafe(source);
+  if (!result.success) {
+    return <DataErrorCard message={result.error} retryHref="/admin/people" />;
+  }
+  const data = result.data;
 
   return (
     <div>

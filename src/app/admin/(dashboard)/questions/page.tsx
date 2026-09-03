@@ -3,12 +3,17 @@ import { redirect } from "next/navigation";
 
 import { deleteQuestion } from "./actions";
 import { Button } from "@/components/ui/button";
-import { getSelectedDataSource, readData } from "@/lib/admin-data";
+import { DataErrorCard } from "@/components/admin/DataErrorCard";
+import { getSelectedDataSource, readDataSafe } from "@/lib/admin-data";
 
 export default async function AdminQuestionsPage() {
   const source = await getSelectedDataSource();
   if (!source) redirect("/admin");
-  const data = await readData(source);
+  const result = await readDataSafe(source);
+  if (!result.success) {
+    return <DataErrorCard message={result.error} retryHref="/admin/questions" />;
+  }
+  const data = result.data;
 
   return (
     <div>

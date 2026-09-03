@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 
 import { deleteRelationship } from "./actions";
 import { Button } from "@/components/ui/button";
-import { getSelectedDataSource, readData } from "@/lib/admin-data";
+import { DataErrorCard } from "@/components/admin/DataErrorCard";
+import { getSelectedDataSource, readDataSafe } from "@/lib/admin-data";
 
 const TYPE_LABEL: Record<string, string> = {
   "parent-child": "Батько/матір → дитина",
@@ -13,7 +14,11 @@ const TYPE_LABEL: Record<string, string> = {
 export default async function AdminRelationshipsPage() {
   const source = await getSelectedDataSource();
   if (!source) redirect("/admin");
-  const data = await readData(source);
+  const result = await readDataSafe(source);
+  if (!result.success) {
+    return <DataErrorCard message={result.error} retryHref="/admin/relationships" />;
+  }
+  const data = result.data;
   const byId = new Map(data.people.map((person) => [person.id, person]));
   const name = (id: string) => {
     const person = byId.get(id);
