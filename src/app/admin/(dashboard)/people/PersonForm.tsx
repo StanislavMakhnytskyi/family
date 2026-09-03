@@ -94,6 +94,7 @@ export function PersonForm({ person }: { person?: Person }) {
 
   const [firstName, setFirstName] = useState(person?.firstName ?? "");
   const [lastName, setLastName] = useState(person?.lastName ?? "");
+  const [middleName, setMiddleName] = useState(person?.middleName ?? "");
   const [id, setId] = useState(person?.id ?? "");
   const [birthDate, setBirthDate] = useState(person?.birthDate ?? "");
   const [deathDate, setDeathDate] = useState(person?.deathDate ?? "");
@@ -132,7 +133,7 @@ export function PersonForm({ person }: { person?: Person }) {
         />
       </label>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <label className="flex flex-col gap-1.5">
           <span className="text-[13px] font-semibold text-muted-4">Ім&apos;я</span>
           <Input
@@ -150,6 +151,16 @@ export function PersonForm({ person }: { person?: Person }) {
             name="lastName"
             value={lastName}
             onChange={(event) => handleLastNameChange(event.target.value)}
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-semibold text-muted-4">
+            По батькові <span className="font-normal text-faint">(необов&apos;язково)</span>
+          </span>
+          <Input
+            name="middleName"
+            value={middleName}
+            onChange={(event) => setMiddleName(event.target.value)}
           />
         </label>
       </div>
