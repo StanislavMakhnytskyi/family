@@ -62,6 +62,23 @@ test.describe("second login stage (birth years)", () => {
     await expect(page).toHaveURL(/\/gate\/years$/);
   });
 
+  test("duplicate years are rejected client-side and never reach the server", async ({
+    page,
+  }) => {
+    await passStageOne(page);
+
+    const inputs = page.getByPlaceholder("РРРР");
+    await inputs.nth(0).fill(validYears[0]);
+    await inputs.nth(1).fill(validYears[0]);
+    await expect(page.getByText("Роки мають бути різними")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Увійти" })).toBeDisabled();
+
+    // Fixing the duplicate clears the error and re-enables the button.
+    await inputs.nth(1).fill(validYears[1]);
+    await expect(page.getByText("Роки мають бути різними")).not.toBeVisible();
+    await expect(page.getByRole("button", { name: "Увійти" })).toBeEnabled();
+  });
+
   test("three correct years complete login", async ({ page }) => {
     await passStageOne(page);
 

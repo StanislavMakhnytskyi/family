@@ -24,6 +24,7 @@
     "submit": "Enter",
     "submitting": "Please wait…",
     "errorIncomplete": "Fill in all three fields",
+    "errorDuplicate": "The years must be different",
     "errorWrong": "Not all years match. Attempts left: __REMAINING__",
     "lockedPrefix": "Try again in",
     "demoHint": "Demo mode — any (or no) years work, just click Enter"
