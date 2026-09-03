@@ -2,7 +2,7 @@
 
 import { useActionState, useRef, useState } from "react";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { CalendarDays, Loader2 } from "lucide-react";
 
 import { savePerson, type PersonFormState } from "./actions";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,77 @@ import type { Person } from "@/lib/schemas";
 
 const initialState: PersonFormState = {};
 
+// The stored value can be a bare year ("1928", the common case when only
+// that much is known) or a full date ("1928-05-12"). The public site only
+// ever shows the year (lifespan() slices the first 4 characters), so
+// widening this to a full date is purely additive -- no schema or public
+// display change needed. The visible field stays free text (so a bare year
+// stays easy to type and legacy values still display), with a native date
+// picker alongside it as a convenience for filling in the full date.
+function DateField({
+  name,
+  label,
+  optional,
+  value,
+  onChange,
+}: {
+  name: string;
+  label: string;
+  optional?: boolean;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const pickerRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-[13px] font-semibold text-muted-4">
+        {label}{" "}
+        {optional && (
+          <span className="font-normal text-faint">(необов&apos;язково)</span>
+        )}
+      </span>
+      <div className="relative">
+        <Input
+          name={name}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder="1928 або 1928-05-12"
+          className="pr-10"
+        />
+        <button
+          type="button"
+          aria-label="Обрати дату"
+          onClick={() => {
+            const picker = pickerRef.current;
+            if (!picker) return;
+            // Safari < 16.4 has no showPicker() -- fall back to a synthetic
+            // click, which still opens the native date picker there.
+            try {
+              picker.showPicker();
+            } catch {
+              picker.click();
+            }
+          }}
+          className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted hover:text-ink"
+        >
+          <CalendarDays className="size-4" />
+        </button>
+        <input
+          ref={pickerRef}
+          type="date"
+          tabIndex={-1}
+          aria-hidden="true"
+          className="absolute inset-y-0 right-0 size-0 opacity-0"
+          onChange={(event) => {
+            if (event.target.value) onChange(event.target.value);
+          }}
+        />
+      </div>
+    </label>
+  );
+}
+
 export function PersonForm({ person }: { person?: Person }) {
   const [state, formAction, isPending] = useActionState(
     savePerson,
@@ -24,6 +95,8 @@ export function PersonForm({ person }: { person?: Person }) {
   const [firstName, setFirstName] = useState(person?.firstName ?? "");
   const [lastName, setLastName] = useState(person?.lastName ?? "");
   const [id, setId] = useState(person?.id ?? "");
+  const [birthDate, setBirthDate] = useState(person?.birthDate ?? "");
+  const [deathDate, setDeathDate] = useState(person?.deathDate ?? "");
   // Once someone types directly into the id field, stop overwriting it —
   // otherwise a deliberate custom id would keep getting clobbered by the
   // next keystroke in firstName/lastName.
@@ -82,26 +155,20 @@ export function PersonForm({ person }: { person?: Person }) {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-semibold text-muted-4">
-            Дата народження <span className="font-normal text-faint">(необов&apos;язково)</span>
-          </span>
-          <Input
-            name="birthDate"
-            defaultValue={person?.birthDate}
-            placeholder="1928"
-          />
-        </label>
-        <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-semibold text-muted-4">
-            Дата смерті
-          </span>
-          <Input
-            name="deathDate"
-            defaultValue={person?.deathDate}
-            placeholder="необов'язково"
-          />
-        </label>
+        <DateField
+          name="birthDate"
+          label="Дата народження"
+          optional
+          value={birthDate}
+          onChange={setBirthDate}
+        />
+        <DateField
+          name="deathDate"
+          label="Дата смерті"
+          optional
+          value={deathDate}
+          onChange={setDeathDate}
+        />
       </div>
 
       <label className="flex flex-col gap-1.5">
