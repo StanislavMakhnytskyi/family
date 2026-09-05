@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { getPeople, getQuestions } from "@/lib/data";
-import { normalizeAnswer } from "@/lib/utils";
+import { isAnswerMatch } from "@/lib/utils";
 import { demoModeFlag } from "@/lib/flags";
 import {
   createSession,
@@ -55,13 +55,10 @@ export async function verifyAnswer(
 
   const questions = await getQuestions();
   const question = questions.find((item) => item.id === questionId);
-  const normalized = normalizeAnswer(answer);
   const isCorrect =
     !!question &&
-    (normalized === normalizeAnswer(question.normalizedAnswer) ||
-      (question.variants ?? []).some(
-        (variant) => normalized === normalizeAnswer(variant),
-      ));
+    (isAnswerMatch(answer, question.normalizedAnswer) ||
+      (question.variants ?? []).some((variant) => isAnswerMatch(answer, variant)));
 
   if (!isCorrect) {
     const next = await recordFailedAttempt();
