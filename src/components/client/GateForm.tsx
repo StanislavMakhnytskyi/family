@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import { verifyAnswer, type GateState } from "@/app/actions/auth";
@@ -17,6 +17,7 @@ type Messages = {
   otherQuestion: string;
   errorEmpty: string;
   errorWrong: string;
+  errorWrongHint: string;
   lockedPrefix: string;
 };
 
@@ -43,16 +44,23 @@ export function GateForm({
     initialState,
   );
   const [questionId, setQuestionId] = useState(initialQuestionId);
+  const [answer, setAnswer] = useState("");
   const [now, setNow] = useState(() => Date.now());
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const locked = state.status === "locked" && (state.lockUntil ?? 0) > now;
+  // Attempts are tracked per question (see session.ts), and switching
+  // questions below is purely client-side -- ignore a result that belongs
+  // to a question that isn't the one currently shown, or a stale
+  // error/lock would keep displaying after switching to a fresh,
+  // unlocked question.
+  const forCurrentQuestion = state.questionId === questionId;
+  const locked =
+    forCurrentQuestion && state.status === "locked" && (state.lockUntil ?? 0) > now;
 
   useEffect(() => {
-    if (state.status !== "locked") return;
+    if (state.status !== "locked" || !forCurrentQuestion) return;
     const interval = setInterval(() => setNow(Date.now()), 500);
     return () => clearInterval(interval);
-  }, [state.status]);
+  }, [state.status, forCurrentQuestion]);
 
   const question =
     questions.find((item) => item.id === questionId) ?? questions[0];
@@ -63,7 +71,7 @@ export function GateForm({
       remaining.length > 0 ? remaining : questions,
     );
     setQuestionId(next.id);
-    if (inputRef.current) inputRef.current.value = "";
+    setAnswer("");
   }
 
   return (
@@ -75,25 +83,31 @@ export function GateForm({
       </p>
 
       <Input
-        ref={inputRef}
         name="answer"
+        value={answer}
+        onChange={(event) => setAnswer(event.target.value)}
         placeholder={messages.answerPlaceholder}
         disabled={locked}
         autoComplete="off"
       />
 
-      {state.status === "error-empty" && (
+      {forCurrentQuestion && state.status === "error-empty" && (
         <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
           {messages.errorEmpty}
         </p>
       )}
-      {state.status === "error-wrong" && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
-          {messages.errorWrong.replace(
-            "__REMAINING__",
-            String(state.remaining ?? 0),
-          )}
-        </p>
+      {forCurrentQuestion && state.status === "error-wrong" && (
+        <>
+          <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+            {messages.errorWrong.replace(
+              "__REMAINING__",
+              String(state.remaining ?? 0),
+            )}
+          </p>
+          <p className="mt-1 ml-0.5 animate-fade-in text-[13px] text-muted">
+            {messages.errorWrongHint}
+          </p>
+        </>
       )}
 
       {locked && (
@@ -121,9 +135,8 @@ export function GateForm({
         <Button
           type="button"
           variant="ghost"
-          disabled={locked}
           onClick={handleOtherQuestion}
-          className="flex-none basis-auto"
+          className="w-full basis-full sm:w-auto sm:flex-none sm:basis-auto"
         >
           {messages.otherQuestion}
         </Button>
