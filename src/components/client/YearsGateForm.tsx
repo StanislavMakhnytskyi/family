@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import { verifyYears, type YearsState } from "@/app/actions/auth";
@@ -33,6 +33,7 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
   );
   const [now, setNow] = useState(() => Date.now());
   const [values, setValues] = useState(["", "", ""]);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const locked = state.status === "locked" && (state.lockUntil ?? 0) > now;
   const filled = values.filter((year) => year !== "");
@@ -50,6 +51,9 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
         {(["year1", "year2", "year3"] as const).map((name, index) => (
           <Input
             key={name}
+            ref={(el) => {
+              inputRefs.current[index] = el;
+            }}
             name={name}
             type="text"
             inputMode="numeric"
@@ -58,10 +62,26 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
             placeholder={messages.yearPlaceholder}
             disabled={locked}
             autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
             value={values[index]}
             onChange={(event) => {
               const digits = event.target.value.replace(/\D/g, "").slice(0, 4);
               setValues((prev) => prev.map((v, i) => (i === index ? digits : v)));
+              // Auto-advance once this box is full -- a 4-digit year never
+              // needs more typing here, so move straight to the next box
+              // instead of making the person tab/click over manually.
+              if (digits.length === 4 && index < inputRefs.current.length - 1) {
+                inputRefs.current[index + 1]?.focus();
+              }
+            }}
+            onKeyDown={(event) => {
+              // Symmetric convenience: Backspace on an already-empty box
+              // jumps back to the previous one instead of doing nothing.
+              if (event.key === "Backspace" && values[index] === "" && index > 0) {
+                inputRefs.current[index - 1]?.focus();
+              }
             }}
             className="text-center tabular-nums"
           />
