@@ -29,7 +29,13 @@ export const peopleSchema = z.array(personSchema);
 
 export const relationshipSchema = z.object({
   id: z.string().min(1),
-  type: z.enum(["parent-child", "spouse"]),
+  // "sibling" is deliberately not fed into the tree layout algorithm
+  // (family-tree-layout.ts only branches on "parent-child"/"spouse") --
+  // it's for recording a known sibling pair without knowing (or without
+  // the app knowing) their shared parents, e.g. a cousin-grandparent
+  // added as a sibling of an actual grandparent. It only ever shows up
+  // in a person's "Siblings" list, never as a tree connector.
+  type: z.enum(["parent-child", "spouse", "sibling"]),
   person1Id: z.string().min(1),
   person2Id: z.string().min(1),
 });

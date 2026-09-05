@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import { saveRelationship, type RelationshipFormState } from "./actions";
@@ -9,6 +9,12 @@ import { Select } from "@/components/ui/select";
 import type { Person, Relationship } from "@/lib/schemas";
 
 const initialState: RelationshipFormState = {};
+
+const PERSON_LABELS: Record<Relationship["type"], [string, string]> = {
+  "parent-child": ["Особа 1 (батько/матір)", "Особа 2 (дитина)"],
+  spouse: ["Особа 1 (перший з подружжя)", "Особа 2 (другий з подружжя)"],
+  sibling: ["Особа 1 (брат/сестра)", "Особа 2 (брат/сестра)"],
+};
 
 export function RelationshipForm({
   people,
@@ -21,7 +27,11 @@ export function RelationshipForm({
     saveRelationship,
     initialState,
   );
+  const [type, setType] = useState<Relationship["type"]>(
+    relationship?.type ?? "parent-child",
+  );
   const isNew = !relationship;
+  const [person1Label, person2Label] = PERSON_LABELS[type];
 
   return (
     <form action={formAction} className="flex max-w-[480px] flex-col gap-4">
@@ -30,15 +40,20 @@ export function RelationshipForm({
 
       <label className="flex flex-col gap-1.5">
         <span className="text-[13px] font-semibold text-muted-4">Тип</span>
-        <Select name="type" defaultValue={relationship?.type ?? "parent-child"}>
+        <Select
+          name="type"
+          value={type}
+          onChange={(event) => setType(event.target.value as Relationship["type"])}
+        >
           <option value="parent-child">Батько/матір → дитина</option>
           <option value="spouse">Подружжя</option>
+          <option value="sibling">Брат/сестра</option>
         </Select>
       </label>
 
       <label className="flex flex-col gap-1.5">
         <span className="text-[13px] font-semibold text-muted-4">
-          Особа 1 (батько/матір, або перший з подружжя)
+          {person1Label}
         </span>
         <Select name="person1Id" defaultValue={relationship?.person1Id ?? ""}>
           <option value="" disabled>
@@ -54,7 +69,7 @@ export function RelationshipForm({
 
       <label className="flex flex-col gap-1.5">
         <span className="text-[13px] font-semibold text-muted-4">
-          Особа 2 (дитина, або другий з подружжя)
+          {person2Label}
         </span>
         <Select name="person2Id" defaultValue={relationship?.person2Id ?? ""}>
           <option value="" disabled>
