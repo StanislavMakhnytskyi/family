@@ -79,6 +79,23 @@ test.describe("second login stage (birth years)", () => {
     await expect(page.getByRole("button", { name: "Увійти" })).toBeEnabled();
   });
 
+  test("typing a 4th digit auto-advances to the next year field", async ({
+    page,
+  }) => {
+    await passStageOne(page);
+
+    const inputs = page.getByPlaceholder("РРРР");
+    await inputs.nth(0).pressSequentially("1928");
+    await expect(inputs.nth(1)).toBeFocused();
+
+    await inputs.nth(1).pressSequentially("1931");
+    await expect(inputs.nth(2)).toBeFocused();
+
+    // Backspace on an already-empty field jumps back to the previous one.
+    await inputs.nth(2).press("Backspace");
+    await expect(inputs.nth(1)).toBeFocused();
+  });
+
   test("three correct years complete login", async ({ page }) => {
     await passStageOne(page);
 

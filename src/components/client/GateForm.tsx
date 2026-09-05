@@ -89,6 +89,9 @@ export function GateForm({
         placeholder={messages.answerPlaceholder}
         disabled={locked}
         autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
       />
 
       {forCurrentQuestion && state.status === "error-empty" && (
