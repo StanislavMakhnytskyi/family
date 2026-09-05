@@ -48,6 +48,7 @@ export default async function GatePage() {
                 otherQuestion: t("Gate.otherQuestion"),
                 errorEmpty: t("Gate.errorEmpty"),
                 errorWrong: t("Gate.errorWrong"),
+                errorWrongHint: t("Gate.errorWrongHint"),
                 lockedPrefix: t("Gate.lockedPrefix"),
               }}
             />

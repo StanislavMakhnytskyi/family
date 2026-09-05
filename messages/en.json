@@ -12,8 +12,9 @@
     "submit": "Enter",
     "submitting": "Please wait…",
     "otherQuestion": "Another question",
-    "errorEmpty": "Enter an answer",
+    "errorEmpty": "Enter an answer or choose another question",
     "errorWrong": "Wrong answer. Attempts left: __REMAINING__",
+    "errorWrongHint": "Don't know the answer? Click \"Another question\"",
     "lockedPrefix": "Try again in",
     "demoHint": "Demo mode — any answer gets you in, just click Enter"
   },
