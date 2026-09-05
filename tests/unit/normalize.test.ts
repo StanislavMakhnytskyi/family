@@ -33,28 +33,28 @@ describe("isAnswerMatch", () => {
   });
 
   it("matches a multi-word answer regardless of word order", () => {
-    expect(isAnswerMatch("саша вася", "вася и саша")).toBe(true);
+    expect(isAnswerMatch("софія тарас", "тарас і софія")).toBe(true);
   });
 
   it("tolerates extra words the user adds around the required ones", () => {
-    expect(isAnswerMatch("вася и брат саша", "вася и саша")).toBe(true);
+    expect(isAnswerMatch("тарас і сестра софія", "тарас і софія")).toBe(true);
   });
 
-  it("ignores connector words like 'и' on both sides", () => {
-    expect(isAnswerMatch("вася саша", "вася и саша")).toBe(true);
+  it("ignores connector words like 'і' on both sides", () => {
+    expect(isAnswerMatch("тарас софія", "тарас і софія")).toBe(true);
   });
 
   it("treats slash- or comma-separated variants the same way", () => {
-    expect(isAnswerMatch("сашка василий", "василий / сашка")).toBe(true);
-    expect(isAnswerMatch("александр василий", "василий, александр")).toBe(true);
+    expect(isAnswerMatch("софія тарас", "тарас / софія")).toBe(true);
+    expect(isAnswerMatch("софія тарас", "тарас, софія")).toBe(true);
   });
 
   it("rejects an answer missing one of the required words", () => {
-    expect(isAnswerMatch("вася", "вася и саша")).toBe(false);
-    expect(isAnswerMatch("", "вася и саша")).toBe(false);
+    expect(isAnswerMatch("тарас", "тарас і софія")).toBe(false);
+    expect(isAnswerMatch("", "тарас і софія")).toBe(false);
   });
 
   it("is case- and letter-substitution-insensitive like normalizeAnswer", () => {
-    expect(isAnswerMatch("САША ВАСЯ", "Вася И Саша")).toBe(true);
+    expect(isAnswerMatch("СОФІЯ ТАРАС", "Тарас І Софія")).toBe(true);
   });
 });
