@@ -61,13 +61,15 @@ describe("relationshipSchema", () => {
   it("accepts valid relationship types", () => {
     const result = relationshipsSchema.safeParse([
       { id: "r1", type: "parent-child", person1Id: "p1", person2Id: "p2" },
+      { id: "r2", type: "spouse", person1Id: "p1", person2Id: "p3" },
+      { id: "r3", type: "sibling", person1Id: "p1", person2Id: "p4" },
     ]);
     expect(result.success).toBe(true);
   });
 
   it("rejects an unknown relationship type", () => {
     const result = relationshipsSchema.safeParse([
-      { id: "r1", type: "sibling", person1Id: "p1", person2Id: "p2" },
+      { id: "r1", type: "cousin", person1Id: "p1", person2Id: "p2" },
     ]);
     expect(result.success).toBe(false);
   });
