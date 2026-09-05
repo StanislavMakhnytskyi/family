@@ -16,16 +16,19 @@ type Graph = {
   parentsOf: Map<string, string[]>;
   childrenOf: Map<string, string[]>;
   spousesOf: Map<string, string[]>;
+  siblingsOf: Map<string, string[]>;
 };
 
 function buildGraph(people: Person[], relationships: Relationship[]): Graph {
   const parentsOf = new Map<string, string[]>();
   const childrenOf = new Map<string, string[]>();
   const spousesOf = new Map<string, string[]>();
+  const siblingsOf = new Map<string, string[]>();
   for (const person of people) {
     parentsOf.set(person.id, []);
     childrenOf.set(person.id, []);
     spousesOf.set(person.id, []);
+    siblingsOf.set(person.id, []);
   }
 
   function push(map: Map<string, string[]>, key: string, value: string) {
@@ -40,15 +43,52 @@ function buildGraph(people: Person[], relationships: Relationship[]): Graph {
     } else if (rel.type === "spouse") {
       push(spousesOf, rel.person1Id, rel.person2Id);
       push(spousesOf, rel.person2Id, rel.person1Id);
+    } else if (rel.type === "sibling") {
+      push(siblingsOf, rel.person1Id, rel.person2Id);
+      push(siblingsOf, rel.person2Id, rel.person1Id);
     }
-    // "sibling" relationships are deliberately excluded from the tree
-    // graph entirely -- they exist to record a known sibling pair without
-    // a shared parent node to hang them from (see schemas.ts), so there's
-    // no tree-layout meaning to give them. Falling into the old bare
-    // `else` here used to silently miscount them as spouses instead.
   }
 
-  return { parentsOf, childrenOf, spousesOf };
+  return { parentsOf, childrenOf, spousesOf, siblingsOf };
+}
+
+/**
+ * For each person with no recorded parents ("parentless") who has a
+ * "sibling" relationship to someone else, decides who's the "anchor" (kept
+ * as a normal tree root/member) and who's the "satellite" (positioned as
+ * an extra member right next to the anchor instead — see assignColumns).
+ * This is specifically for the case the sibling relationship type exists
+ * for: a relative known to be someone's sibling without knowing (or
+ * without it being recorded) their shared parents, e.g. a
+ * cousin-grandparent added as a sibling of an actual grandparent.
+ *
+ * Preference order: attach to a sibling who already has real parents (a
+ * proper place in the tree) over one who's also parentless; if both are
+ * parentless, break the tie by id so a mutually-isolated pair still ends
+ * up clustered together instead of neither being chosen. Only direct
+ * sibling edges are resolved -- a chain of satellites-of-satellites (no
+ * one in the chain otherwise anchored) isn't something the described use
+ * case produces, so it isn't specially handled here.
+ */
+function computeSiblingAnchors(people: Person[], graph: Graph): Map<string, string> {
+  const isParentless = (id: string) => (graph.parentsOf.get(id) ?? []).length === 0;
+  const anchorOf = new Map<string, string>();
+
+  for (const person of people) {
+    if (anchorOf.has(person.id) || !isParentless(person.id)) continue;
+    for (const siblingId of graph.siblingsOf.get(person.id) ?? []) {
+      // Don't attach to someone who is themselves already our satellite --
+      // that would just swap which end of the pair is "the anchor" for no
+      // reason, or (in a 3+-way case) create a cycle.
+      if (anchorOf.get(siblingId) === person.id) continue;
+      if (!isParentless(siblingId) || siblingId < person.id) {
+        anchorOf.set(person.id, siblingId);
+        break;
+      }
+    }
+  }
+
+  return anchorOf;
 }
 
 /**
@@ -58,12 +98,23 @@ function buildGraph(people: Person[], relationships: Relationship[]): Graph {
  * marriage (in-laws) by re-seeding a BFS from any still-unreached person
  * once the current one runs out — every person ends up with a generation,
  * regardless of how many marriage-only "bridges" separate them.
+ *
+ * A sibling satellite (see computeSiblingAnchors) shares its anchor's
+ * generation too, but never starts its own BFS -- it must only ever be
+ * reached *through* its anchor, or it could seed its own independent
+ * generation-0 component first (if it happens to come first in `people`)
+ * and end up on the wrong row relative to the anchor it's meant to sit
+ * beside.
  */
-function assignGenerations(people: Person[], graph: Graph): Map<string, number> {
+function assignGenerations(
+  people: Person[],
+  graph: Graph,
+  siblingAnchorOf: Map<string, string>,
+): Map<string, number> {
   const generation = new Map<string, number>();
 
   for (const start of people) {
-    if (generation.has(start.id)) continue;
+    if (generation.has(start.id) || siblingAnchorOf.has(start.id)) continue;
     generation.set(start.id, 0);
     const queue = [start.id];
     while (queue.length > 0) {
@@ -85,6 +136,12 @@ function assignGenerations(people: Person[], graph: Graph): Map<string, number> 
         if (!generation.has(spouseId)) {
           generation.set(spouseId, g);
           queue.push(spouseId);
+        }
+      }
+      for (const siblingId of graph.siblingsOf.get(id) ?? []) {
+        if (!generation.has(siblingId)) {
+          generation.set(siblingId, g);
+          queue.push(siblingId);
         }
       }
     }
@@ -115,8 +172,16 @@ type ChildGroup = { children: string[] };
  *   spouse's* shared children counted toward centering them — not every
  *   spouse's children pooled together — so a blended family doesn't drag
  *   one marriage's kids under the wrong parent.
+ * - A sibling satellite (see computeSiblingAnchors) lands exactly one
+ *   column from its anchor, the same way a spouse would -- but
+ *   contributes no children of its own to the anchor's centering (a
+ *   satellite is expected to be a standalone leaf; see the caveat there).
  */
-function assignColumns(people: Person[], graph: Graph): Map<string, number> {
+function assignColumns(
+  people: Person[],
+  graph: Graph,
+  siblingAnchorOf: Map<string, string>,
+): Map<string, number> {
   function byBirthDate(a: string, b: string): number {
     const personA = people.find((p) => p.id === a);
     const personB = people.find((p) => p.id === b);
@@ -124,7 +189,11 @@ function assignColumns(people: Person[], graph: Graph): Map<string, number> {
   }
 
   function discoverOrder(): string[] {
-    const visited = new Set<string>();
+    // Sibling satellites are pre-marked visited so they're never
+    // independently seeded as their own root (by the roots filter below,
+    // by the marriage-bridge fallback, or otherwise) -- they must only
+    // ever be reached as a member of their anchor's unit, in computeWidth.
+    const visited = new Set<string>(siblingAnchorOf.keys());
     const order: string[] = [];
     function visit(id: string) {
       if (visited.has(id)) return;
@@ -147,7 +216,9 @@ function assignColumns(people: Person[], graph: Graph): Map<string, number> {
       for (const childId of remaining.sort(byBirthDate)) visit(childId);
     }
 
-    const roots = people.filter((p) => (graph.parentsOf.get(p.id) ?? []).length === 0);
+    const roots = people.filter(
+      (p) => (graph.parentsOf.get(p.id) ?? []).length === 0 && !siblingAnchorOf.has(p.id),
+    );
     for (const root of roots) visit(root.id);
 
     // Fallback: anyone left is only reachable through a marriage bridge
@@ -180,7 +251,14 @@ function assignColumns(people: Person[], graph: Graph): Map<string, number> {
     claimed.add(id);
     const spouses = (graph.spousesOf.get(id) ?? []).filter((s) => !claimed.has(s));
     for (const s of spouses) claimed.add(s);
-    membersOf.set(id, [id, ...spouses]);
+    // Sibling satellites sit adjacent exactly like a spouse for placement
+    // purposes, but (unlike spouses) never contribute a children group --
+    // see the doc comment above.
+    const siblingSatellites = (graph.siblingsOf.get(id) ?? []).filter(
+      (s) => siblingAnchorOf.get(s) === id && !claimed.has(s),
+    );
+    for (const s of siblingSatellites) claimed.add(s);
+    membersOf.set(id, [id, ...spouses, ...siblingSatellites]);
 
     const idChildren = new Set(graph.childrenOf.get(id) ?? []);
     const attributed = new Set<string>();
@@ -275,8 +353,9 @@ export function computeFamilyTreeLayout(
   relationships: Relationship[],
 ): FamilyTreeLayout {
   const graph = buildGraph(people, relationships);
-  const generation = assignGenerations(people, graph);
-  const column = assignColumns(people, graph);
+  const siblingAnchorOf = computeSiblingAnchors(people, graph);
+  const generation = assignGenerations(people, graph, siblingAnchorOf);
+  const column = assignColumns(people, graph, siblingAnchorOf);
 
   const nodes = new Map<string, FamilyTreeNode>();
   for (const person of people) {
