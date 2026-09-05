@@ -23,6 +23,13 @@ export const personSchema = z.object({
   deathDate: z.string().optional(),
   bio: z.array(z.string().min(1)).optional(),
   avatar: avatarSchema,
+  // Admin-only "keep the data, don't clutter the tree with it" toggle --
+  // a hidden person (and any relationship naming them) is stripped before
+  // the tree layout ever runs (see src/app/page.tsx), but their own
+  // /person/[id] page and any relative-list mention of them elsewhere are
+  // unaffected. Omitted (not `false`) is the common case, so existing data
+  // doesn't need a migration.
+  hidden: z.boolean().optional(),
 });
 export type Person = z.infer<typeof personSchema>;
 export const peopleSchema = z.array(personSchema);

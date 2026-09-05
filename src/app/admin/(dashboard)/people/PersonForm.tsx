@@ -191,6 +191,23 @@ export function PersonForm({ person }: { person?: Person }) {
         />
       </div>
 
+      <label className="flex items-start gap-2 text-[13.5px] text-ink">
+        <input
+          type="checkbox"
+          name="hidden"
+          defaultChecked={person?.hidden ?? false}
+          className="mt-0.5"
+        />
+        <span>
+          Приховати з дерева
+          <br />
+          <span className="text-[12.5px] text-faint">
+            Дані зберігаються, сторінку людини й далі можна відкрити напряму
+            або через родичів — просто не показується на загальному дереві.
+          </span>
+        </span>
+      </label>
+
       <label className="flex flex-col gap-1.5">
         <span className="text-[13px] font-semibold text-muted-4">
           Біографія (абзаци через порожній рядок)
