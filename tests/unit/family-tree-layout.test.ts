@@ -52,6 +52,23 @@ describe("computeFamilyTreeLayout", () => {
     expect(nodes.get("a")!.generation).toBe(nodes.get("b")!.generation);
   });
 
+  it("does not fold a sibling relationship into the tree graph the way a spouse relationship is", () => {
+    // Regression test: buildGraph() used to have a bare `else` for
+    // anything that wasn't "parent-child", so a "sibling" relationship
+    // silently got treated as a spouse pair -- pulling `b` onto `a`'s row
+    // even though `b` has no real parent/child/spouse edge of its own.
+    const people = [person("a-parent"), person("a"), person("a-child"), person("b")];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "parent-child", person1Id: "a-parent", person2Id: "a" },
+      { id: "r2", type: "parent-child", person1Id: "a", person2Id: "a-child" },
+      { id: "r3", type: "sibling", person1Id: "a", person2Id: "b" },
+    ];
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+
+    expect(nodes.get("b")!.generation).not.toBe(nodes.get("a")!.generation);
+    expectNoOverlapWithinGeneration(nodes);
+  });
+
   it("assigns every person a node, including those only reachable through a marriage bridge", () => {
     // Two otherwise-unconnected blood lines, joined only by a marriage:
     // familyA's descendant marries familyB's descendant.

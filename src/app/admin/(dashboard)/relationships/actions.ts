@@ -22,7 +22,7 @@ export async function saveRelationship(
   const person1Id = String(formData.get("person1Id") ?? "");
   const person2Id = String(formData.get("person2Id") ?? "");
 
-  if (type !== "parent-child" && type !== "spouse") {
+  if (type !== "parent-child" && type !== "spouse" && type !== "sibling") {
     return { error: "Оберіть тип зв'язку." };
   }
   if (!person1Id || !person2Id) {

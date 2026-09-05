@@ -115,29 +115,37 @@ export default async function PersonPage({
 
         {(relatives.parents.length > 0 ||
           relatives.spouses.length > 0 ||
+          relatives.siblings.length > 0 ||
           relatives.children.length > 0) && (
           <Card className="p-[26px] animate-fade-up">
             <CardHeading className="mb-[18px]">{t("Person.family")}</CardHeading>
 
-            {relatives.parents.length > 0 && (
-              <RelativeSection
-                label={t("Person.parents")}
-                people={relatives.parents}
-              />
-            )}
-            {relatives.spouses.length > 0 && (
-              <RelativeSection
-                label={t("Person.spouses")}
-                people={relatives.spouses}
-              />
-            )}
-            {relatives.children.length > 0 && (
-              <RelativeSection
-                label={t("Person.children")}
-                people={relatives.children}
-                last
-              />
-            )}
+            <div className="[&>*+*]:mt-[22px]">
+              {relatives.parents.length > 0 && (
+                <RelativeSection
+                  label={t("Person.parents")}
+                  people={relatives.parents}
+                />
+              )}
+              {relatives.siblings.length > 0 && (
+                <RelativeSection
+                  label={t("Person.siblings")}
+                  people={relatives.siblings}
+                />
+              )}
+              {relatives.spouses.length > 0 && (
+                <RelativeSection
+                  label={t("Person.spouses")}
+                  people={relatives.spouses}
+                />
+              )}
+              {relatives.children.length > 0 && (
+                <RelativeSection
+                  label={t("Person.children")}
+                  people={relatives.children}
+                />
+              )}
+            </div>
           </Card>
         )}
 
@@ -165,14 +173,12 @@ export default async function PersonPage({
 function RelativeSection({
   label,
   people,
-  last = false,
 }: {
   label: string;
   people: Awaited<ReturnType<typeof getRelatives>>["parents"];
-  last?: boolean;
 }) {
   return (
-    <div className={last ? undefined : "mb-[22px]"}>
+    <div>
       <h3 className="m-0 mb-2.5 text-[13.5px] font-bold text-muted">
         {label}
       </h3>

@@ -113,6 +113,7 @@ export async function getMediaByPersonId(id: string): Promise<Media[]> {
 export type Relatives = {
   parents: Person[];
   spouses: Person[];
+  siblings: Person[];
   children: Person[];
 };
 
@@ -135,6 +136,12 @@ export async function getRelatives(personId: string): Promise<Relatives> {
     .filter((rel) => rel.type === "spouse" && (rel.person1Id === personId || rel.person2Id === personId))
     .map((rel) => (rel.person1Id === personId ? rel.person2Id : rel.person1Id));
 
+  // Symmetric like spouse -- a sibling relationship doesn't require a
+  // shared parent to be recorded, so this isn't derived from parentIds.
+  const siblingIds = relationships
+    .filter((rel) => rel.type === "sibling" && (rel.person1Id === personId || rel.person2Id === personId))
+    .map((rel) => (rel.person1Id === personId ? rel.person2Id : rel.person1Id));
+
   const resolve = (ids: string[]) =>
     ids
       .map((id) => byId.get(id))
@@ -143,6 +150,7 @@ export async function getRelatives(personId: string): Promise<Relatives> {
   return {
     parents: resolve(parentIds),
     spouses: resolve(spouseIds),
+    siblings: resolve(siblingIds),
     children: resolve(childIds),
   };
 }

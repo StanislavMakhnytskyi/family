@@ -152,6 +152,42 @@ test("editing a grave without changing its person still saves", async ({
   await expect(page).toHaveURL(/\/admin\/graves$/);
 });
 
+// A "sibling" relationship exists specifically for recording two people
+// as siblings without needing a shared parent on record (e.g. a
+// cousin-grandparent added as a sibling of an actual grandparent) -- it
+// must round-trip through the admin form and show up on both people's
+// public pages under "Брати/сестри".
+test("adding a sibling relationship shows up on both people's pages", async ({
+  page,
+}) => {
+  await loginAsAdmin(page);
+
+  await page.goto("/admin/relationships/new");
+  await page.locator("select[name=type]").selectOption("sibling");
+  await page.locator("select[name=person1Id]").selectOption("denys-poliakov");
+  await page.locator("select[name=person2Id]").selectOption("petro-marchenko");
+  await page.getByRole("button", { name: "Зберегти" }).click();
+
+  await expect(page).toHaveURL(/\/admin\/relationships$/);
+  const row = page.getByRole("row", { name: /Брат\/сестра/ });
+  await expect(row).toBeVisible();
+  await expect(row).toContainText("Денис Поляков");
+  await expect(row).toContainText("Петро Марченко");
+
+  await login(page); // family gate, needed for the public /person page
+  await page.goto("/person/denys-poliakov");
+  await expect(page.getByText("Брати/сестри")).toBeVisible();
+  await expect(page.getByText("Петро Марченко")).toBeVisible();
+
+  await page.goto("/admin/relationships");
+  await page
+    .getByRole("row", { name: /Брат\/сестра/ })
+    .getByRole("button", { name: "Видалити" })
+    .click();
+  await expect(page).toHaveURL(/\/admin\/relationships$/);
+  await expect(page.getByRole("row", { name: /Брат\/сестра/ })).toHaveCount(0);
+});
+
 // A photo can show several family members, so the media form tags it with
 // a checkbox per person (personIds: string[]) rather than one <select>.
 // Uploading needs a real Vercel Blob store connected -- if none is
