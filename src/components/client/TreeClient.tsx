@@ -352,6 +352,34 @@ export function TreeClient({
                   />
                 );
               })}
+            {relationships
+              .filter((rel) => rel.type === "sibling")
+              .map((rel) => {
+                const a = positionOf.get(rel.person1Id);
+                const b = positionOf.get(rel.person2Id);
+                if (!a || !b || a.y !== b.y) return null;
+                const [left, right] = a.x < b.x ? [a, b] : [b, a];
+                // A bracket over the pair -- "|---|" -- with no line
+                // extending further up to a parent, since a sibling
+                // relationship exists specifically for when there isn't
+                // one on record. Deliberately distinct from the spouse
+                // connector (a plain line through the cards' vertical
+                // center) so the two read as different kinds of link.
+                const busY = a.y - 16;
+                const leftX = left.x + CARD_WIDTH / 2;
+                const rightX = right.x + CARD_WIDTH / 2;
+                return (
+                  <path
+                    key={rel.id}
+                    data-testid="tree-connector"
+                    className="tree-connector tree-connector-sibling"
+                    d={`M ${leftX} ${left.y} V ${busY} H ${rightX} V ${right.y}`}
+                    fill="none"
+                    strokeWidth={2}
+                    strokeDasharray="4 3"
+                  />
+                );
+              })}
           </svg>
 
           {positioned.map(({ id, x, y }) => {

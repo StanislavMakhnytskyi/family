@@ -188,6 +188,35 @@ test("adding a sibling relationship shows up on both people's pages", async ({
   await expect(page.getByRole("row", { name: /Брат\/сестра/ })).toHaveCount(0);
 });
 
+// A person marked "hidden" keeps their own page and stays mentionable
+// elsewhere -- only the main tree overview is supposed to leave them out,
+// so the owner can add relatives they know about without cluttering the
+// diagram everyone else sees.
+test("hiding a person removes them from the tree but their page stays reachable", async ({
+  page,
+}) => {
+  await loginAsAdmin(page);
+
+  await page.goto("/admin/people/yuliia-bondarenko");
+  await page.locator('input[name="hidden"]').check();
+  await page.getByRole("button", { name: "Зберегти" }).click();
+  await expect(page).toHaveURL(/\/admin\/people$/);
+  await expect(page.getByText("приховано з дерева")).toBeVisible();
+
+  await login(page); // family gate, needed for the public tree/person pages
+  await page.goto("/");
+  await expect(page.getByText("Юлія Бондаренко")).toHaveCount(0);
+
+  await page.goto("/person/yuliia-bondarenko");
+  await expect(page.getByRole("heading", { name: "Юлія Бондаренко" })).toBeVisible();
+
+  await page.goto("/admin/people/yuliia-bondarenko");
+  await page.locator('input[name="hidden"]').uncheck();
+  await page.getByRole("button", { name: "Зберегти" }).click();
+  await expect(page).toHaveURL(/\/admin\/people$/);
+  await expect(page.getByText("приховано з дерева")).toHaveCount(0);
+});
+
 // A photo can show several family members, so the media form tags it with
 // a checkbox per person (personIds: string[]) rather than one <select>.
 // Uploading needs a real Vercel Blob store connected -- if none is

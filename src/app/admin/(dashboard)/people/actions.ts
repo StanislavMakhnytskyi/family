@@ -30,6 +30,7 @@ export async function savePerson(
   const birthDate = String(formData.get("birthDate") ?? "").trim();
   const deathDate = String(formData.get("deathDate") ?? "").trim();
   const bioValue = String(formData.get("bio") ?? "");
+  const hidden = formData.get("hidden") === "on";
   const removeAvatar = formData.get("removeAvatar") === "on";
   const avatarFile = formData.get("avatarFile");
 
@@ -84,6 +85,7 @@ export async function savePerson(
     deathDate: deathDate || undefined,
     bio: textareaValueToBio(bioValue),
     avatar,
+    hidden: hidden || undefined,
   };
 
   const nextPeople = isNew
