@@ -49,6 +49,11 @@ export default async function AdminPeoplePage({
             <tr key={person.id} className="border-b border-border">
               <td className="py-2.5 text-ink">
                 {person.firstName} {person.lastName}
+                {person.hidden && (
+                  <span className="ml-2 rounded-xs bg-surface-muted px-1.5 py-0.5 text-[11px] font-semibold text-faint">
+                    приховано з дерева
+                  </span>
+                )}
               </td>
               <td className="py-2.5 tabular-nums text-muted">
                 {lifespan(person.birthDate, person.deathDate, {

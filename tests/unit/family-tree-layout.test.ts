@@ -52,11 +52,12 @@ describe("computeFamilyTreeLayout", () => {
     expect(nodes.get("a")!.generation).toBe(nodes.get("b")!.generation);
   });
 
-  it("does not fold a sibling relationship into the tree graph the way a spouse relationship is", () => {
-    // Regression test: buildGraph() used to have a bare `else` for
-    // anything that wasn't "parent-child", so a "sibling" relationship
-    // silently got treated as a spouse pair -- pulling `b` onto `a`'s row
-    // even though `b` has no real parent/child/spouse edge of its own.
+  it("places a parentless sibling satellite directly beside its anchor, sharing its generation", () => {
+    // `b` has no parents of its own recorded -- known only to be `a`'s
+    // sibling (e.g. a cousin-grandparent added as a sibling of an actual
+    // grandparent). It should land on `a`'s row, exactly one column away,
+    // like a spouse would -- not float disconnected from the rest of the
+    // tree, and not disturb `a`'s own parent/child placement.
     const people = [person("a-parent"), person("a"), person("a-child"), person("b")];
     const relationships: Relationship[] = [
       { id: "r1", type: "parent-child", person1Id: "a-parent", person2Id: "a" },
@@ -65,7 +66,78 @@ describe("computeFamilyTreeLayout", () => {
     ];
     const { nodes } = computeFamilyTreeLayout(people, relationships);
 
-    expect(nodes.get("b")!.generation).not.toBe(nodes.get("a")!.generation);
+    expect(nodes.get("b")!.generation).toBe(nodes.get("a")!.generation);
+    expect(Math.abs(nodes.get("b")!.column - nodes.get("a")!.column)).toBe(1);
+    expect(nodes.get("a-child")!.generation).toBe(nodes.get("a")!.generation + 1);
+    expectNoOverlapWithinGeneration(nodes);
+  });
+
+  it("does not miscount a sibling relationship as a spouse pairing for children", () => {
+    // Regression test for the original bug: buildGraph() used to have a
+    // bare `else` for anything that wasn't "parent-child", so a "sibling"
+    // relationship was silently added to spousesOf. That would make `b`
+    // eligible for the couple-children grouping in computeWidth -- which
+    // should never happen for a sibling, since they don't share children
+    // with their sibling the way an actual spouse would.
+    const people = [
+      person("a-parent"),
+      person("a"),
+      person("a-child"),
+      person("b"),
+      person("b-child"),
+    ];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "parent-child", person1Id: "a-parent", person2Id: "a" },
+      { id: "r2", type: "parent-child", person1Id: "a", person2Id: "a-child" },
+      { id: "r3", type: "sibling", person1Id: "a", person2Id: "b" },
+      // Not a's child -- b's own, unrelated to a. If b were miscounted as
+      // a's spouse, this would (harmlessly, since there's no overlap) get
+      // swept into a's children grouping instead of being left unplaced.
+      { id: "r4", type: "parent-child", person1Id: "b", person2Id: "b-child" },
+    ];
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+
+    // a-child is still a's own child one generation below -- not folded
+    // into some bogus "a+b couple" grouping the way an actual shared
+    // child would be.
+    expect(nodes.get("a-child")!.generation).toBe(nodes.get("a")!.generation + 1);
+    expect(nodes.get("b")!.generation).toBe(nodes.get("a")!.generation);
+    expectNoOverlapWithinGeneration(nodes);
+  });
+
+  it("clusters two mutually-isolated siblings together via the id tie-break", () => {
+    // Neither has any other relationship recorded -- both are eligible to
+    // be "the anchor", so the tie-break (lower id wins) must still pick
+    // exactly one, keeping the pair clustered instead of dropping either.
+    const people = [person("zed"), person("alice")];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "sibling", person1Id: "zed", person2Id: "alice" },
+    ];
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+
+    expect(nodes.get("alice")!.generation).toBe(nodes.get("zed")!.generation);
+    expect(Math.abs(nodes.get("alice")!.column - nodes.get("zed")!.column)).toBe(1);
+  });
+
+  it("places multiple sibling satellites on the same anchor without overlapping", () => {
+    // The realistic "more than one cousin-grandparent" case: two isolated
+    // people both recorded as siblings of the same properly-anchored
+    // person.
+    const people = [
+      person("a-parent"),
+      person("a"),
+      person("b"),
+      person("c"),
+    ];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "parent-child", person1Id: "a-parent", person2Id: "a" },
+      { id: "r2", type: "sibling", person1Id: "a", person2Id: "b" },
+      { id: "r3", type: "sibling", person1Id: "a", person2Id: "c" },
+    ];
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+
+    expect(nodes.get("b")!.generation).toBe(nodes.get("a")!.generation);
+    expect(nodes.get("c")!.generation).toBe(nodes.get("a")!.generation);
     expectNoOverlapWithinGeneration(nodes);
   });
 
