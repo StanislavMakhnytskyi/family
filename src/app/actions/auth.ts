@@ -27,6 +27,13 @@ export type GateState = {
   status: GateStatus;
   remaining?: number;
   lockUntil?: number;
+  // Which question this result is about. Attempts are tracked per
+  // question (see session.ts), and "Інше питання" switches questions
+  // client-side with no server round trip -- without this, a stale
+  // error/lock from a previous question would keep showing after
+  // switching to a different, unlocked one. The client only renders the
+  // error/lock UI when this matches the currently-displayed question.
+  questionId?: string;
 };
 
 export async function verifyAnswer(
@@ -41,16 +48,17 @@ export async function verifyAnswer(
     redirect("/gate/years");
   }
 
-  const attemptState = await getAttemptState();
+  const questionId = String(formData.get("questionId") ?? "");
+
+  const attemptState = await getAttemptState(questionId);
   if (attemptState.lockUntil > Date.now()) {
-    return { status: "locked", lockUntil: attemptState.lockUntil };
+    return { status: "locked", lockUntil: attemptState.lockUntil, questionId };
   }
 
-  const questionId = String(formData.get("questionId") ?? "");
   const answer = String(formData.get("answer") ?? "").trim();
 
   if (!answer) {
-    return { status: "error-empty" };
+    return { status: "error-empty", questionId };
   }
 
   const questions = await getQuestions();
@@ -61,11 +69,11 @@ export async function verifyAnswer(
       (question.variants ?? []).some((variant) => isAnswerMatch(answer, variant)));
 
   if (!isCorrect) {
-    const next = await recordFailedAttempt();
+    const next = await recordFailedAttempt(questionId);
     if (next.lockUntil > Date.now()) {
-      return { status: "locked", lockUntil: next.lockUntil };
+      return { status: "locked", lockUntil: next.lockUntil, questionId };
     }
-    return { status: "error-wrong", remaining: MAX_ATTEMPTS - next.count };
+    return { status: "error-wrong", remaining: MAX_ATTEMPTS - next.count, questionId };
   }
 
   await resetAttempts();
