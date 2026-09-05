@@ -1,6 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { createAttemptLockout } from "@/lib/attempt-lockout";
+import { createAttemptLockout, createKeyedAttemptLockout } from "@/lib/attempt-lockout";
 
 export const SESSION_COOKIE = "family-session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
@@ -8,7 +8,12 @@ const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 export const MAX_ATTEMPTS = 3;
 export const LOCKOUT_MINUTES = 15;
 
-const attempts = createAttemptLockout(
+// Keyed by questionId: "Інше питання" switches questions client-side with
+// no server round trip, so attempts are tracked per question rather than
+// as one shared counter -- a wrong guess on a question you don't know
+// shouldn't cost you a try on a different one, but a question's own count
+// still has to persist if you switch away and cycle back to it.
+const attempts = createKeyedAttemptLockout(
   "family-gate-attempts",
   MAX_ATTEMPTS,
   LOCKOUT_MINUTES,
