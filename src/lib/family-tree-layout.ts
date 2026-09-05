@@ -37,10 +37,15 @@ function buildGraph(people: Person[], relationships: Relationship[]): Graph {
     if (rel.type === "parent-child") {
       push(childrenOf, rel.person1Id, rel.person2Id);
       push(parentsOf, rel.person2Id, rel.person1Id);
-    } else {
+    } else if (rel.type === "spouse") {
       push(spousesOf, rel.person1Id, rel.person2Id);
       push(spousesOf, rel.person2Id, rel.person1Id);
     }
+    // "sibling" relationships are deliberately excluded from the tree
+    // graph entirely -- they exist to record a known sibling pair without
+    // a shared parent node to hang them from (see schemas.ts), so there's
+    // no tree-layout meaning to give them. Falling into the old bare
+    // `else` here used to silently miscount them as spouses instead.
   }
 
   return { parentsOf, childrenOf, spousesOf };

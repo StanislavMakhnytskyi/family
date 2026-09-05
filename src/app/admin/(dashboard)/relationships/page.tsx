@@ -9,6 +9,7 @@ import { getSelectedDataSource, readDataSafe } from "@/lib/admin-data";
 const TYPE_LABEL: Record<string, string> = {
   "parent-child": "Батько/матір → дитина",
   spouse: "Подружжя",
+  sibling: "Брат/сестра",
 };
 
 export default async function AdminRelationshipsPage() {
