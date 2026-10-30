@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { setAdminFlash } from "@/lib/admin-flash";
 import { getSelectedDataSource, readData, writeData } from "@/lib/admin-data";
 import { textValueToVariants } from "@/lib/admin-forms";
 import { normalizeAnswer } from "@/lib/utils";
@@ -51,6 +52,7 @@ export async function saveQuestion(
     return { error: error instanceof Error ? error.message : String(error) };
   }
 
+  await setAdminFlash("saved");
   redirect("/admin/questions");
 }
 
@@ -64,5 +66,6 @@ export async function deleteQuestion(formData: FormData): Promise<void> {
     ...data,
     questions: data.questions.filter((item) => item.id !== id),
   });
+  await setAdminFlash("deleted");
   redirect("/admin/questions");
 }

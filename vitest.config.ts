@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
+    // Cold-cache runs (first run after edits) can exceed the 5s default when
+    // tests dynamically import the heavier server modules.
+    testTimeout: 20_000,
     include: ["tests/unit/**/*.test.{ts,tsx}"],
   },
   resolve: {

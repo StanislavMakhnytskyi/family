@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Search, X } from "lucide-react";
 
 import type { Person, Relationship } from "@/lib/schemas";
 import { computeFamilyTreeLayout } from "@/lib/family-tree-layout";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { clampZoom, initials, lifespan } from "@/lib/utils";
 
@@ -62,9 +62,7 @@ const DEFAULT_LABELS: TreeLabels = {
 };
 
 const CARD_CLASS =
-  "absolute flex h-[108px] w-[156px] flex-col items-center justify-center gap-1.5 rounded-lg border border-border bg-surface p-2.5 shadow-tree-card transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-[3px] hover:border-border-hover hover:shadow-card-hover animate-pop-in-tree cursor-pointer select-none no-underline";
-const AVATAR_CLASS =
-  "avatar-placeholder flex size-[42px] shrink-0 items-center justify-center rounded-full border border-border-strong font-mono text-[11px] text-avatar-text";
+  "absolute flex h-[108px] w-[156px] flex-col items-center justify-center gap-1.5 rounded-lg border border-border bg-surface p-2.5 shadow-card transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-[3px] hover:border-border-hover hover:shadow-card-hover animate-pop-in-tree cursor-pointer select-none no-underline";
 
 type Positioned = { id: string; x: number; y: number };
 
@@ -504,27 +502,17 @@ export function TreeClient({
                 style={{ left: x, top: y }}
                 onClick={handleCardClick}
               >
-                {person.avatar ? (
-                  <div className="relative size-[42px] shrink-0 overflow-hidden rounded-full border border-border-strong">
-                    <Image
-                      src={person.avatar.small}
-                      alt=""
-                      fill
-                      unoptimized
-                      sizes="42px"
-                      className="object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className={AVATAR_CLASS}>
+                <Avatar className="size-10.5">
+                  {person.avatar && <AvatarImage src={person.avatar.small} alt="" />}
+                  <AvatarFallback className="text-caption">
                     {initials(person.firstName, person.lastName)}
-                  </div>
-                )}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="text-center leading-tight">
-                  <div className="text-[12.5px] font-bold text-ink">
+                  <div className="text-caption font-bold text-ink">
                     {person.firstName} {person.lastName}
                   </div>
-                  <div className="mt-[2px] text-[11px] tabular-nums text-muted-2">
+                  <div className="mt-0.5 text-caption tabular-nums text-muted-2">
                     {lifespan(person.birthDate, person.deathDate, lifespanLabels)}
                   </div>
                 </div>
@@ -580,7 +568,7 @@ export function TreeClient({
                     <button
                       type="button"
                       onClick={() => focusPerson(p.id)}
-                      className="block min-h-11 w-full cursor-pointer rounded-xs px-3 py-2 text-left text-[14.5px] text-ink hover:bg-surface-hover"
+                      className="block min-h-11 w-full cursor-pointer rounded-xs px-3 py-2 text-left text-small text-ink hover:bg-surface-hover"
                     >
                       {[p.firstName, p.lastName].filter(Boolean).join(" ")}
                     </button>

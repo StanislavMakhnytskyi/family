@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { setAdminFlash } from "@/lib/admin-flash";
 import { getSelectedDataSource, readData, writeData } from "@/lib/admin-data";
 import { uploadPrivateFile } from "@/lib/blob";
 
@@ -83,6 +84,7 @@ export async function saveMedia(
     return { error: error instanceof Error ? error.message : String(error) };
   }
 
+  await setAdminFlash("saved");
   redirect("/admin/media");
 }
 
@@ -96,5 +98,6 @@ export async function deleteMedia(formData: FormData): Promise<void> {
     ...data,
     media: data.media.filter((item) => item.id !== id),
   });
+  await setAdminFlash("deleted");
   redirect("/admin/media");
 }

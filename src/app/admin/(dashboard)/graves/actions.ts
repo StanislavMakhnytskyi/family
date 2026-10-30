@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { setAdminFlash } from "@/lib/admin-flash";
 import { getSelectedDataSource, readData, writeData } from "@/lib/admin-data";
 
 export type GraveFormState = { error?: string };
@@ -60,6 +61,7 @@ export async function saveGrave(
     return { error: error instanceof Error ? error.message : String(error) };
   }
 
+  await setAdminFlash("saved");
   redirect("/admin/graves");
 }
 
@@ -73,5 +75,6 @@ export async function deleteGrave(formData: FormData): Promise<void> {
     ...data,
     graves: data.graves.filter((grave) => grave.personId !== personId),
   });
+  await setAdminFlash("deleted");
   redirect("/admin/graves");
 }

@@ -50,15 +50,15 @@ export function AdminLoginForm() {
       </div>
 
       {state.status === "error-invalid" && (
-        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-caption text-error">
           Невірний логін або пароль. Залишилось спроб: {state.remaining ?? 0}
         </p>
       )}
 
       {locked && (
-        <div className="mt-3.5 flex animate-fade-in items-center gap-2.5 rounded-sm border border-border-divider bg-[#f7ede0] px-3.5 py-3">
+        <div className="mt-3.5 flex animate-fade-in items-center gap-2.5 rounded-sm border border-border-divider bg-notice px-3.5 py-3">
           <div className="size-2 shrink-0 rounded-full bg-terracotta" />
-          <span className="text-[13.5px] text-muted-4">
+          <span className="text-caption text-muted-4">
             Спробуйте через{" "}
             <b className="tabular-nums">
               {formatCountdown((state.lockUntil ?? 0) - now)}
@@ -71,7 +71,7 @@ export function AdminLoginForm() {
         type="submit"
         variant="primary"
         disabled={locked || isPending}
-        className="mt-[18px] w-full"
+        className="mt-4.5 w-full"
       >
         {isPending && <Loader2 className="size-4 animate-spin" />}
         {isPending ? "Зачекайте…" : "Увійти"}

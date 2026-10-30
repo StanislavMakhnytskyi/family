@@ -96,28 +96,28 @@ export function GateForm({
       />
 
       {forCurrentQuestion && state.status === "error-empty" && (
-        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-caption text-error">
           {messages.errorEmpty}
         </p>
       )}
       {forCurrentQuestion && state.status === "error-wrong" && (
         <>
-          <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+          <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-caption text-error">
             {messages.errorWrong.replace(
               "__REMAINING__",
               String(state.remaining ?? 0),
             )}
           </p>
-          <p className="mt-1 ml-0.5 animate-fade-in text-[13px] text-muted">
+          <p className="mt-1 ml-0.5 animate-fade-in text-caption text-muted">
             {messages.errorWrongHint}
           </p>
         </>
       )}
 
       {locked && (
-        <div className="mt-3.5 flex animate-fade-in items-center gap-2.5 rounded-sm border border-border-divider bg-[#f7ede0] px-3.5 py-3">
+        <div className="mt-3.5 flex animate-fade-in items-center gap-2.5 rounded-sm border border-border-divider bg-notice px-3.5 py-3">
           <div className="size-2 shrink-0 rounded-full bg-terracotta" />
-          <span className="text-[13.5px] text-muted-4">
+          <span className="text-caption text-muted-4">
             {messages.lockedPrefix}{" "}
             <b className="tabular-nums">
               {formatCountdown((state.lockUntil ?? 0) - now)}
@@ -126,7 +126,7 @@ export function GateForm({
         </div>
       )}
 
-      <div className="mt-[18px] flex flex-wrap gap-2.5">
+      <div className="mt-4.5 flex flex-wrap gap-2.5">
         <Button
           type="submit"
           variant="primary"

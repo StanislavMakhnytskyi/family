@@ -39,7 +39,7 @@ export function RelationshipForm({
       {!isNew && <input type="hidden" name="id" value={relationship.id} />}
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Тип</span>
+        <span className="text-caption font-semibold text-muted-4">Тип</span>
         <Select
           name="type"
           value={type}
@@ -52,7 +52,7 @@ export function RelationshipForm({
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">
+        <span className="text-caption font-semibold text-muted-4">
           {person1Label}
         </span>
         <Select name="person1Id" defaultValue={relationship?.person1Id ?? ""}>
@@ -68,7 +68,7 @@ export function RelationshipForm({
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">
+        <span className="text-caption font-semibold text-muted-4">
           {person2Label}
         </span>
         <Select name="person2Id" defaultValue={relationship?.person2Id ?? ""}>
@@ -84,7 +84,7 @@ export function RelationshipForm({
       </label>
 
       {state.error && (
-        <p className="rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-[13.5px] text-error">
+        <p role="alert" className="rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-caption text-error">
           {state.error}
         </p>
       )}

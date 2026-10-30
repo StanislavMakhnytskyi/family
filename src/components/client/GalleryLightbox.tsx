@@ -226,7 +226,7 @@ export function GalleryLightbox({
             <button
               type="button"
               onClick={(event) => open(index, event.currentTarget)}
-              className="block w-full cursor-zoom-in overflow-hidden rounded-md border border-border-strong shadow-gallery transition-[transform,box-shadow] duration-200 hover:-translate-y-[2px] hover:shadow-card-hover"
+              className="block w-full cursor-zoom-in overflow-hidden rounded-md border border-border-strong shadow-card transition-[transform,box-shadow] duration-200 hover:-translate-y-[2px] hover:shadow-card-hover"
             >
               <div className="relative aspect-[4/3]">
                 <Image
@@ -239,7 +239,7 @@ export function GalleryLightbox({
               </div>
             </button>
             {item.caption && (
-              <figcaption className="mt-2 text-[13px] leading-snug text-muted">
+              <figcaption className="mt-2 text-caption leading-snug text-muted">
                 {item.caption}
               </figcaption>
             )}
@@ -352,7 +352,7 @@ export function GalleryLightbox({
               <Plus className="size-5" />
             </Button>
             {current.caption && (
-              <p className="m-0 ml-2 max-w-[60vw] truncate text-[13px] text-surface/80">
+              <p className="m-0 ml-2 max-w-[60vw] truncate text-caption text-surface/80">
                 {current.caption}
               </p>
             )}
