@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { setAdminFlash } from "@/lib/admin-flash";
 import {
   getSelectedDataSource,
   readData,
@@ -103,6 +104,7 @@ export async function savePerson(
     return { error: error instanceof Error ? error.message : String(error) };
   }
 
+  await setAdminFlash("saved");
   redirect("/admin/people");
 }
 
@@ -125,5 +127,6 @@ export async function deletePerson(formData: FormData): Promise<void> {
     ...data,
     people: data.people.filter((person) => person.id !== id),
   });
+  await setAdminFlash("deleted");
   redirect("/admin/people");
 }

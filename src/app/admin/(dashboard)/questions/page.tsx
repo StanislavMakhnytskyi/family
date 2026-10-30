@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { deleteQuestion } from "./actions";
 import { Button } from "@/components/ui/button";
+import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { DataErrorCard } from "@/components/admin/DataErrorCard";
 import { getSelectedDataSource, readDataSafe } from "@/lib/admin-data";
 
@@ -24,7 +25,8 @@ export default async function AdminQuestionsPage() {
         </Button>
       </div>
 
-      <table className="w-full border-collapse text-left text-[14px]">
+      <div className="overflow-x-auto">
+      <table className="w-full border-collapse text-left text-small">
         <thead>
           <tr className="border-b border-border text-muted">
             <th className="py-2 font-semibold">Питання</th>
@@ -46,15 +48,17 @@ export default async function AdminQuestionsPage() {
                 </Link>
                 <form action={deleteQuestion} className="inline">
                   <input type="hidden" name="id" value={item.id} />
-                  <button type="submit" className="px-2 py-2.5 text-error underline">
-                    Видалити
-                  </button>
+                  <ConfirmDelete />
                 </form>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
+      {data.questions.length === 0 && (
+        <p className="mt-6 text-center text-muted">Поки що тут порожньо.</p>
+      )}
     </div>
   );
 }

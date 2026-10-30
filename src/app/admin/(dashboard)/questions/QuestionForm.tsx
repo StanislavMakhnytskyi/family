@@ -24,12 +24,12 @@ export function QuestionForm({ question }: { question?: Question }) {
       {!isNew && <input type="hidden" name="id" value={question.id} />}
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Питання</span>
+        <span className="text-caption font-semibold text-muted-4">Питання</span>
         <Input name="question" defaultValue={question?.question} required />
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Відповідь</span>
+        <span className="text-caption font-semibold text-muted-4">Відповідь</span>
         <Input
           name="normalizedAnswer"
           defaultValue={question?.normalizedAnswer}
@@ -38,7 +38,7 @@ export function QuestionForm({ question }: { question?: Question }) {
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">
+        <span className="text-caption font-semibold text-muted-4">
           Варіанти відповіді (через кому)
         </span>
         <Input
@@ -49,7 +49,7 @@ export function QuestionForm({ question }: { question?: Question }) {
       </label>
 
       {state.error && (
-        <p className="rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-[13.5px] text-error">
+        <p role="alert" className="rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-caption text-error">
           {state.error}
         </p>
       )}

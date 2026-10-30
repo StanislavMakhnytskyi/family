@@ -5,12 +5,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xs text-[15px] font-bold transition-[background-color,border-color,transform] duration-150 disabled:pointer-events-none disabled:opacity-45 active:translate-y-px cursor-pointer",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xs text-small font-bold transition-[background-color,border-color,transform] duration-150 disabled:pointer-events-none disabled:opacity-45 active:translate-y-px cursor-pointer",
   {
     variants: {
       variant: {
         primary:
-          "bg-terracotta text-surface shadow-btn-primary hover:bg-terracotta-hover disabled:bg-terracotta-disabled disabled:shadow-none",
+          "bg-terracotta text-surface hover:bg-terracotta-hover disabled:bg-terracotta-disabled ",
         ghost:
           "bg-surface-muted border border-border-ghost text-muted-4 font-semibold hover:bg-surface-hover hover:border-border-hover",
       },

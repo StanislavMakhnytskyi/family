@@ -19,10 +19,10 @@ export async function PersonCard({ person }: { person: Person }) {
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
-        <div className="truncate text-[14.5px] font-semibold text-ink">
+        <div className="truncate text-small font-semibold text-ink">
           {person.firstName} {person.lastName}
         </div>
-        <div className="text-[12.5px] tabular-nums text-muted-3">
+        <div className="text-caption tabular-nums text-muted-3">
           {lifespan(person.birthDate, person.deathDate, {
             born: t("Common.bornPrefix"),
             died: t("Common.diedPrefix"),

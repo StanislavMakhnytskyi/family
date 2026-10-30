@@ -3,7 +3,8 @@
     "appName": "Family History",
     "footerNote": "A family archive. No registration required.",
     "bornPrefix": "b.",
-    "diedPrefix": "d."
+    "diedPrefix": "d.",
+    "mainNav": "Main navigation"
   },
   "Gate": {
     "title": "Family History",
@@ -65,5 +66,19 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "counter": "__CURRENT__ of __TOTAL__"
+  },
+  "Meta": {
+    "title": "Family History (demo)",
+    "description": "A demo of a private family archive, with fictional data."
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "body": "There is no such page, or it has been removed.",
+    "back": "Back to the tree"
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "body": "Please try again. If it keeps happening, come back later.",
+    "retry": "Try again"
   }
 }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
-import { LogoMark, SiteHeader } from "@/components/SiteHeader";
+import { HomeLink, SiteHeader } from "@/components/SiteHeader";
 import { PersonCard } from "@/components/PersonCard";
 import { GalleryLightbox } from "@/components/client/GalleryLightbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -33,31 +33,25 @@ export default async function PersonPage({
   return (
     <div className="min-h-dvh animate-fade-in">
       <SiteHeader
-        left={
+        navLabel={t("Common.mainNav")}
+        left={<HomeLink name={t("Common.appName")} />}
+        right={
           <Button variant="ghost" asChild className="text-sm">
             <Link href="/">← {t("Person.backToTree")}</Link>
           </Button>
         }
-        right={
-          <div className="flex items-center gap-2.5">
-            <LogoMark size={26} />
-            <span className="font-serif text-base text-muted">
-              {t("Common.appName")}
-            </span>
-          </div>
-        }
       />
 
-      <main className="mx-auto flex max-w-[980px] flex-col gap-[18px] px-[18px] py-7 pb-20">
-        <Card className="flex flex-wrap items-center gap-[26px] p-[30px] animate-fade-up">
+      <main className="mx-auto flex max-w-[980px] flex-col gap-4.5 px-4.5 py-7 pb-20">
+        <Card className="flex flex-wrap items-center gap-6.5 p-7.5 animate-fade-up">
           <Avatar className="size-36">
-            {person.avatar && <AvatarImage src={person.avatar.large} alt="" />}
-            <AvatarFallback className="text-[14px]">
+            {person.avatar && <AvatarImage src={person.avatar.large} alt="" fetchPriority="high" />}
+            <AvatarFallback className="text-small">
               {initials(person.firstName, person.lastName)}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-[200px] flex-1 basis-[240px]">
-            <h1 className="m-0 mb-2 text-pretty font-serif text-[40px] leading-[1.1] font-medium tracking-tight text-ink">
+            <h1 className="m-0 mb-2 text-pretty font-serif text-display leading-[1.1] font-medium tracking-tight text-ink">
               {person.firstName} {person.lastName}
             </h1>
             <p className="m-0 tabular-nums text-base text-muted">
@@ -78,16 +72,16 @@ export default async function PersonPage({
 
         {/* One column on phones (order: biography, burial, family, gallery);
             from lg up the text column sits beside a narrower side column. */}
-        <div className="flex flex-col gap-[18px] lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
-          <div className="contents lg:flex lg:flex-col lg:gap-[18px]">
+        <div className="flex flex-col gap-4.5 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+          <div className="contents lg:flex lg:flex-col lg:gap-4.5">
             {person.bio && person.bio.length > 0 && (
-              <Card className="order-1 p-[26px] animate-fade-up lg:order-none">
+              <Card className="order-1 p-6.5 animate-fade-up lg:order-none">
                 <CardHeading>{t("Person.biography")}</CardHeading>
                 <div className="flex flex-col gap-3.5">
                   {person.bio.map((paragraph, index) => (
                     <p
                       key={index}
-                      className="m-0 text-pretty text-[16.5px] leading-[1.68] text-ink"
+                      className="m-0 text-pretty text-body leading-[1.68] text-ink"
                     >
                       {paragraph}
                     </p>
@@ -97,7 +91,7 @@ export default async function PersonPage({
             )}
 
             {media.length > 0 && (
-              <Card className="order-4 p-[26px] animate-fade-up lg:order-none">
+              <Card className="order-4 p-6.5 animate-fade-up lg:order-none">
                 <CardHeading className="mb-4">{t("Person.gallery")}</CardHeading>
                 <GalleryLightbox
                   items={media}
@@ -114,19 +108,19 @@ export default async function PersonPage({
             )}
           </div>
 
-          <div className="contents lg:flex lg:flex-col lg:gap-[18px]">
+          <div className="contents lg:flex lg:flex-col lg:gap-4.5">
             {grave && (
-              <Card className="order-2 p-[26px] animate-fade-up lg:order-none">
+              <Card className="order-2 p-6.5 animate-fade-up lg:order-none">
                 <CardHeading>{t("Person.burialPlace")}</CardHeading>
                 <div className="flex flex-col items-start gap-4">
                   <div>
                     {grave.address && (
-                      <p className="m-0 text-[17px] font-semibold text-ink">
+                      <p className="m-0 text-body font-semibold text-ink">
                         {grave.address}
                       </p>
                     )}
                     {grave.description && (
-                      <p className="m-0 mt-1.5 text-[14.5px] text-muted">
+                      <p className="m-0 mt-1.5 text-small text-muted">
                         {grave.description}
                       </p>
                     )}
@@ -149,10 +143,10 @@ export default async function PersonPage({
               relatives.spouses.length > 0 ||
               relatives.siblings.length > 0 ||
               relatives.children.length > 0) && (
-              <Card className="order-3 p-[26px] animate-fade-up lg:order-none">
-                <CardHeading className="mb-[18px]">{t("Person.family")}</CardHeading>
+              <Card className="order-3 p-6.5 animate-fade-up lg:order-none">
+                <CardHeading className="mb-4.5">{t("Person.family")}</CardHeading>
 
-                <div className="[&>*+*]:mt-[22px]">
+                <div className="[&>*+*]:mt-5.5">
                   {relatives.parents.length > 0 && (
                     <RelativeSection
                       label={t("Person.parents")}
@@ -196,7 +190,7 @@ function RelativeSection({
 }) {
   return (
     <div>
-      <h3 className="m-0 mb-2.5 text-[13.5px] font-bold text-muted">
+      <h3 className="m-0 mb-2.5 text-caption font-bold text-muted">
         {label}
       </h3>
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-1">

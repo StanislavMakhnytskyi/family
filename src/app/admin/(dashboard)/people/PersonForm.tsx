@@ -5,6 +5,7 @@ import Image from "next/image";
 import { CalendarDays, Loader2 } from "lucide-react";
 
 import { savePerson, type PersonFormState } from "./actions";
+import { FileInput } from "@/components/admin/FileInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,7 +46,7 @@ function DateField({
 
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-[13px] font-semibold text-muted-4">
+      <span className="text-caption font-semibold text-muted-4">
         {label}{" "}
         {optional && (
           <span className="font-normal text-faint">(необов&apos;язково)</span>
@@ -130,7 +131,7 @@ export function PersonForm({ person }: { person?: Person }) {
       )}
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">ID</span>
+        <span className="text-caption font-semibold text-muted-4">ID</span>
         <Input
           name="id"
           value={id}
@@ -142,9 +143,9 @@ export function PersonForm({ person }: { person?: Person }) {
         />
       </label>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-semibold text-muted-4">Ім&apos;я</span>
+          <span className="text-caption font-semibold text-muted-4">Ім&apos;я</span>
           <Input
             name="firstName"
             value={firstName}
@@ -153,7 +154,7 @@ export function PersonForm({ person }: { person?: Person }) {
           />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-semibold text-muted-4">
+          <span className="text-caption font-semibold text-muted-4">
             Прізвище <span className="font-normal text-faint">(необов&apos;язково)</span>
           </span>
           <Input
@@ -163,7 +164,7 @@ export function PersonForm({ person }: { person?: Person }) {
           />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-semibold text-muted-4">
+          <span className="text-caption font-semibold text-muted-4">
             По батькові <span className="font-normal text-faint">(необов&apos;язково)</span>
           </span>
           <Input
@@ -174,7 +175,7 @@ export function PersonForm({ person }: { person?: Person }) {
         </label>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <DateField
           name="birthDate"
           label="Дата народження"
@@ -191,7 +192,7 @@ export function PersonForm({ person }: { person?: Person }) {
         />
       </div>
 
-      <label className="flex items-start gap-2 text-[13.5px] text-ink">
+      <label className="flex items-start gap-2 text-caption text-ink">
         <input
           type="checkbox"
           name="hidden"
@@ -201,7 +202,7 @@ export function PersonForm({ person }: { person?: Person }) {
         <span>
           Приховати з дерева
           <br />
-          <span className="text-[12.5px] text-faint">
+          <span className="text-caption text-faint">
             Дані зберігаються, сторінку людини й далі можна відкрити напряму
             або через родичів — просто не показується на загальному дереві.
           </span>
@@ -209,7 +210,7 @@ export function PersonForm({ person }: { person?: Person }) {
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">
+        <span className="text-caption font-semibold text-muted-4">
           Біографія (абзаци через порожній рядок)
         </span>
         <Textarea
@@ -220,7 +221,7 @@ export function PersonForm({ person }: { person?: Person }) {
       </label>
 
       <div className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Фото</span>
+        <span className="text-caption font-semibold text-muted-4">Фото</span>
         {person?.avatar && (
           <div className="relative size-20 overflow-hidden rounded-full border border-border-strong">
             <Image
@@ -232,21 +233,16 @@ export function PersonForm({ person }: { person?: Person }) {
             />
           </div>
         )}
-        <input
-          type="file"
-          name="avatarFile"
-          accept="image/*"
-          className="text-[13.5px] text-muted"
-        />
+        <FileInput name="avatarFile" accept="image/*" label="Обрати фото" />
         {person?.avatar && (
-          <label className="flex items-center gap-2 text-[13px] text-muted">
+          <label className="flex items-center gap-2 text-caption text-muted">
             <input type="checkbox" name="removeAvatar" /> Прибрати фото
           </label>
         )}
       </div>
 
       {state.error && (
-        <p className="rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-[13.5px] text-error">
+        <p role="alert" className="rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-caption text-error">
           {state.error}
         </p>
       )}

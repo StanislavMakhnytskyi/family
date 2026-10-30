@@ -20,7 +20,7 @@ function CardHeading({ className, ...props }: React.ComponentProps<"h2">) {
     <h2
       data-slot="card-heading"
       className={cn(
-        "mb-3.5 font-serif text-[15px] font-semibold tracking-[0.08em] text-label uppercase",
+        "mb-3.5 font-serif text-xl font-semibold text-ink",
         className,
       )}
       {...props}

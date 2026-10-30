@@ -1,10 +1,14 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { logoutAdmin } from "@/app/admin/actions/auth";
+import { AdminFlash } from "@/components/admin/AdminFlash";
+import { AdminNav } from "@/components/admin/AdminNav";
 import { LogoMark } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { getSelectedDataSource } from "@/lib/admin-data";
+import { ADMIN_FLASH_COOKIE } from "@/lib/admin-flash";
 
 const NAV_ITEMS = [
   { href: "/admin/people", label: "Люди" },
@@ -24,6 +28,8 @@ export default async function AdminDashboardLayout({
     redirect("/admin");
   }
 
+  const flash = (await cookies()).get(ADMIN_FLASH_COOKIE)?.value;
+
   return (
     <div className="min-h-dvh">
       <header className="sticky top-0 z-30 border-b border-border-divider bg-cream/92 backdrop-blur-sm">
@@ -35,7 +41,7 @@ export default async function AdminDashboardLayout({
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-[13px] text-muted">
+            <span className="text-caption text-muted">
               Джерело:{" "}
               <b className="text-ink">
                 {source === "local" ? "локальні файли" : "Vercel Global Config"}
@@ -49,19 +55,12 @@ export default async function AdminDashboardLayout({
             </form>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-[1000px] gap-1 px-5 pb-2">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-xs px-3 py-2.5 text-[14px] text-muted-4 hover:bg-surface-hover"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <AdminNav items={NAV_ITEMS} />
       </header>
-      <main className="mx-auto max-w-[1000px] px-5 py-7">{children}</main>
+      <main className="mx-auto max-w-[1000px] px-5 py-7">
+        <AdminFlash flash={flash} />
+        {children}
+      </main>
     </div>
   );
 }

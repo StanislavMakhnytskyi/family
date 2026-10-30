@@ -29,6 +29,14 @@
   --color-stripe-b: #f5eeda;
   --color-avatar-text: #6f6350;
   --color-connector: #cfc3a8;
+  --color-notice: #f7ede0;
+  --color-flag-yellow: #ffd500;
+  --color-flag-blue: #005bbb;
+
+  --text-caption: 13px;
+  --text-small: 14.5px;
+  --text-body: 16.5px;
+  --text-display: 40px;
 
   --font-serif: var(--font-literata), Georgia, serif;
   --font-sans: var(--font-nunito-sans), system-ui, sans-serif;
@@ -39,14 +47,10 @@
   --radius-sm: 12px;
   --radius-xs: 10px;
 
-  --shadow-card: 0 1px 2px rgba(60, 44, 24, 0.05), 0 14px 34px -20px rgba(60, 44, 24, 0.24);
+  --shadow-card: 0 1px 2px rgba(60, 44, 24, 0.06);
   --shadow-card-hover: 0 2px 4px rgba(60, 44, 24, 0.06), 0 18px 34px -14px rgba(60, 44, 24, 0.3);
-  --shadow-tree-card: 0 1px 2px rgba(60, 44, 24, 0.05), 0 10px 24px -14px rgba(60, 44, 24, 0.25);
-  --shadow-login: 0 1px 2px rgba(60, 44, 24, 0.05), 0 18px 44px -18px rgba(60, 44, 24, 0.28);
   --shadow-modal: 0 30px 70px -20px rgba(40, 28, 14, 0.5);
   --shadow-fab: 0 8px 20px -12px rgba(60, 44, 24, 0.4);
-  --shadow-gallery: 0 8px 20px -14px rgba(60, 44, 24, 0.4);
-  --shadow-btn-primary: 0 6px 16px -8px rgba(120, 72, 40, 0.7);
 
   --animate-fade-up: fade-up 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) both;
   --animate-fade-in: fade-in 0.35s both;
@@ -96,8 +100,15 @@
   }
 }
 
+/* Paper grain lives on the body (fixed, painted once) instead of an overlay
+   element that sat above the whole UI and was re-composited on every pan. */
 body {
-  background: var(--color-cream);
+  background-color: var(--color-cream);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(120, 96, 60, 0.025) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(120, 96, 60, 0.02) 0 1px, transparent 1px 4px),
+    radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(90, 68, 38, 0.05) 100%);
+  background-attachment: fixed;
   color: var(--color-ink);
 }
 
@@ -108,13 +119,6 @@ body {
       var(--color-stripe-a) 0 8px,
       var(--color-stripe-b) 8px 16px
     );
-  }
-
-  .paper-texture {
-    background-image:
-      repeating-linear-gradient(0deg, rgba(120, 96, 60, 0.05) 0 1px, transparent 1px 3px),
-      repeating-linear-gradient(90deg, rgba(120, 96, 60, 0.04) 0 1px, transparent 1px 4px),
-      radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(90, 68, 38, 0.1) 100%);
   }
 }
 
