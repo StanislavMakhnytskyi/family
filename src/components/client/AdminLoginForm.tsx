@@ -50,7 +50,7 @@ export function AdminLoginForm() {
       </div>
 
       {state.status === "error-invalid" && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
           Невірний логін або пароль. Залишилось спроб: {state.remaining ?? 0}
         </p>
       )}

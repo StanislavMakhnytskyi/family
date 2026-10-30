@@ -6,7 +6,8 @@ import { TreeClient } from "@/components/client/TreeClient";
 import { Button } from "@/components/ui/button";
 import { getPeople, getRelationships } from "@/lib/data";
 
-export default async function TreePage() {
+export default async function TreePage({ searchParams }: PageProps<"/">) {
+  const { focus } = await searchParams;
   const t = await getTranslations();
   const [allPeople, allRelationships] = await Promise.all([
     getPeople(),
@@ -46,9 +47,21 @@ export default async function TreePage() {
         }
       />
       <TreeClient
+        initialFocusId={typeof focus === "string" ? focus : undefined}
         people={people}
         relationships={relationships}
         hint={t("Tree.hint")}
+        labels={{
+          search: t("Tree.search"),
+          searchPlaceholder: t("Tree.searchPlaceholder"),
+          noResults: t("Tree.noResults"),
+          dismiss: t("Tree.dismiss"),
+          empty: t("Tree.empty"),
+          legendParent: t("Tree.legendParent"),
+          legendSpouse: t("Tree.legendSpouse"),
+          legendSibling: t("Tree.legendSibling"),
+        }}
+        zoomLabels={{ zoomIn: t("Tree.zoomIn"), zoomOut: t("Tree.zoomOut"), fit: t("Tree.fit") }}
         lifespanLabels={{ born: t("Common.bornPrefix"), died: t("Common.diedPrefix") }}
       />
     </div>

@@ -54,7 +54,7 @@ export default async function AdminDashboardLayout({
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xs px-3 py-1.5 text-[14px] text-muted-4 hover:bg-surface-hover"
+              className="rounded-xs px-3 py-2.5 text-[14px] text-muted-4 hover:bg-surface-hover"
             >
               {item.label}
             </Link>

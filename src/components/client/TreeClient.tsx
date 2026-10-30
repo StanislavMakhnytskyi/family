@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import Link from "next/link";
 import Image from "next/image";
+import { Search, X } from "lucide-react";
 
 import type { Person, Relationship } from "@/lib/schemas";
 import { computeFamilyTreeLayout } from "@/lib/family-tree-layout";
@@ -14,9 +15,54 @@ const CARD_HEIGHT = 108;
 const COLUMN_WIDTH = CARD_WIDTH + 22;
 const ROW_HEIGHT = CARD_HEIGHT + 64;
 const ZOOM_STEP = 1.2;
+// Fitting a big tree onto a phone would shrink cards to unreadable sizes, so
+// the initial view never goes below this and starts at the top generation
+// instead. The "fit" button still shows the whole tree.
+const MIN_READABLE_SCALE = 0.5;
+const SEARCH_FOCUS_SCALE = 0.9;
+const HINT_DISMISSED_KEY = "tree-hint-dismissed";
+
+const hintListeners = new Set<() => void>();
+
+function subscribeHint(listener: () => void) {
+  hintListeners.add(listener);
+  return () => {
+    hintListeners.delete(listener);
+  };
+}
+
+function readHintDismissed() {
+  try {
+    return localStorage.getItem(HINT_DISMISSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+type TreeLabels = {
+  search: string;
+  searchPlaceholder: string;
+  noResults: string;
+  dismiss: string;
+  empty: string;
+  legendParent: string;
+  legendSpouse: string;
+  legendSibling: string;
+};
+
+const DEFAULT_LABELS: TreeLabels = {
+  search: "Знайти людину",
+  searchPlaceholder: "Знайти людину…",
+  noResults: "Нікого не знайдено",
+  dismiss: "Сховати підказку",
+  empty: "Дерево поки порожнє",
+  legendParent: "батьки та діти",
+  legendSpouse: "подружжя",
+  legendSibling: "брати/сестри",
+};
 
 const CARD_CLASS =
-  "absolute flex h-[108px] w-[156px] flex-col items-center justify-center gap-1.5 rounded-lg border border-border bg-surface p-2.5 shadow-tree-card transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-[3px] hover:border-border-hover hover:shadow-card-hover animate-pop-in-tree cursor-pointer select-none";
+  "absolute flex h-[108px] w-[156px] flex-col items-center justify-center gap-1.5 rounded-lg border border-border bg-surface p-2.5 shadow-tree-card transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-[3px] hover:border-border-hover hover:shadow-card-hover animate-pop-in-tree cursor-pointer select-none no-underline";
 const AVATAR_CLASS =
   "avatar-placeholder flex size-[42px] shrink-0 items-center justify-center rounded-full border border-border-strong font-mono text-[11px] text-avatar-text";
 
@@ -43,13 +89,26 @@ export function TreeClient({
   relationships,
   hint,
   lifespanLabels,
+  zoomLabels = { zoomIn: "Збільшити", zoomOut: "Зменшити", fit: "Вмістити все дерево" },
+  labels: labelsProp,
+  initialFocusId,
 }: {
   people: Person[];
   relationships: Relationship[];
   hint: string;
   lifespanLabels: { born: string; died: string };
+  zoomLabels?: { zoomIn: string; zoomOut: string; fit: string };
+  labels?: Partial<TreeLabels>;
+  initialFocusId?: string;
 }) {
-  const router = useRouter();
+  const labels = { ...DEFAULT_LABELS, ...labelsProp };
+  const [query, setQuery] = useState("");
+  const [highlightId, setHighlightId] = useState<string | null>(
+    initialFocusId && people.some((p) => p.id === initialFocusId) ? initialFocusId : null,
+  );
+  const [hintDismissedLocal, setHintDismissedLocal] = useState(false);
+  const hintDismissed =
+    useSyncExternalStore(subscribeHint, readHintDismissed, () => false) || hintDismissedLocal;
   const viewportRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   const transformRef = useRef({ x: 0, y: 0, scale: 1 });
@@ -126,20 +185,40 @@ export function TreeClient({
     el.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
   }
 
-  function fitToScreen(withTransition: boolean) {
+  function fitToScreen(withTransition: boolean, readable = false) {
     const viewport = viewportRef.current;
     if (!viewport || totalWidth === 0 || totalHeight === 0) return;
     const vw = viewport.clientWidth;
     const vh = viewport.clientHeight;
-    const scale = clampZoom(
-      Math.min(vw / totalWidth, vh / totalHeight) * 0.9,
-    );
+    const fitScale = clampZoom(Math.min(vw / totalWidth, vh / totalHeight) * 0.9);
+    const scale = readable ? Math.max(fitScale, MIN_READABLE_SCALE) : fitScale;
+    // Where the fit is too small to read, show the top generation, centred.
+    const overflowsY = totalHeight * scale > vh;
     transformRef.current = {
       x: (vw - totalWidth * scale) / 2,
-      y: (vh - totalHeight * scale) / 2,
+      y: overflowsY ? 16 : (vh - totalHeight * scale) / 2,
       scale,
     };
     applyTransform(withTransition);
+  }
+
+  function centerOn(id: string, withTransition: boolean) {
+    const viewport = viewportRef.current;
+    const pos = positionOf.get(id);
+    if (!viewport || !pos) return;
+    const scale = clampZoom(Math.max(transformRef.current.scale, SEARCH_FOCUS_SCALE));
+    transformRef.current = {
+      x: viewport.clientWidth / 2 - (pos.x + CARD_WIDTH / 2) * scale,
+      y: viewport.clientHeight / 2 - (pos.y + CARD_HEIGHT / 2) * scale,
+      scale,
+    };
+    applyTransform(withTransition);
+  }
+
+  function focusPerson(id: string) {
+    centerOn(id, true);
+    setHighlightId(id);
+    setQuery("");
   }
 
   function zoomAt(factor: number, clientX: number, clientY: number) {
@@ -168,15 +247,45 @@ export function TreeClient({
   }
 
   useEffect(() => {
-    fitToScreen(false);
+    fitToScreen(false, true);
+    // Arriving from a person page ("show on the tree") starts on that person.
+    if (initialFocusId) centerOn(initialFocusId, false);
 
     function handleResize() {
-      fitToScreen(false);
+      fitToScreen(false, true);
     }
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalWidth, totalHeight]);
+
+  function dismissHint() {
+    try {
+      localStorage.setItem(HINT_DISMISSED_KEY, "1");
+    } catch {
+      // Non-fatal: the hint just returns next visit.
+    }
+    hintListeners.forEach((listener) => listener());
+    setHintDismissedLocal(true);
+  }
+
+  const trimmedQuery = query.trim().toLocaleLowerCase();
+  const searchResults = useMemo(() => {
+    if (!trimmedQuery) return [];
+    return people
+      .filter((p) =>
+        [p.firstName, p.middleName, p.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .toLocaleLowerCase()
+          .includes(trimmedQuery),
+      )
+      .filter((p) => positionOf.has(p.id))
+      .slice(0, 6);
+  }, [people, trimmedQuery, positionOf]);
+
+  const hasSiblingLinks = relationships.some((r) => r.type === "sibling");
+  const hasSpouseLinks = relationships.some((r) => r.type === "spouse");
 
   function distanceBetween(a: { x: number; y: number }, b: { x: number; y: number }) {
     return Math.hypot(a.x - b.x, a.y - b.y);
@@ -276,9 +385,8 @@ export function TreeClient({
     zoomAt(factor, event.clientX, event.clientY);
   }
 
-  function handleCardClick(id: string) {
-    if (dragRef.current?.moved) return;
-    router.push(`/person/${id}`);
+  function handleCardClick(event: React.MouseEvent) {
+    if (dragRef.current?.moved) event.preventDefault();
   }
 
   return (
@@ -386,12 +494,15 @@ export function TreeClient({
             const person = personById.get(id);
             if (!person) return null;
             return (
-              <div
+              <Link
                 key={id}
+                href={`/person/${id}`}
+                draggable={false}
                 data-testid="tree-card"
-                className={CARD_CLASS}
+                className={`${CARD_CLASS}${id === highlightId ? " border-terracotta ring-2 ring-terracotta" : ""}`}
+                aria-current={id === highlightId ? "true" : undefined}
                 style={{ left: x, top: y }}
-                onClick={() => handleCardClick(id)}
+                onClick={handleCardClick}
               >
                 {person.avatar ? (
                   <div className="relative size-[42px] shrink-0 overflow-hidden rounded-full border border-border-strong">
@@ -417,18 +528,76 @@ export function TreeClient({
                     {lifespan(person.birthDate, person.deathDate, lifespanLabels)}
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
       </div>
+
+      {people.length === 0 && (
+        <p className="absolute inset-0 z-10 m-0 flex items-center justify-center text-muted">
+          {labels.empty}
+        </p>
+      )}
+
+      {people.length > 0 && (
+        <div
+          role="search"
+          className="absolute top-3 left-3 z-20 w-[min(20rem,calc(100%-1.5rem))]"
+        >
+          <div className="relative">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted"
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && searchResults[0]) focusPerson(searchResults[0].id);
+                else if (event.key === "Escape") {
+                  setQuery("");
+                  setHighlightId(null);
+                }
+              }}
+              aria-label={labels.search}
+              placeholder={labels.searchPlaceholder}
+              autoComplete="off"
+              className="w-full rounded-sm border border-border-strong bg-surface py-2.5 pr-3 pl-10 font-sans text-base text-ink shadow-fab placeholder:text-faint"
+            />
+          </div>
+          {trimmedQuery && (
+            <ul
+              className="m-0 mt-1.5 list-none overflow-hidden rounded-sm border border-border-strong bg-surface p-1 shadow-modal"
+              data-testid="tree-search-results"
+            >
+              {searchResults.length === 0 ? (
+                <li className="px-3 py-2.5 text-sm text-muted">{labels.noResults}</li>
+              ) : (
+                searchResults.map((p) => (
+                  <li key={p.id}>
+                    <button
+                      type="button"
+                      onClick={() => focusPerson(p.id)}
+                      className="block min-h-11 w-full cursor-pointer rounded-xs px-3 py-2 text-left text-[14.5px] text-ink hover:bg-surface-hover"
+                    >
+                      {[p.firstName, p.lastName].filter(Boolean).join(" ")}
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
+        </div>
+      )}
 
       <div className="absolute right-4 bottom-5 z-20 flex flex-col gap-2">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Збільшити"
+          aria-label={zoomLabels.zoomIn}
           onClick={() => zoomFromCenter(ZOOM_STEP)}
         >
           +
@@ -437,7 +606,7 @@ export function TreeClient({
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Зменшити"
+          aria-label={zoomLabels.zoomOut}
           onClick={() => zoomFromCenter(1 / ZOOM_STEP)}
         >
           −
@@ -446,16 +615,56 @@ export function TreeClient({
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Скинути масштаб до 100%"
+          aria-label={zoomLabels.fit}
           className="text-xs font-semibold"
           onClick={() => fitToScreen(true)}
         >
-          100%
+          ⤢
         </Button>
       </div>
-      <p className="pointer-events-none absolute bottom-3 left-5 z-20 m-0 rounded-xs bg-cream/90 px-2.5 py-1.5 font-mono text-xs text-faint">
-        {hint}
-      </p>
+      <div className="pointer-events-none absolute bottom-3 left-3 z-20 flex max-w-[calc(100%-5.5rem)] flex-col items-start gap-1.5">
+        {!hintDismissed && (
+          <p className="pointer-events-auto m-0 flex items-start gap-1.5 rounded-xs bg-cream/90 py-1 pr-1 pl-2.5 text-xs text-muted">
+            <span className="py-0.5">{hint}</span>
+            <button
+              type="button"
+              onClick={dismissHint}
+              aria-label={labels.dismiss}
+              className="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-xs text-muted hover:bg-surface-hover"
+            >
+              <X aria-hidden="true" className="size-3.5" />
+            </button>
+          </p>
+        )}
+        {(hasSpouseLinks || hasSiblingLinks) && (
+          <ul
+            data-testid="tree-legend"
+            className="m-0 flex list-none flex-wrap gap-x-3 gap-y-1 rounded-xs bg-cream/90 px-2.5 py-1.5 text-xs text-muted"
+          >
+            {hasSpouseLinks && (
+              <li className="flex items-center gap-1.5">
+                <svg width="18" height="8" aria-hidden="true">
+                  <path d="M0 4 H18" className="tree-connector" strokeWidth={2} />
+                </svg>
+                {labels.legendSpouse}
+              </li>
+            )}
+            {hasSiblingLinks && (
+              <li className="flex items-center gap-1.5">
+                <svg width="18" height="8" aria-hidden="true">
+                  <path
+                    d="M0 4 H18"
+                    className="tree-connector"
+                    strokeWidth={2}
+                    strokeDasharray="4 3"
+                  />
+                </svg>
+                {labels.legendSibling}
+              </li>
+            )}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
