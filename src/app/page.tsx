@@ -1,12 +1,13 @@
 import { getTranslations } from "next-intl/server";
 
 import { logout } from "@/app/actions/auth";
-import { LogoMark, SiteHeader } from "@/components/SiteHeader";
+import { HomeLink, SiteHeader } from "@/components/SiteHeader";
 import { TreeClient } from "@/components/client/TreeClient";
 import { Button } from "@/components/ui/button";
 import { getPeople, getRelationships } from "@/lib/data";
 
-export default async function TreePage() {
+export default async function TreePage({ searchParams }: PageProps<"/">) {
+  const { focus } = await searchParams;
   const t = await getTranslations();
   const [allPeople, allRelationships] = await Promise.all([
     getPeople(),
@@ -29,14 +30,8 @@ export default async function TreePage() {
   return (
     <div className="flex h-dvh animate-fade-in flex-col overflow-hidden">
       <SiteHeader
-        left={
-          <div className="flex min-w-0 items-center gap-2.5">
-            <LogoMark size={26} />
-            <span className="truncate font-serif text-lg font-medium text-ink">
-              {t("Common.appName")}
-            </span>
-          </div>
-        }
+        navLabel={t("Common.mainNav")}
+        left={<HomeLink name={t("Common.appName")} />}
         right={
           <form action={logout}>
             <Button type="submit" variant="ghost" className="text-sm">
@@ -46,9 +41,21 @@ export default async function TreePage() {
         }
       />
       <TreeClient
+        initialFocusId={typeof focus === "string" ? focus : undefined}
         people={people}
         relationships={relationships}
         hint={t("Tree.hint")}
+        labels={{
+          search: t("Tree.search"),
+          searchPlaceholder: t("Tree.searchPlaceholder"),
+          noResults: t("Tree.noResults"),
+          dismiss: t("Tree.dismiss"),
+          empty: t("Tree.empty"),
+          legendParent: t("Tree.legendParent"),
+          legendSpouse: t("Tree.legendSpouse"),
+          legendSibling: t("Tree.legendSibling"),
+        }}
+        zoomLabels={{ zoomIn: t("Tree.zoomIn"), zoomOut: t("Tree.zoomOut"), fit: t("Tree.fit") }}
         lifespanLabels={{ born: t("Common.bornPrefix"), died: t("Common.diedPrefix") }}
       />
     </div>

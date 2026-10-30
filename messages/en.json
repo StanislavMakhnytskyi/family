@@ -3,7 +3,8 @@
     "appName": "Family History",
     "footerNote": "A family archive. No registration required.",
     "bornPrefix": "b.",
-    "diedPrefix": "d."
+    "diedPrefix": "d.",
+    "mainNav": "Main navigation"
   },
   "Gate": {
     "title": "Family History",
@@ -32,7 +33,18 @@
   },
   "Tree": {
     "logout": "Log out",
-    "hint": "drag · scroll / pinch to zoom"
+    "hint": "drag · scroll / pinch to zoom",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit whole tree",
+    "search": "Find a person",
+    "searchPlaceholder": "Find a person…",
+    "noResults": "No one found",
+    "dismiss": "Hide hint",
+    "empty": "The tree is empty so far",
+    "legendParent": "parents and children",
+    "legendSpouse": "spouses",
+    "legendSibling": "siblings"
   },
   "Person": {
     "biography": "Biography",
@@ -44,7 +56,8 @@
     "siblings": "Siblings",
     "children": "Children",
     "gallery": "Photo gallery",
-    "backToTree": "Tree"
+    "backToTree": "Tree",
+    "showInTree": "Show on the tree"
   },
   "Gallery": {
     "close": "Close",
@@ -53,5 +66,19 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "counter": "__CURRENT__ of __TOTAL__"
+  },
+  "Meta": {
+    "title": "Family History (demo)",
+    "description": "A demo of a private family archive, with fictional data."
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "body": "There is no such page, or it has been removed.",
+    "back": "Back to the tree"
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "body": "Please try again. If it keeps happening, come back later.",
+    "retry": "Try again"
   }
 }

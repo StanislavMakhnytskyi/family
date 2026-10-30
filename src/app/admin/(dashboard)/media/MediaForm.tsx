@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Loader2 } from "lucide-react";
 
 import { saveMedia, type MediaFormState } from "./actions";
+import { FileInput } from "@/components/admin/FileInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -28,14 +29,14 @@ export function MediaForm({
       {!isNew && <input type="hidden" name="id" value={media.id} />}
 
       <div className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">
+        <span className="text-caption font-semibold text-muted-4">
           Люди на фото <span className="font-normal text-faint">(можна обрати декількох)</span>
         </span>
         <div className="grid max-h-56 grid-cols-2 gap-1.5 overflow-y-auto rounded-sm border border-border-strong bg-surface-muted p-3">
           {people.map((person) => (
             <label
               key={person.id}
-              className="flex items-center gap-2 text-[13.5px] text-ink"
+              className="flex items-center gap-2 text-caption text-ink"
             >
               <input
                 type="checkbox"
@@ -50,7 +51,7 @@ export function MediaForm({
       </div>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Тип</span>
+        <span className="text-caption font-semibold text-muted-4">Тип</span>
         <Select name="type" defaultValue={media?.type ?? "photo"}>
           <option value="photo">Фото</option>
           <option value="document">Документ</option>
@@ -58,17 +59,17 @@ export function MediaForm({
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Підпис</span>
+        <span className="text-caption font-semibold text-muted-4">Підпис</span>
         <Input name="caption" defaultValue={media?.caption} />
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Рік</span>
+        <span className="text-caption font-semibold text-muted-4">Рік</span>
         <Input name="year" type="number" defaultValue={media?.year} />
       </label>
 
       <div className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">
+        <span className="text-caption font-semibold text-muted-4">
           Файл {isNew ? "" : "(залиште порожнім, щоб не змінювати)"}
         </span>
         {media?.url && (
@@ -76,16 +77,11 @@ export function MediaForm({
             <Image src={media.url} alt="" fill unoptimized className="object-cover" />
           </div>
         )}
-        <input
-          type="file"
-          name="file"
-          accept="image/*,application/pdf"
-          className="text-[13.5px] text-muted"
-        />
+        <FileInput name="file" accept="image/*,application/pdf" label="Обрати файл" />
       </div>
 
       {state.error && (
-        <p className="rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-[13.5px] text-error">
+        <p role="alert" className="rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-caption text-error">
           {state.error}
         </p>
       )}

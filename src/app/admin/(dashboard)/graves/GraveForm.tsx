@@ -26,7 +26,7 @@ export function GraveForm({
       <input type="hidden" name="mode" value={isNew ? "new" : "edit"} />
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Людина</span>
+        <span className="text-caption font-semibold text-muted-4">Людина</span>
         <Select
           name={isNew ? "personId" : undefined}
           defaultValue={grave?.personId ?? ""}
@@ -44,9 +44,9 @@ export function GraveForm({
         {!isNew && <input type="hidden" name="personId" value={grave.personId} />}
       </label>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-semibold text-muted-4">Широта</span>
+          <span className="text-caption font-semibold text-muted-4">Широта</span>
           <Input
             name="latitude"
             type="number"
@@ -56,7 +56,7 @@ export function GraveForm({
           />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-semibold text-muted-4">Довгота</span>
+          <span className="text-caption font-semibold text-muted-4">Довгота</span>
           <Input
             name="longitude"
             type="number"
@@ -68,12 +68,12 @@ export function GraveForm({
       </div>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Адреса</span>
+        <span className="text-caption font-semibold text-muted-4">Адреса</span>
         <Input name="address" defaultValue={grave?.address} />
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold text-muted-4">Опис</span>
+        <span className="text-caption font-semibold text-muted-4">Опис</span>
         <Input
           name="description"
           defaultValue={grave?.description}
@@ -82,7 +82,7 @@ export function GraveForm({
       </label>
 
       {state.error && (
-        <p className="rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-[13.5px] text-error">
+        <p role="alert" className="rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-caption text-error">
           {state.error}
         </p>
       )}

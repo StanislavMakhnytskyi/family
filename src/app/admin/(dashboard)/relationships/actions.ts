@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { setAdminFlash } from "@/lib/admin-flash";
 import { getSelectedDataSource, readData, writeData } from "@/lib/admin-data";
 
 export type RelationshipFormState = { error?: string };
@@ -50,6 +51,7 @@ export async function saveRelationship(
     return { error: error instanceof Error ? error.message : String(error) };
   }
 
+  await setAdminFlash("saved");
   redirect("/admin/relationships");
 }
 
@@ -63,5 +65,6 @@ export async function deleteRelationship(formData: FormData): Promise<void> {
     ...data,
     relationships: data.relationships.filter((rel) => rel.id !== id),
   });
+  await setAdminFlash("deleted");
   redirect("/admin/relationships");
 }

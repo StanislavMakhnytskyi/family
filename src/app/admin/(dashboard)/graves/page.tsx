@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { deleteGrave } from "./actions";
 import { Button } from "@/components/ui/button";
+import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { DataErrorCard } from "@/components/admin/DataErrorCard";
 import { getSelectedDataSource, readDataSafe } from "@/lib/admin-data";
 
@@ -29,7 +30,8 @@ export default async function AdminGravesPage() {
         </Button>
       </div>
 
-      <table className="w-full border-collapse text-left text-[14px]">
+      <div className="overflow-x-auto">
+      <table className="w-full border-collapse text-left text-small">
         <thead>
           <tr className="border-b border-border text-muted">
             <th className="py-2 font-semibold">Людина</th>
@@ -49,21 +51,23 @@ export default async function AdminGravesPage() {
               <td className="py-2.5 text-right whitespace-nowrap">
                 <Link
                   href={`/admin/graves/${grave.personId}`}
-                  className="mr-3 text-terracotta underline"
+                  className="mr-1 inline-block px-2 py-2.5 text-terracotta underline"
                 >
                   Редагувати
                 </Link>
                 <form action={deleteGrave} className="inline">
                   <input type="hidden" name="personId" value={grave.personId} />
-                  <button type="submit" className="text-error underline">
-                    Видалити
-                  </button>
+                  <ConfirmDelete />
                 </form>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
+      {data.graves.length === 0 && (
+        <p className="mt-6 text-center text-muted">Поки що тут порожньо.</p>
+      )}
     </div>
   );
 }

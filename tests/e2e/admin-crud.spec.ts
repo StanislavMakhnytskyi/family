@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Locator } from "@playwright/test";
 import { TEST_ADMIN_USERNAME, TEST_ADMIN_PASSWORD } from "./admin-test-credentials";
 import { login } from "./helpers";
 
@@ -15,6 +15,12 @@ async function loginAsAdmin(page: import("@playwright/test").Page) {
 // Exercises the full local-file write round trip: create through the form,
 // confirm it's actually persisted and visible, then delete it again so the
 // tracked src/data/questions.json ends up unchanged.
+async function deleteWithConfirm(row: Locator) {
+  await row.getByRole("button", { name: "Видалити" }).click();
+  await row.getByRole("button", { name: "Підтвердити" }).click();
+  await expect(row.page().getByRole("status")).toContainText("Видалено.");
+}
+
 test("creating and deleting a question round-trips through local src/data files", async ({
   page,
 }) => {
@@ -29,7 +35,7 @@ test("creating and deleting a question round-trips through local src/data files"
   const row = page.getByRole("row", { name: /E2E тестове питання/ });
   await expect(row).toBeVisible();
 
-  await row.getByRole("button", { name: "Видалити" }).click();
+  await deleteWithConfirm(row);
   await expect(page).toHaveURL(/\/admin\/questions$/);
   await expect(
     page.getByRole("row", { name: /E2E тестове питання/ }),
@@ -72,10 +78,9 @@ test("a person's full birth/death dates round-trip through local src/data files"
   );
 
   await page.goto("/admin/people");
-  await page
+  await deleteWithConfirm(page
     .getByRole("row", { name: /^E2E / })
-    .getByRole("button", { name: "Видалити" })
-    .click();
+    );
   await expect(page).toHaveURL(/\/admin\/people$/);
   await expect(page.getByRole("row", { name: /^E2E / })).toHaveCount(0);
 });
@@ -107,10 +112,9 @@ test("a person's middle name round-trips through local src/data files but never 
   await expect(page.getByText("Дуже-Секретович")).toHaveCount(0);
 
   await page.goto("/admin/people");
-  await page
+  await deleteWithConfirm(page
     .getByRole("row", { name: /^E2E / })
-    .getByRole("button", { name: "Видалити" })
-    .click();
+    );
   await expect(page).toHaveURL(/\/admin\/people$/);
   await expect(page.getByRole("row", { name: /^E2E / })).toHaveCount(0);
 });
@@ -144,11 +148,10 @@ test("editing a grave without changing its person still saves", async ({
   await expect(page.getByText("Оберіть людину")).toHaveCount(0);
   await expect(page.getByRole("row").filter({ hasText: "48.2" })).toBeVisible();
 
-  await page
+  await deleteWithConfirm(page
     .getByRole("row")
     .filter({ hasText: "48.2" })
-    .getByRole("button", { name: "Видалити" })
-    .click();
+    );
   await expect(page).toHaveURL(/\/admin\/graves$/);
 });
 
@@ -180,10 +183,9 @@ test("adding a sibling relationship shows up on both people's pages", async ({
   await expect(page.getByText("Петро Марченко")).toBeVisible();
 
   await page.goto("/admin/relationships");
-  await page
+  await deleteWithConfirm(page
     .getByRole("row", { name: /Брат\/сестра/ })
-    .getByRole("button", { name: "Видалити" })
-    .click();
+    );
   await expect(page).toHaveURL(/\/admin\/relationships$/);
   await expect(page.getByRole("row", { name: /Брат\/сестра/ })).toHaveCount(0);
 });
@@ -263,7 +265,7 @@ test("tagging a media item with multiple people round-trips through local src/da
   await expect(row).toContainText("Ярослав Савченко");
   await expect(row).not.toContainText("Наталія Савченко");
 
-  await row.getByRole("button", { name: "Видалити" }).click();
+  await deleteWithConfirm(row);
   await expect(page).toHaveURL(/\/admin\/media$/);
   await expect(page.getByRole("row", { name: /E2E тестове фото/ })).toHaveCount(0);
 });

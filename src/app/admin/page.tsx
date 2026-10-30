@@ -13,7 +13,7 @@ export default function AdminSourcePickerPage() {
   const globalConfigAvailable = isGlobalConfigSourceAvailable();
 
   return (
-    <div className="mx-auto max-w-[640px] px-[18px] py-10">
+    <div className="mx-auto max-w-[640px] px-4.5 py-10">
       <header className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <LogoMark size={26} />
@@ -29,14 +29,14 @@ export default function AdminSourcePickerPage() {
       </header>
 
       <h1 className="mb-2 font-serif text-2xl text-ink">Джерело даних</h1>
-      <p className="mb-6 text-[14.5px] text-muted">
+      <p className="mb-6 text-small text-muted">
         Оберіть, які дані редагувати цього разу.
       </p>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Card className="flex flex-col p-5">
           <h2 className="mb-2 font-serif text-lg text-ink">Локальні файли</h2>
-          <p className="mb-4 flex-1 text-[13.5px] text-muted">
+          <p className="mb-4 flex-1 text-caption text-muted">
             src/data/*.json на диску. Працює лише в локальній розробці.
           </p>
           <form action={setDataSource}>
@@ -46,7 +46,7 @@ export default function AdminSourcePickerPage() {
             </Button>
           </form>
           {!localAvailable && (
-            <p className="mt-2 text-[12.5px] text-error">
+            <p className="mt-2 text-caption text-error">
               Недоступно на Vercel — файлова система там лише для читання.
             </p>
           )}
@@ -56,7 +56,7 @@ export default function AdminSourcePickerPage() {
           <h2 className="mb-2 font-serif text-lg text-ink">
             Vercel Global Config
           </h2>
-          <p className="mb-4 flex-1 text-[13.5px] text-muted">
+          <p className="mb-4 flex-1 text-caption text-muted">
             Живі дані сайту. Зміни поширюються на прод протягом ~10 секунд.
           </p>
           <form action={setDataSource}>
@@ -70,7 +70,7 @@ export default function AdminSourcePickerPage() {
             </Button>
           </form>
           {!globalConfigAvailable && (
-            <p className="mt-2 text-[12.5px] text-error">
+            <p className="mt-2 text-caption text-error">
               Задайте GLOBAL_CONFIG, VERCEL_API_TOKEN,
               VERCEL_GLOBAL_CONFIG_STORE_ID.
             </p>

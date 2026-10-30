@@ -59,6 +59,7 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
             inputMode="numeric"
             pattern="[0-9]*"
             maxLength={4}
+            aria-label={`${messages.yearPlaceholder} ${index + 1}`}
             placeholder={messages.yearPlaceholder}
             disabled={locked}
             autoComplete="off"
@@ -89,22 +90,22 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
       </div>
 
       {hasDuplicate && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-caption text-error">
           {messages.errorDuplicate}
         </p>
       )}
       {!hasDuplicate && state.status === "error-incomplete" && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-caption text-error">
           {messages.errorIncomplete}
         </p>
       )}
       {!hasDuplicate && state.status === "error-duplicate" && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-caption text-error">
           {messages.errorDuplicate}
         </p>
       )}
       {!hasDuplicate && state.status === "error-wrong" && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-caption text-error">
           {messages.errorWrong.replace(
             "__REMAINING__",
             String(state.remaining ?? 0),
@@ -113,9 +114,9 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
       )}
 
       {locked && (
-        <div className="mt-3.5 flex animate-fade-in items-center gap-2.5 rounded-sm border border-border-divider bg-[#f7ede0] px-3.5 py-3">
+        <div className="mt-3.5 flex animate-fade-in items-center gap-2.5 rounded-sm border border-border-divider bg-notice px-3.5 py-3">
           <div className="size-2 shrink-0 rounded-full bg-terracotta" />
-          <span className="text-[13.5px] text-muted-4">
+          <span className="text-caption text-muted-4">
             {messages.lockedPrefix}{" "}
             <b className="tabular-nums">
               {formatCountdown((state.lockUntil ?? 0) - now)}
@@ -124,7 +125,7 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
         </div>
       )}
 
-      <div className="mt-[18px]">
+      <div className="mt-4.5">
         <Button
           type="submit"
           variant="primary"
