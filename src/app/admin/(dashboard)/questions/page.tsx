@@ -40,13 +40,13 @@ export default async function AdminQuestionsPage() {
               <td className="py-2.5 text-right whitespace-nowrap">
                 <Link
                   href={`/admin/questions/${item.id}`}
-                  className="mr-3 text-terracotta underline"
+                  className="mr-1 inline-block px-2 py-2.5 text-terracotta underline"
                 >
                   Редагувати
                 </Link>
                 <form action={deleteQuestion} className="inline">
                   <input type="hidden" name="id" value={item.id} />
-                  <button type="submit" className="text-error underline">
+                  <button type="submit" className="px-2 py-2.5 text-error underline">
                     Видалити
                   </button>
                 </form>

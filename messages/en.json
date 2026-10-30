@@ -32,7 +32,18 @@
   },
   "Tree": {
     "logout": "Log out",
-    "hint": "drag · scroll / pinch to zoom"
+    "hint": "drag · scroll / pinch to zoom",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit whole tree",
+    "search": "Find a person",
+    "searchPlaceholder": "Find a person…",
+    "noResults": "No one found",
+    "dismiss": "Hide hint",
+    "empty": "The tree is empty so far",
+    "legendParent": "parents and children",
+    "legendSpouse": "spouses",
+    "legendSibling": "siblings"
   },
   "Person": {
     "biography": "Biography",
@@ -44,7 +55,8 @@
     "siblings": "Siblings",
     "children": "Children",
     "gallery": "Photo gallery",
-    "backToTree": "Tree"
+    "backToTree": "Tree",
+    "showInTree": "Show on the tree"
   },
   "Gallery": {
     "close": "Close",

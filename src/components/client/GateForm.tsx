@@ -86,6 +86,7 @@ export function GateForm({
         name="answer"
         value={answer}
         onChange={(event) => setAnswer(event.target.value)}
+        aria-label={question?.question}
         placeholder={messages.answerPlaceholder}
         disabled={locked}
         autoComplete="off"
@@ -95,13 +96,13 @@ export function GateForm({
       />
 
       {forCurrentQuestion && state.status === "error-empty" && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
           {messages.errorEmpty}
         </p>
       )}
       {forCurrentQuestion && state.status === "error-wrong" && (
         <>
-          <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+          <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
             {messages.errorWrong.replace(
               "__REMAINING__",
               String(state.remaining ?? 0),

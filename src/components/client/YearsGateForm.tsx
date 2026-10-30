@@ -59,6 +59,7 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
             inputMode="numeric"
             pattern="[0-9]*"
             maxLength={4}
+            aria-label={`${messages.yearPlaceholder} ${index + 1}`}
             placeholder={messages.yearPlaceholder}
             disabled={locked}
             autoComplete="off"
@@ -89,22 +90,22 @@ export function YearsGateForm({ messages }: { messages: Messages }) {
       </div>
 
       {hasDuplicate && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
           {messages.errorDuplicate}
         </p>
       )}
       {!hasDuplicate && state.status === "error-incomplete" && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
           {messages.errorIncomplete}
         </p>
       )}
       {!hasDuplicate && state.status === "error-duplicate" && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
           {messages.errorDuplicate}
         </p>
       )}
       {!hasDuplicate && state.status === "error-wrong" && (
-        <p className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
+        <p role="alert" className="mt-2.5 ml-0.5 animate-fade-in text-[13.5px] text-error">
           {messages.errorWrong.replace(
             "__REMAINING__",
             String(state.remaining ?? 0),

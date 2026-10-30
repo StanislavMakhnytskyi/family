@@ -44,6 +44,8 @@ export function GalleryLightbox({
   const activePointersRef = useRef(new Map<number, { x: number; y: number }>());
   const pinchRef = useRef<{ startDistance: number; startScale: number } | null>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const isOpen = openIndex !== null;
 
@@ -93,6 +95,26 @@ export function GalleryLightbox({
       else if (event.key === "ArrowRight") go(1);
       else if (event.key === "+" || event.key === "=") zoomBy(ZOOM_STEP);
       else if (event.key === "-") zoomBy(1 / ZOOM_STEP);
+      else if (event.key === "Tab") {
+        // Keep focus inside the modal: wrap around at both ends.
+        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+          "button:not([disabled])",
+        );
+        if (!focusable || focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+        if (!dialogRef.current?.contains(active)) {
+          event.preventDefault();
+          first.focus();
+        } else if (event.shiftKey && active === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && active === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => {
@@ -101,7 +123,18 @@ export function GalleryLightbox({
     };
   }, [isOpen, close, go, zoomBy]);
 
+  // Warm the cache for the neighbours so arrow presses don't flash a blank frame.
+  useEffect(() => {
+    if (openIndex === null || items.length < 2) return;
+    for (const delta of [-1, 1]) {
+      const neighbour = items[(openIndex + delta + items.length) % items.length];
+      new window.Image().src = neighbour.url;
+    }
+  }, [openIndex, items]);
+
   function handlePointerDown(event: React.PointerEvent) {
+    swipeStartRef.current =
+      activePointersRef.current.size === 0 ? { x: event.clientX, y: event.clientY } : null;
     activePointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     try {
       (event.target as HTMLElement).setPointerCapture(event.pointerId);
@@ -151,6 +184,13 @@ export function GalleryLightbox({
   }
 
   function handlePointerUp(event: React.PointerEvent) {
+    const swipe = swipeStartRef.current;
+    swipeStartRef.current = null;
+    if (swipe && event.type === "pointerup" && transform.scale === 1 && items.length > 1) {
+      const dx = event.clientX - swipe.x;
+      const dy = event.clientY - swipe.y;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+    }
     activePointersRef.current.delete(event.pointerId);
     const pointers = [...activePointersRef.current.values()];
     if (pointers.length < 2) pinchRef.current = null;
@@ -171,6 +211,12 @@ export function GalleryLightbox({
   }
 
   const current = openIndex !== null ? items[openIndex] : null;
+  const counterText =
+    openIndex !== null
+      ? labels.counter
+          .replace("__CURRENT__", String(openIndex + 1))
+          .replace("__TOTAL__", String(items.length))
+      : "";
 
   return (
     <>
@@ -205,9 +251,10 @@ export function GalleryLightbox({
         current &&
         createPortal(
           <div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
-            aria-label={current.caption ?? labels.counter}
+            aria-label={current.caption ?? counterText}
             className="fixed inset-0 z-[100] flex flex-col bg-ink/95 animate-fade-in"
             onClick={(event) => {
               if (event.target === event.currentTarget) close();
@@ -215,9 +262,7 @@ export function GalleryLightbox({
           >
           <div className="flex items-center justify-between gap-3 p-4">
             <span className="rounded-xs bg-surface/10 px-2.5 py-1 font-mono text-xs text-surface/80 tabular-nums">
-              {labels.counter
-                .replace("__CURRENT__", String(openIndex! + 1))
-                .replace("__TOTAL__", String(items.length))}
+              {counterText}
             </span>
             <Button
               type="button"

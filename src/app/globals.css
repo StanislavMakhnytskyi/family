@@ -17,17 +17,17 @@
   --color-terracotta-disabled: #c9bda9;
 
   --color-ink: #35291d;
-  --color-muted: #7d7161;
+  --color-muted: #6f6350;
   --color-muted-2: #726551;
-  --color-muted-3: #92846f;
+  --color-muted-3: #766853;
   --color-muted-4: #6b5d4c;
-  --color-label: #8b7d68;
+  --color-label: #766853;
   --color-faint: #75694f;
   --color-error: #9c4a3a;
 
   --color-stripe-a: #ece2ca;
   --color-stripe-b: #f5eeda;
-  --color-avatar-text: #97886f;
+  --color-avatar-text: #6f6350;
   --color-connector: #cfc3a8;
 
   --font-serif: var(--font-literata), Georgia, serif;
@@ -115,6 +115,22 @@ body {
       repeating-linear-gradient(0deg, rgba(120, 96, 60, 0.05) 0 1px, transparent 1px 3px),
       repeating-linear-gradient(90deg, rgba(120, 96, 60, 0.04) 0 1px, transparent 1px 4px),
       radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(90, 68, 38, 0.1) 100%);
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-terracotta);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
