@@ -102,6 +102,8 @@ messages/         — translations (uk.json, en.json)
 src/proxy.ts      — session cookie checks (replaces middleware.ts in this Next.js version)
 ```
 
+Screen wireframes live in [docs/wireframes/](docs/wireframes/README.md).
+
 ## Security
 
 - Every page except `/gate` and `/gate/years` has `noindex`; `public/robots.txt` disallows indexing entirely.

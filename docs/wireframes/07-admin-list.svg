@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1930" height="1300" viewBox="0 0 1930 1300" role="img" aria-labelledby="t d">
+<title id="t">Адмін: оболонка та список людей</title>
+<desc id="d">Каркас адмін-панелі: липка шапка, вкладки, список людей зі стани видалення, порожній стан і помилка читання, desktop 1440 і mobile 390. Стовпці інших списків окремою таблицею.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;font-size:14px;fill:#2b2b2b}
+.bg{fill:#f2f2f0}
+.frame{fill:#f2f2f0;stroke:#bdbdb8;stroke-width:1.5}
+.box{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.card{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn-primary{fill:#9c6446;stroke:#9c6446;stroke-width:1.5}
+.btn-disabled{fill:#e6e6e3;stroke:#d0d0cc;stroke-width:1.5}
+.input{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.avatar{fill:#d9d9d5;stroke:#bdbdb8;stroke-width:1.5}
+.ink{fill:#222}
+.line{stroke:#2b2b2b;stroke-width:2;fill:none}
+.dash{stroke:#777;stroke-width:2;stroke-dasharray:6 5;fill:none}
+.ring{fill:none;stroke:#9c6446;stroke-width:3}
+.call{fill:#9c6446}
+.accent{fill:#9c6446}
+.accent-t{fill:#9c6446}
+.muted{fill:#777;font-size:12px}
+.title{font-family:Georgia,serif;font-size:22px;font-weight:bold}
+.serif{font-family:Georgia,serif}
+.note{font-size:12px;fill:#2b2b2b}
+.b{font-weight:bold}
+.w{fill:#fff}
+.c{text-anchor:middle}
+.e{text-anchor:end}
+.sm{font-size:13px}
+.lg{font-size:16px}
+</style>
+<defs>
+ <g id="callout"><circle class="call" r="10"/></g>
+ <clipPath id="mclip"><rect x="1520" y="290" width="350" height="290"/></clipPath>
+</defs>
+<rect class="bg" width="1930" height="1300"/>
+
+<text class="title" x="20" y="36">Адмін: оболонка та список людей</text>
+<text class="note" x="20" y="58">Маршрут: /admin/people (так само /admin/relationships, /graves, /media, /questions)   ·   Бачать: адміністратор (cookie admin-session) з обраним джерелом даних; без нього редирект на /admin.</text>
+
+<!-- ============ DESKTOP ============ -->
+<text class="b" x="20" y="100">Desktop 1440</text>
+<rect class="frame" x="20" y="110" width="1440" height="530"/>
+<!-- sticky header -->
+<rect class="box" x="20" y="110" width="1440" height="104"/>
+<rect class="avatar" x="260" y="124" width="26" height="26" rx="6"/>
+<text class="serif lg b" x="296" y="143">Адміністрування</text>
+<text class="sm e" x="1120" y="143">Джерело: <tspan class="b">локальні файли</tspan> · <tspan style="text-decoration:underline">Змінити</tspan></text>
+<text class="sm e" x="1220" y="143">Вийти</text>
+<text class="muted" x="1300" y="143">sticky, z-30</text>
+<!-- tabs -->
+<rect x="260" y="168" width="74" height="38" rx="8" fill="#ece9e2"/>
+<text class="sm b c" x="297" y="192">Люди</text>
+<text class="sm c" x="383" y="192">Зв'язки</text>
+<text class="sm c" x="487" y="192">Поховання</text>
+<text class="sm c" x="586" y="192">Медіа</text>
+<text class="sm c" x="675" y="192">Питання</text>
+<text class="muted" x="760" y="192">1000px max, aria-label «Розділи адміністрування»</text>
+<!-- flash -->
+<rect x="260" y="242" width="960" height="34" rx="8" fill="#f1e6de" stroke="#bdbdb8" stroke-width="1.5"/>
+<text class="sm" x="274" y="264">Збережено.</text>
+<text class="muted e" x="1206" y="264">зникає через 4 с</text>
+<!-- title row -->
+<text class="title" x="260" y="322">Люди</text>
+<rect class="btn-primary" x="1112" y="300" width="108" height="40" rx="8"/><text class="w b c sm" x="1166" y="325">+ Додати</text>
+<!-- table -->
+<text class="sm b" x="260" y="368" style="fill:#777">Ім'я</text>
+<text class="sm b" x="640" y="368" style="fill:#777">Роки</text>
+<path d="M260 380 H1220 M260 432 H1220 M260 484 H1220 M260 536 H1220 M260 588 H1220" stroke="#e3e3df" stroke-width="1"/>
+<path d="M260 380 H1220" stroke="#bdbdb8" stroke-width="1.5"/>
+<!-- row 1 -->
+<text class="sm" x="260" y="412">Василь Коваль</text><text class="sm" x="640" y="412" style="fill:#777">1910 – 1985</text>
+<text class="sm e accent-t" x="1128" y="412" style="text-decoration:underline">Редагувати</text>
+<text class="sm e" x="1212" y="412" style="fill:#9c4a3a;text-decoration:underline">Видалити</text>
+<!-- row 2 -->
+<text class="sm" x="260" y="464">Ганна Коваль</text><text class="sm" x="640" y="464" style="fill:#777">1914 – 1999</text>
+<text class="sm e accent-t" x="1128" y="464" style="text-decoration:underline">Редагувати</text>
+<text class="sm e" x="1212" y="464" style="fill:#9c4a3a;text-decoration:underline">Видалити</text>
+<!-- row 3: hidden tag + armed delete -->
+<text class="sm" x="260" y="516">Андрій Коваль</text>
+<rect x="366" y="498" width="130" height="22" rx="5" fill="#ece9e2"/>
+<text class="note b" x="376" y="513" style="fill:#777">приховано з дерева</text>
+<text class="sm" x="640" y="516" style="fill:#777">нар. 1966</text>
+<text class="sm e accent-t" x="1026" y="516" style="text-decoration:underline">Редагувати</text>
+<rect x="1040" y="498" width="104" height="34" rx="6" fill="#9c4a3a"/>
+<text class="sm w b c" x="1092" y="520">Підтвердити</text>
+<text class="sm e" x="1218" y="516" style="fill:#777;text-decoration:underline">Скасувати</text>
+<!-- row 4 -->
+<text class="sm" x="260" y="568">Степан Бойко</text><text class="sm" x="640" y="568" style="fill:#777">1950</text>
+<text class="sm e accent-t" x="1128" y="568" style="text-decoration:underline">Редагувати</text>
+<text class="sm e" x="1212" y="568" style="fill:#9c4a3a;text-decoration:underline">Видалити</text>
+<!-- callouts desktop -->
+<use href="#callout" x="238" y="128"/><text class="note w b c" x="238" y="132">1</text>
+<use href="#callout" x="248" y="187"/><text class="note w b c" x="248" y="191">2</text>
+<use href="#callout" x="244" y="259"/><text class="note w b c" x="244" y="263">3</text>
+<use href="#callout" x="1036" y="492"/><text class="note w b c" x="1036" y="496">4</text>
+<use href="#callout" x="362" y="494"/><text class="note w b c" x="362" y="498">5</text>
+
+<!-- ============ MOBILE ============ -->
+<text class="b" x="1500" y="100">Mobile 390</text>
+<rect class="frame" x="1500" y="110" width="390" height="530"/>
+<rect class="box" x="1500" y="110" width="390" height="106"/>
+<rect class="avatar" x="1520" y="128" width="26" height="26" rx="6"/>
+<text class="serif b" x="1554" y="147" style="font-size:14px">Адміністрування</text>
+<text class="note e" x="1812" y="139">Джерело: локальні</text>
+<text class="note e" x="1812" y="155">файли · <tspan style="text-decoration:underline">Змінити</tspan></text>
+<text class="sm e" x="1872" y="147">Вийти</text>
+<rect x="1520" y="172" width="74" height="38" rx="8" fill="#ece9e2"/>
+<text class="sm b c" x="1557" y="196">Люди</text>
+<text class="sm c" x="1643" y="196">Зв'язки</text>
+<text class="sm c" x="1747" y="196">Поховання</text>
+<text class="sm c" x="1846" y="196">Медіа</text>
+<text class="muted" x="1880" y="196" style="font-size:20px">›</text>
+<text class="title" x="1520" y="268">Люди</text>
+<rect class="btn-primary" x="1762" y="246" width="108" height="40" rx="8"/><text class="w b c sm" x="1816" y="271">+ Додати</text>
+<g clip-path="url(#mclip)">
+ <text class="sm b" x="1520" y="318" style="fill:#777">Ім'я</text>
+ <text class="sm b" x="1790" y="318" style="fill:#777">Роки</text>
+ <path d="M1520 328 H2200 M1520 380 H2200 M1520 432 H2200 M1520 484 H2200 M1520 536 H2200" stroke="#e3e3df" stroke-width="1"/>
+ <text class="sm" x="1520" y="360">Василь Коваль</text><text class="sm" x="1790" y="360" style="fill:#777">1910 – 1985</text>
+ <text class="sm" x="1520" y="412">Ганна Коваль</text><text class="sm" x="1790" y="412" style="fill:#777">1914 – 1999</text>
+ <text class="sm" x="1520" y="464">Андрій Коваль</text>
+ <rect x="1626" y="446" width="130" height="22" rx="5" fill="#ece9e2"/>
+ <text class="note b" x="1636" y="461" style="fill:#777">приховано з дерева</text>
+ <text class="sm" x="1790" y="464" style="fill:#777">нар. 1966</text>
+ <text class="sm" x="1520" y="516">Степан Бойко</text><text class="sm" x="1790" y="516" style="fill:#777">1950</text>
+ <text class="sm accent-t" x="1900" y="360" style="text-decoration:underline">Редагувати</text>
+</g>
+<rect x="1520" y="552" width="350" height="6" rx="3" fill="#e3e3df"/>
+<rect x="1520" y="552" width="190" height="6" rx="3" fill="#bdbdb8"/>
+<text class="muted" x="1520" y="582">стовпець дій праворуч: таблиця прокручується по горизонталі</text>
+<use href="#callout" x="1878" y="224"/><text class="note w b c" x="1878" y="228">6</text>
+<use href="#callout" x="1878" y="566"/><text class="note w b c" x="1878" y="570">7</text>
+
+<!-- ============ STATES ============ -->
+<text class="b" x="20" y="676">Стани</text>
+<!-- empty -->
+<text class="note" x="20" y="696">Порожній список</text>
+<rect class="frame" x="20" y="704" width="460" height="220"/>
+<text class="title" x="44" y="748">Люди</text>
+<rect class="btn-primary" x="356" y="724" width="100" height="36" rx="8"/><text class="w b c sm" x="406" y="747">+ Додати</text>
+<text class="sm b" x="44" y="800" style="fill:#777">Ім'я</text>
+<text class="sm b" x="260" y="800" style="fill:#777">Роки</text>
+<path d="M44 812 H456" stroke="#bdbdb8" stroke-width="1.5"/>
+<text class="sm c" x="250" y="868" style="fill:#777">Поки що тут порожньо.</text>
+<!-- read error -->
+<text class="note" x="500" y="696">Помилка читання даних (замість таблиці)</text>
+<rect class="frame" x="500" y="704" width="460" height="220"/>
+<rect x="524" y="728" width="412" height="170" rx="14" fill="#f7ecea" stroke="#d9b8b0" stroke-width="1.5"/>
+<text class="serif b" x="544" y="768" style="font-size:19px">Не вдалося завантажити дані</text>
+<text class="sm" x="544" y="794" style="fill:#9c4a3a">Текст помилки джерела даних.</text>
+<rect class="btn-primary" x="544" y="816" width="170" height="40" rx="8"/><text class="w b c sm" x="629" y="841">Спробувати ще раз</text>
+<!-- delete flow -->
+<text class="note" x="980" y="696">Видалення у два кроки</text>
+<rect class="frame" x="980" y="704" width="480" height="220"/>
+<text class="sm" x="1000" y="746">Василь Коваль</text>
+<text class="sm e accent-t" x="1292" y="746" style="text-decoration:underline">Редагувати</text>
+<text class="sm e" x="1376" y="746" style="fill:#9c4a3a;text-decoration:underline">Видалити</text>
+<text class="muted" x="1000" y="768">1. Початковий стан: «Видалити» лише озброює кнопку.</text>
+<path d="M1000 782 H1440" stroke="#e3e3df" stroke-width="1"/>
+<text class="sm" x="1000" y="822">Василь Коваль</text>
+<text class="sm e accent-t" x="1214" y="822" style="text-decoration:underline">Редагувати</text>
+<rect x="1226" y="804" width="104" height="34" rx="6" fill="#9c4a3a"/>
+<text class="sm w b c" x="1278" y="826">Підтвердити</text>
+<text class="sm e" x="1440" y="822" style="fill:#777;text-decoration:underline">Скасувати</text>
+<text class="muted" x="1000" y="852">2. Фокус на «Скасувати»; відправляє форму лише «Підтвердити».</text>
+<text class="muted" x="1000" y="870">Помилка видалення: червоний блок role="alert" над таблицею.</text>
+
+<!-- ============ OTHER LISTS ============ -->
+<text class="b" x="20" y="960">Інші списки: та сама оболонка, інші стовпці</text>
+<rect class="box" x="20" y="972" width="1440" height="204"/>
+<path d="M20 1004 H1460 M20 1040 H1460 M20 1076 H1460 M20 1112 H1460 M20 1144 H1460" stroke="#e3e3df" stroke-width="1"/>
+<path d="M20 1004 H1460" stroke="#bdbdb8" stroke-width="1.5"/>
+<text class="sm b" x="40" y="993" style="fill:#777">Розділ (вкладка)</text>
+<text class="sm b" x="260" y="993" style="fill:#777">Маршрут</text>
+<text class="sm b" x="560" y="993" style="fill:#777">Заголовок h1</text>
+<text class="sm b" x="820" y="993" style="fill:#777">Стовпці</text>
+<text class="sm b" x="1180" y="993" style="fill:#777">Остання комірка</text>
+<text class="sm" x="40" y="1027">Люди</text><text class="sm" x="260" y="1027">/admin/people</text><text class="sm" x="560" y="1027">Люди</text><text class="sm" x="820" y="1027">Ім'я (+ тег «приховано з дерева»), Роки</text><text class="sm" x="1180" y="1027">Редагувати / Видалити</text>
+<text class="sm" x="40" y="1063">Зв'язки</text><text class="sm" x="260" y="1063">/admin/relationships</text><text class="sm" x="560" y="1063">Зв'язки</text><text class="sm" x="820" y="1063">Тип, Особа 1, Особа 2</text><text class="sm" x="1180" y="1063">Редагувати / Видалити</text>
+<text class="sm" x="40" y="1099">Поховання</text><text class="sm" x="260" y="1099">/admin/graves</text><text class="sm" x="560" y="1099">Поховання</text><text class="sm" x="820" y="1099">Людина, Адреса, Координати</text><text class="sm" x="1180" y="1099">Редагувати / Видалити</text>
+<text class="sm" x="40" y="1135">Медіа</text><text class="sm" x="260" y="1135">/admin/media</text><text class="sm" x="560" y="1135">Медіа</text><text class="sm" x="820" y="1135">Людина, Тип, Підпис, Рік</text><text class="sm" x="1180" y="1135">Редагувати / Видалити</text>
+<text class="sm" x="40" y="1166">Питання</text><text class="sm" x="260" y="1166">/admin/questions</text><text class="sm" x="560" y="1166">Питання для входу</text><text class="sm" x="820" y="1166">Питання, Відповідь</text><text class="sm" x="1180" y="1166">Редагувати / Видалити</text>
+
+<!-- NOTES -->
+<text class="b" x="20" y="1204">Примітки</text>
+<text class="note" x="20" y="1224">1. Липка шапка: логотип + «Адміністрування», рядок «Джерело: … · Змінити» (повертає на /admin) і «Вийти». Вміст обмежений 1000px (main теж).</text>
+<text class="note" x="20" y="1240">2. Вкладки: Люди, Зв'язки, Поховання, Медіа, Питання; поточна має aria-current="page", жирний шрифт і тло (також на /new та /[id]).</text>
+<text class="note" x="20" y="1256">3. Flash role="status": «Збережено.» або «Видалено.», зникає через 4 с (одноразовий cookie admin-flash).   4. Видалити, потім Підтвердити (суцільний червоний) + Скасувати.</text>
+<text class="note" x="20" y="1272">5. Тег «приховано з дерева» для людей з hidden.   6. Mobile: вкладки прокручуються по горизонталі.   7. Mobile: таблиця в обгортці overflow-x-auto, колонка дій праворуч.   Червоне: токен помилки #9c4a3a.</text>
+</svg>

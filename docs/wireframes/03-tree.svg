@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1930" height="1300" viewBox="0 0 1930 1300" role="img" aria-labelledby="t d">
+<title id="t">Дерево родини: каркас</title>
+<desc id="d">Каркас екрана дерева родини, маршрут /, desktop 1440 і mobile 390.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;font-size:14px;fill:#2b2b2b}
+.bg{fill:#f2f2f0}
+.frame{fill:#f2f2f0;stroke:#bdbdb8;stroke-width:1.5}
+.box{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.card{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn-primary{fill:#9c6446;stroke:#9c6446;stroke-width:1.5}
+.btn-disabled{fill:#e6e6e3;stroke:#d0d0cc;stroke-width:1.5}
+.input{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.avatar{fill:#d9d9d5;stroke:#bdbdb8;stroke-width:1.5}
+.ink{fill:#222}
+.line{stroke:#2b2b2b;stroke-width:2;fill:none}
+.dash{stroke:#777;stroke-width:2;stroke-dasharray:6 5;fill:none}
+.ring{fill:none;stroke:#9c6446;stroke-width:3}
+.call{fill:#9c6446}
+.accent{fill:#9c6446}
+.accent-t{fill:#9c6446}
+.muted{fill:#777;font-size:12px}
+.title{font-family:Georgia,serif;font-size:22px;font-weight:bold}
+.serif{font-family:Georgia,serif}
+.note{font-size:12px;fill:#2b2b2b}
+.b{font-weight:bold}
+.w{fill:#fff}
+.c{text-anchor:middle}
+.e{text-anchor:end}
+.sm{font-size:13px}
+.lg{font-size:16px}
+</style>
+<defs>
+ <g id="tree">
+  <!-- connectors (drawn first) -->
+  <path class="line" d="M736 264 H764"/>
+  <path class="line" d="M750 264 V360 M498 360 H918 M498 360 V400 M918 360 V400"/>
+  <path class="line" d="M576 454 H604"/>
+  <path class="line" d="M590 454 V550 M488 550 H672 M488 550 V590 M672 550 V590"/>
+  <path class="dash" d="M1098 590 V572 H1282 V590"/>
+  <!-- gen 1 -->
+  <rect class="card" x="580" y="210" width="156" height="108" rx="8"/>
+  <circle class="avatar" cx="658" cy="244" r="21"/>
+  <text class="b sm c" x="658" y="288">Василь Коваль</text><text class="muted c" x="658" y="306">1910 – 1985</text>
+  <rect class="card" x="764" y="210" width="156" height="108" rx="8"/>
+  <circle class="avatar" cx="842" cy="244" r="21"/>
+  <text class="b sm c" x="842" y="288">Ганна Коваль</text><text class="muted c" x="842" y="306">1914 – 1999</text>
+  <!-- gen 2 -->
+  <rect class="card" x="420" y="400" width="156" height="108" rx="8"/>
+  <circle class="avatar" cx="498" cy="434" r="21"/>
+  <text class="b sm c" x="498" y="478">Петро Коваль</text><text class="muted c" x="498" y="496">1938 – 2011</text>
+  <rect class="card" x="604" y="400" width="156" height="108" rx="8"/>
+  <circle class="avatar" cx="682" cy="434" r="21"/>
+  <text class="b sm c" x="682" y="478">Марія Коваль</text><text class="muted c" x="682" y="496">1941 – 2015</text>
+  <rect class="card" x="840" y="400" width="156" height="108" rx="8"/>
+  <circle class="avatar" cx="918" cy="434" r="21"/>
+  <text class="b sm c" x="918" y="478">Ольга Мельник</text><text class="muted c" x="918" y="496">1945</text>
+  <!-- gen 3 -->
+  <rect class="card" x="410" y="590" width="156" height="108" rx="8"/>
+  <circle class="avatar" cx="488" cy="624" r="21"/>
+  <text class="b sm c" x="488" y="668">Андрій Коваль</text><text class="muted c" x="488" y="686">1966</text>
+  <rect class="ring" x="405" y="585" width="166" height="118" rx="11"/>
+  <rect class="card" x="594" y="590" width="156" height="108" rx="8"/>
+  <circle class="avatar" cx="672" cy="624" r="21"/>
+  <text class="b sm c" x="672" y="668">Ірина Коваль</text><text class="muted c" x="672" y="686">1969</text>
+  <rect class="card" x="1020" y="590" width="156" height="108" rx="8"/>
+  <circle class="avatar" cx="1098" cy="624" r="21"/>
+  <text class="b sm c" x="1098" y="668">Степан Бойко</text><text class="muted c" x="1098" y="686">1950</text>
+  <rect class="card" x="1204" y="590" width="156" height="108" rx="8"/>
+  <circle class="avatar" cx="1282" cy="624" r="21"/>
+  <text class="b sm c" x="1282" y="668">Надія Бойко</text><text class="muted c" x="1282" y="686">1953</text>
+ </g>
+ <g id="legend">
+  <rect class="box" x="0" y="0" width="250" height="84" rx="8"/>
+  <path class="line" d="M14 16 H44 M29 8 V16 M14 16 V24 M44 16 V24"/>
+  <text class="note" x="58" y="20">батьки та діти</text>
+  <rect class="card" x="14" y="36" width="12" height="12" rx="2"/><rect class="card" x="34" y="36" width="12" height="12" rx="2"/>
+  <path class="line" d="M26 42 H34"/>
+  <text class="note" x="58" y="46">подружжя</text>
+  <path class="dash" d="M14 72 V64 H44 V72"/>
+  <text class="note" x="58" y="70">брати/сестри</text>
+ </g>
+ <g id="zoom">
+  <rect class="btn" x="0" y="0" width="44" height="44" rx="8"/><text class="lg c b" x="22" y="29">+</text>
+  <rect class="btn" x="0" y="52" width="44" height="44" rx="8"/><text class="lg c b" x="22" y="81">−</text>
+  <rect class="btn" x="0" y="104" width="44" height="44" rx="8"/>
+  <path class="line" d="M14 120 V114 H20 M30 114 H36 V120 M36 132 V138 H30 M20 138 H14 V132"/>
+ </g>
+ <g id="callout"><circle class="call" r="10"/></g>
+ <clipPath id="mclip"><rect x="1500" y="174" width="390" height="696"/></clipPath>
+</defs>
+<rect class="bg" width="1930" height="1300"/>
+
+<text class="title" x="20" y="36">Дерево родини</text>
+<text class="note" x="20" y="58">Маршрут: /   ·   Бачать: члени родини (cookie family-session). Без сесії proxy веде на /gate.</text>
+
+<!-- DESKTOP -->
+<text class="b" x="20" y="100">Desktop 1440</text>
+<rect class="frame" x="20" y="110" width="1440" height="760"/>
+<g transform="translate(0,0)">
+ <rect class="box" x="20" y="110" width="1440" height="64"/>
+ <rect class="avatar" x="44" y="128" width="28" height="28" rx="6"/>
+ <text class="serif lg b" x="84" y="148">Родинна історія</text>
+ <rect class="btn" x="1350" y="124" width="90" height="36" rx="8"/>
+ <text class="sm c" x="1395" y="147">Вийти</text>
+ <text class="muted" x="760" y="147">sticky, 64px</text>
+</g>
+<use href="#tree" transform="translate(0,0)"/>
+
+<!-- search -->
+<rect class="input" x="44" y="190" width="320" height="44" rx="8"/>
+<text class="muted sm" x="60" y="217">Знайти людину</text>
+<rect class="box" x="44" y="240" width="320" height="240" rx="8"/>
+<rect x="45" y="241" width="318" height="38" fill="#f1e6de"/>
+<path d="M44 280 H364 M44 320 H364 M44 360 H364 M44 400 H364 M44 440 H364" stroke="#e3e3df" stroke-width="1"/>
+<text class="sm" x="60" y="265">Петро Коваль</text><text class="muted e" x="348" y="265">1938 – 2011</text>
+<text class="sm" x="60" y="305">Марія Коваль</text><text class="muted e" x="348" y="305">1941 – 2015</text>
+<text class="sm" x="60" y="345">Андрій Коваль</text><text class="muted e" x="348" y="345">1966</text>
+<text class="sm" x="60" y="385">Ірина Коваль</text><text class="muted e" x="348" y="385">1969</text>
+<text class="sm" x="60" y="425">Василь Коваль</text><text class="muted e" x="348" y="425">1910 – 1985</text>
+<text class="sm" x="60" y="465">Ганна Коваль</text><text class="muted e" x="348" y="465">1914 – 1999</text>
+
+<!-- zoom, hint, legend (desktop) -->
+<use href="#zoom" transform="translate(1396,702)"/>
+<rect class="box" x="44" y="716" width="340" height="38" rx="8"/>
+<text class="note" x="58" y="739">перетягніть · колесо / щипок для масштабу</text>
+<rect class="btn" x="356" y="722" width="22" height="26" rx="6"/><text class="c" x="367" y="740">×</text>
+<use href="#legend" transform="translate(44,762)"/>
+
+<!-- callouts desktop -->
+<use href="#callout" x="400" y="600"/><text class="note w b c" x="400" y="604">1</text>
+<use href="#callout" x="1190" y="572"/><text class="note w b c" x="1190" y="576">2</text>
+<use href="#callout" x="376" y="196"/><text class="note w b c" x="376" y="200">3</text>
+<use href="#callout" x="1384" y="710"/><text class="note w b c" x="1384" y="714">4</text>
+<use href="#callout" x="396" y="720"/><text class="note w b c" x="396" y="724">5</text>
+
+<!-- MOBILE -->
+<text class="b" x="1500" y="100">Mobile 390</text>
+<rect class="frame" x="1500" y="110" width="390" height="760"/>
+<g clip-path="url(#mclip)">
+ <use href="#tree" transform="translate(1320,145) scale(0.5)"/>
+</g>
+<rect class="box" x="1500" y="110" width="390" height="64"/>
+<rect class="avatar" x="1516" y="128" width="28" height="28" rx="6"/>
+<text class="serif lg b" x="1556" y="148">Родинна історія</text>
+<rect class="btn" x="1800" y="124" width="76" height="36" rx="8"/>
+<text class="sm c" x="1838" y="147">Вийти</text>
+<rect class="input" x="1512" y="190" width="320" height="44" rx="8"/>
+<text class="muted sm" x="1528" y="217">Знайти людину</text>
+<use href="#zoom" transform="translate(1834,702)"/>
+<rect class="box" x="1512" y="700" width="300" height="54" rx="8"/>
+<text class="note" x="1524" y="722">перетягніть · колесо /</text>
+<text class="note" x="1524" y="740">щипок для масштабу</text>
+<rect class="btn" x="1780" y="706" width="22" height="26" rx="6"/><text class="c" x="1791" y="724">×</text>
+<use href="#legend" transform="translate(1512,762)"/>
+<use href="#callout" x="1850" y="190"/><text class="note w b c" x="1850" y="194">6</text>
+<use href="#callout" x="1820" y="694"/><text class="note w b c" x="1820" y="698">7</text>
+<use href="#callout" x="1872" y="260"/><text class="note w b c" x="1872" y="264">8</text>
+
+<!-- VARIANTS -->
+<text class="b" x="20" y="900">Стани</text>
+<text class="note" x="20" y="918">Пошук без збігів</text>
+<rect class="frame" x="20" y="926" width="360" height="170"/>
+<rect class="input" x="44" y="946" width="312" height="44" rx="8"/>
+<text class="sm" x="60" y="973">Щщщ</text>
+<rect class="box" x="44" y="996" width="312" height="44" rx="8"/>
+<text class="muted sm" x="60" y="1023">Нікого не знайдено</text>
+
+<text class="note" x="420" y="918">Порожнє дерево</text>
+<rect class="frame" x="420" y="926" width="560" height="170"/>
+<rect class="box" x="420" y="926" width="560" height="40"/>
+<rect class="avatar" x="436" y="934" width="24" height="24" rx="6"/>
+<text class="serif b" x="470" y="952">Родинна історія</text>
+<rect class="btn" x="880" y="932" width="84" height="28" rx="8"/><text class="note c" x="922" y="950">Вийти</text>
+<text class="title c" x="700" y="1038">Дерево поки порожнє</text>
+
+<!-- LEGEND -->
+<text class="b" x="20" y="1130">Примітки</text>
+<text class="note" x="20" y="1152">1. Виділена картка: акцентне кільце та aria-current="true" (відкрита зі сторінки людини через «Показати на дереві»).</text>
+<text class="note" x="20" y="1170">2. Пунктирна дужка над двома картками: брати/сестри без записаних батьків. Суцільна шина: батьки та діти; коротка лінія: подружжя.</text>
+<text class="note" x="20" y="1188">3. Пошук: до 6 результатів; Enter або клік центрує дерево на людині; без збігів показує «Нікого не знайдено».</text>
+<text class="note" x="20" y="1206">4. Стек масштабу: три кнопки 44px (+, −, вмістити).   5. Підказка закривається ×; легенда під нею залишається.</text>
+<text class="note" x="20" y="1224">6. Mobile: ширина пошуку min(20rem, 100% − 1.5rem).   7. Підказка вужча, щоб не перекривати стек масштабу (переноситься на 2 рядки).</text>
+<text class="note" x="20" y="1242">8. Mobile: початкове «вмістити» не менше 0.5x і починається з верхнього покоління; решту дерева видно перетягуванням.</text>
+</svg>
