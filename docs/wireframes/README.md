@@ -44,7 +44,7 @@ Each file shows a desktop frame (1440) and, where the layout differs, a mobile f
 
 - Route: `/person/[id]`
 - Who sees it: family members
-- States: desktop two columns (biography and gallery | burial and family), mobile stack order, hero with avatar and "Знайти на дереві", family sections
+- States: desktop two columns (biography and gallery | burial and family), mobile stack order, hero with avatar and "Відкрити родовід", family sections
 
 ### 05 Lightbox
 
