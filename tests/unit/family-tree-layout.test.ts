@@ -769,3 +769,134 @@ describe("computeFamilyTreeLayout", () => {
     expect(nodes.size).toBe(0);
   });
 });
+
+describe("computeFamilyTreeLayout hardening", () => {
+  const parentChild = (parent: string, child: string): Relationship => ({
+    id: `pc-${parent}-${child}`,
+    type: "parent-child",
+    person1Id: parent,
+    person2Id: child,
+  });
+  const spouse = (a: string, b: string): Relationship => ({
+    id: `sp-${a}-${b}`,
+    type: "spouse",
+    person1Id: a,
+    person2Id: b,
+  });
+
+  function expectComplete(people: Person[], relationships: Relationship[]) {
+    const started = Date.now();
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+    expect(Date.now() - started).toBeLessThan(2000);
+    expect(nodes.size).toBe(people.length);
+    for (const p of people) {
+      const node = nodes.get(p.id);
+      expect(node, p.id).toBeDefined();
+      expect(Number.isFinite(node!.generation), p.id).toBe(true);
+      expect(Number.isFinite(node!.column), p.id).toBe(true);
+    }
+    return nodes;
+  }
+
+  it("terminates on a cyclic ancestry above a married-in partner", () => {
+    // spouse(a, c); x is c's parent, y is x's parent, and x is y's parent.
+    const people = ["a", "c", "x", "y"].map((id) => person(id));
+    expectComplete(people, [
+      spouse("a", "c"),
+      parentChild("x", "c"),
+      parentChild("y", "x"),
+      parentChild("x", "y"),
+    ]);
+  });
+
+  it("returns a complete layout for self-parents, mutual parents and other cycles", () => {
+    const people = ["a", "b", "c", "d", "e"].map((id) => person(id));
+    const cases: Relationship[][] = [
+      [parentChild("a", "a")],
+      [parentChild("a", "b"), parentChild("b", "a")],
+      [parentChild("a", "b"), parentChild("b", "c"), parentChild("c", "a")],
+      // a partner who is also an ancestor, and a parent who is also a spouse
+      [spouse("a", "b"), parentChild("b", "a"), parentChild("a", "c"), parentChild("c", "b")],
+      [spouse("a", "a"), spouse("a", "b"), spouse("b", "a")],
+      // duplicate records
+      [parentChild("a", "b"), parentChild("a", "b"), spouse("a", "c"), spouse("c", "a")],
+      // a record naming someone who is not in the family
+      [parentChild("a", "ghost"), parentChild("ghost", "b"), spouse("ghost", "c")],
+      [parentChild("a", "b"), parentChild("b", "c"), parentChild("c", "d"), parentChild("d", "b"), spouse("e", "d")],
+    ];
+    for (const relationships of cases) expectComplete(people, relationships);
+  });
+
+  it("keeps spouses and rows apart even when ancestry is cyclic", () => {
+    const people = ["a", "b", "c", "d"].map((id) => person(id));
+    const relationships = [
+      spouse("a", "b"),
+      parentChild("a", "c"),
+      parentChild("b", "c"),
+      parentChild("c", "a"),
+      spouse("c", "d"),
+    ];
+    const nodes = expectComplete(people, relationships);
+    expect(separationProblems(nodes)).toEqual([]);
+  });
+
+  it("lays out a couple with a very wide row of children quickly and without overlap", () => {
+    const people = [person("mum"), person("dad")];
+    const relationships: Relationship[] = [spouse("mum", "dad")];
+    for (let i = 0; i < 200; i++) {
+      people.push(person(`kid-${String(i).padStart(3, "0")}`, String(1900 + (i % 90))));
+      relationships.push(parentChild("mum", `kid-${String(i).padStart(3, "0")}`));
+      relationships.push(parentChild("dad", `kid-${String(i).padStart(3, "0")}`));
+    }
+    const started = Date.now();
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+    expect(Date.now() - started).toBeLessThan(2000);
+    expect(separationProblems(nodes)).toEqual([]);
+    expect(spouseGapProblems(nodes, relationships)).toEqual([]);
+    // Siblings keep birth-date order, the couple sits over the middle.
+    const kidColumns = people.slice(2).map((p) => nodes.get(p.id)!.column);
+    const centre = (nodes.get("mum")!.column + nodes.get("dad")!.column) / 2;
+    expect(centre).toBeGreaterThan(Math.min(...kidColumns));
+    expect(centre).toBeLessThan(Math.max(...kidColumns));
+  });
+
+  it("stays deterministic and order independent on a wide multi-family tree", () => {
+    const people: Person[] = [];
+    const relationships: Relationship[] = [];
+    for (let f = 0; f < 10; f++) {
+      people.push(person(`f${f}`, "1900"), person(`w${f}`, "1901"));
+      relationships.push(spouse(`f${f}`, `w${f}`));
+      for (let k = 0; k < 40; k++) {
+        const id = `c${f}-${String(k).padStart(2, "0")}`;
+        people.push(person(id, String(1930 + k)));
+        relationships.push(parentChild(`f${f}`, id), parentChild(`w${f}`, id));
+      }
+    }
+    const started = Date.now();
+    const first = computeFamilyTreeLayout(people, relationships);
+    expect(Date.now() - started).toBeLessThan(2000);
+    expect(separationProblems(first.nodes)).toEqual([]);
+    expect(spouseGapProblems(first.nodes, relationships)).toEqual([]);
+    expect(
+      orderIndependenceProblems(people, relationships, shuffle(people, mulberry32(7))),
+    ).toEqual([]);
+  });
+
+  it("lays out a deep single-child chain as one straight column without overflowing the stack", () => {
+    const people: Person[] = [];
+    const relationships: Relationship[] = [];
+    for (let i = 0; i < 3000; i++) {
+      people.push(person(`gen-${String(i).padStart(4, "0")}`));
+      if (i > 0) {
+        relationships.push(
+          parentChild(`gen-${String(i - 1).padStart(4, "0")}`, `gen-${String(i).padStart(4, "0")}`),
+        );
+      }
+    }
+    const started = Date.now();
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+    expect(Date.now() - started).toBeLessThan(2000);
+    expect(nodes.size).toBe(3000);
+    expect(new Set([...nodes.values()].map((n) => n.column)).size).toBe(1);
+  });
+});
