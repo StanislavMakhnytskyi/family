@@ -5,7 +5,7 @@ test.describe("person page", () => {
   test("'show on the tree' returns to the tree centred on that person", async ({ page }) => {
     await login(page);
     await page.goto("/person/yaroslav-savchenko");
-    await page.getByRole("link", { name: "Показати на дереві" }).click();
+    await page.getByRole("link", { name: "Знайти на дереві" }).click();
     await expect(page).toHaveURL(/\/\?focus=yaroslav-savchenko/);
 
     const highlighted = page.locator('[data-testid="tree-card"][aria-current="true"]');
