@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1930" height="1060" viewBox="0 0 1930 1060" role="img" aria-labelledby="t d">
+<title id="t">Лайтбокс: каркас</title>
+<desc id="d">Каркас повноекранного діалогу перегляду фото, desktop 1440 і mobile 390.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;font-size:14px;fill:#2b2b2b}
+.bg{fill:#f2f2f0}
+.frame{fill:#f2f2f0;stroke:#bdbdb8;stroke-width:1.5}
+.box{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.card{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn-primary{fill:#9c6446;stroke:#9c6446;stroke-width:1.5}
+.btn-disabled{fill:#e6e6e3;stroke:#d0d0cc;stroke-width:1.5}
+.input{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.avatar{fill:#d9d9d5;stroke:#bdbdb8;stroke-width:1.5}
+.ink{fill:#222}
+.line{stroke:#2b2b2b;stroke-width:2;fill:none}
+.dash{stroke:#777;stroke-width:2;stroke-dasharray:6 5;fill:none}
+.ring{fill:none;stroke:#9c6446;stroke-width:3}
+.call{fill:#9c6446}
+.accent{fill:#9c6446}
+.accent-t{fill:#9c6446}
+.muted{fill:#777;font-size:12px}
+.title{font-family:Georgia,serif;font-size:22px;font-weight:bold}
+.serif{font-family:Georgia,serif}
+.note{font-size:12px;fill:#2b2b2b}
+.b{font-weight:bold}
+.w{fill:#fff}
+.c{text-anchor:middle}
+.e{text-anchor:end}
+.sm{font-size:13px}
+.lg{font-size:16px}
+</style>
+<defs>
+ <g id="ctl"><rect x="0" y="0" width="44" height="44" rx="22" fill="#333" stroke="#777" stroke-width="1.5"/></g>
+</defs>
+<rect class="bg" width="1930" height="1060"/>
+<text class="title" x="20" y="36">Лайтбокс (перегляд фото)</text>
+<text class="note" x="20" y="58">Діалог поверх /person/[id]   ·   Бачать: члени родини (cookie family-session)   ·   Відкривається кліком по мініатюрі галереї</text>
+
+<!-- DESKTOP -->
+<text class="b" x="20" y="100">Desktop 1440</text>
+<rect class="frame" x="20" y="110" width="1440" height="760"/>
+<rect x="20" y="110" width="1440" height="760" fill="#1c1c1c"/>
+<rect x="20" y="110" width="1440" height="56" fill="#000" fill-opacity="0.35"/>
+<text class="w b lg" x="44" y="144">2 з 7</text>
+<use href="#ctl" x="1396" y="116"/><text class="w lg c" x="1418" y="144">×</text>
+<rect x="260" y="190" width="920" height="560" fill="#3a3a38" stroke="#777" stroke-width="1.5"/>
+<path d="M260 190 L1180 750 M1180 190 L260 750" stroke="#555" stroke-width="1"/>
+<text class="w c" x="720" y="476">фото (масштаб 1x – 5x)</text>
+<use href="#ctl" x="100" y="448"/><text class="w lg c" x="122" y="476">‹</text>
+<use href="#ctl" x="1316" y="448"/><text class="w lg c" x="1338" y="476">›</text>
+<rect x="20" y="780" width="1440" height="90" fill="#000" fill-opacity="0.35"/>
+<use href="#ctl" x="560" y="796"/><text class="w lg c" x="582" y="824">−</text>
+<text class="w c" x="720" y="824">1x</text>
+<use href="#ctl" x="796" y="796"/><text class="w lg c" x="818" y="824">+</text>
+<text class="w sm c" x="1120" y="824">Весілля, 1962</text>
+<circle class="call" cx="120" cy="440" r="10"/><text class="note w b c" x="120" y="444">1</text>
+<circle class="call" cx="1376" cy="124" r="10"/><text class="note w b c" x="1376" y="128">2</text>
+<circle class="call" cx="560" cy="790" r="10"/><text class="note w b c" x="560" y="794">3</text>
+
+<!-- MOBILE -->
+<text class="b" x="1500" y="100">Mobile 390</text>
+<rect class="frame" x="1500" y="110" width="390" height="760"/>
+<rect x="1500" y="110" width="390" height="760" fill="#1c1c1c"/>
+<rect x="1500" y="110" width="390" height="56" fill="#000" fill-opacity="0.35"/>
+<text class="w b lg" x="1520" y="144">2 з 7</text>
+<use href="#ctl" x="1830" y="116"/><text class="w lg c" x="1852" y="144">×</text>
+<rect x="1512" y="300" width="366" height="400" fill="#3a3a38" stroke="#777" stroke-width="1.5"/>
+<path d="M1512 300 L1878 700 M1878 300 L1512 700" stroke="#555" stroke-width="1"/>
+<text class="w c" x="1695" y="504">фото</text>
+<use href="#ctl" x="1520" y="478"/><text class="w lg c" x="1542" y="506">‹</text>
+<use href="#ctl" x="1826" y="478"/><text class="w lg c" x="1848" y="506">›</text>
+<rect x="1500" y="780" width="390" height="90" fill="#000" fill-opacity="0.35"/>
+<use href="#ctl" x="1560" y="796"/><text class="w lg c" x="1582" y="824">−</text>
+<text class="w c" x="1695" y="824">1x</text>
+<use href="#ctl" x="1786" y="796"/><text class="w lg c" x="1808" y="824">+</text>
+<text class="w sm c" x="1695" y="858">Весілля, 1962</text>
+<path d="M1600 232 H1790 M1600 232 l12 -8 M1600 232 l12 8 M1790 232 l-12 -8 M1790 232 l-12 8" stroke="#fff" stroke-width="2" fill="none"/>
+<text class="w note c" x="1695" y="256">свайп (без масштабу)</text>
+<circle class="call" cx="1695" cy="212" r="10"/><text class="note w b c" x="1695" y="216">4</text>
+
+<!-- Notes -->
+<text class="b" x="20" y="910">Примітки</text>
+<text class="note" x="20" y="932">1. Стрілки попереднє/наступне; на краях колекції можуть бути вимкнені. Лічильник «2 з 7» завжди показує позицію.</text>
+<text class="note" x="20" y="950">2. Закрити: кнопка ×, Esc або клік по затемненому фону. Діалог тримає фокус (focus trap) і повертає його на мініатюру.</text>
+<text class="note" x="20" y="968">3. Масштаб 1x – 5x: кнопки −/+ внизу, клавіші +/−, колесо; подвійний клік/тап перемикає масштаб. Підпис фото під зображенням.</text>
+<text class="note" x="20" y="986">Клавіатура: Esc закрити, ← → перемкнути фото, +/− масштаб, Tab лише по елементах діалогу.</text>
+<text class="note" x="20" y="1004">4. Mobile: свайп вліво/вправо перемикає фото, лише коли воно не збільшене; щипок збільшує, подвійний тап теж; у збільшеному вигляді жест рухає фото.</text>
+<text class="note" x="20" y="1022">Кнопки керування мають розмір 44px; фон діалогу темний напівпрозорий, сторінка під ним не прокручується.</text>
+</svg>

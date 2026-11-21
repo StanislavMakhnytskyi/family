@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1930" height="1780" viewBox="0 0 1930 1780" role="img" aria-labelledby="t d">
+<title id="t">Системні стани: 404, помилка, завантаження, порожнє дерево</title>
+<desc id="d">Каркас сторінки «не знайдено», загальної помилки, скелета завантаження сторінки людини, порожнього дерева та помилки адмін-розділу.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;font-size:14px;fill:#2b2b2b}
+.bg{fill:#f2f2f0}
+.frame{fill:#f2f2f0;stroke:#bdbdb8;stroke-width:1.5}
+.box{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.card{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn-primary{fill:#9c6446;stroke:#9c6446;stroke-width:1.5}
+.btn-disabled{fill:#e6e6e3;stroke:#d0d0cc;stroke-width:1.5}
+.input{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.avatar{fill:#d9d9d5;stroke:#bdbdb8;stroke-width:1.5}
+.ink{fill:#222}
+.line{stroke:#2b2b2b;stroke-width:2;fill:none}
+.dash{stroke:#777;stroke-width:2;stroke-dasharray:6 5;fill:none}
+.ring{fill:none;stroke:#9c6446;stroke-width:3}
+.call{fill:#9c6446}
+.accent{fill:#9c6446}
+.accent-t{fill:#9c6446}
+.muted{fill:#777;font-size:12px}
+.title{font-family:Georgia,serif;font-size:22px;font-weight:bold}
+.serif{font-family:Georgia,serif}
+.note{font-size:12px;fill:#2b2b2b}
+.b{font-weight:bold}
+.w{fill:#fff}
+.c{text-anchor:middle}
+.e{text-anchor:end}
+.sm{font-size:13px}
+.lg{font-size:16px}
+</style>
+<defs>
+ <g id="callout"><circle class="call" r="10"/></g>
+ <clipPath id="mclip"><rect x="1500" y="552" width="390" height="730"/></clipPath>
+</defs>
+<rect class="bg" width="1930" height="1780"/>
+
+<text class="title" x="20" y="36">Системні стани</text>
+<text class="note" x="20" y="58">Маршрути: будь-який невідомий URL (404), будь-яка помилка рендера, /person/[id] під час завантаження, / з порожніми даними, /admin/* з помилкою читання   ·   Бачать: ті, хто потрапив на відповідний екран.</text>
+
+<!-- ============ 404 ============ -->
+<text class="b" x="20" y="100">Сторінку не знайдено (not-found.tsx)</text>
+<rect class="frame" x="20" y="110" width="560" height="400"/>
+<rect class="avatar" x="283" y="210" width="34" height="34" rx="8"/>
+<text class="title c" x="300" y="292" style="font-size:30px">Сторінку не знайдено</text>
+<text class="sm c" x="300" y="326" style="fill:#777">Такої сторінки немає або її було видалено.</text>
+<rect class="btn-primary" x="225" y="350" width="150" height="44" rx="8"/><text class="w b c sm" x="300" y="377">До дерева</text>
+<text class="muted" x="40" y="132">по центру екрана, max 440px; та сама розмітка на desktop і mobile</text>
+<use href="#callout" x="272" y="227"/><text class="note w b c" x="272" y="231">1</text>
+
+<!-- ============ GLOBAL ERROR ============ -->
+<text class="b" x="600" y="100">Загальна помилка (error.tsx)</text>
+<rect class="frame" x="600" y="110" width="560" height="400"/>
+<rect class="avatar" x="863" y="210" width="34" height="34" rx="8"/>
+<text class="title c" x="880" y="292" style="font-size:30px">Щось пішло не так</text>
+<text class="sm c" x="880" y="326" style="fill:#777">Спробуйте ще раз. Якщо помилка повторюється, зайдіть пізніше.</text>
+<rect class="btn-primary" x="785" y="350" width="190" height="44" rx="8"/><text class="w b c sm" x="880" y="377">Спробувати ще раз</text>
+<text class="muted" x="620" y="132">абзац role="alert"; кнопка викликає reset() сегмента</text>
+<use href="#callout" x="852" y="227"/><text class="note w b c" x="852" y="231">2</text>
+
+<!-- ============ ADMIN ERROR ============ -->
+<text class="b" x="1180" y="100">Помилка в адмін-розділі ((dashboard)/error.tsx)</text>
+<rect class="frame" x="1180" y="110" width="730" height="400"/>
+<rect class="box" x="1180" y="110" width="730" height="56"/>
+<rect class="avatar" x="1210" y="124" width="26" height="26" rx="6"/>
+<text class="serif lg b" x="1246" y="143">Адміністрування</text>
+<text class="sm e" x="1880" y="143">Вийти</text>
+<rect x="1210" y="210" width="670" height="190" rx="14" fill="#f7ecea" stroke="#d9b8b0" stroke-width="1.5"/>
+<text class="serif b" x="1234" y="254" style="font-size:19px">Не вдалося завантажити дані</text>
+<text class="sm" x="1234" y="284" style="fill:#9c4a3a">Текст помилки (error.message).</text>
+<rect class="btn-primary" x="1234" y="316" width="170" height="40" rx="8"/><text class="w b c sm" x="1319" y="341">Спробувати ще раз</text>
+<text class="muted" x="1210" y="440">Те саме оформлення має картка помилки читання у списках (07), там «Спробувати ще раз» — звичайне</text>
+<text class="muted" x="1210" y="456">посилання на ту саму сторінку, тут — кнопка reset(). Шапка й вкладки адмінки залишаються.</text>
+<use href="#callout" x="1198" y="227"/><text class="note w b c" x="1198" y="231">3</text>
+
+<!-- ============ PERSON LOADING ============ -->
+<text class="b" x="20" y="540">Завантаження сторінки людини: /person/[id]/loading.tsx, desktop 1440</text>
+<rect class="frame" x="20" y="552" width="1440" height="560"/>
+<rect class="box" x="20" y="552" width="1440" height="64"/>
+<text class="muted" x="40" y="590">порожня смуга шапки 64px, aria-busy="true"</text>
+<!-- hero -->
+<rect class="card" x="258" y="644" width="944" height="204" rx="12"/>
+<circle cx="360" cy="746" r="72" fill="#e6e6e3"/>
+<rect x="462" y="700" width="288" height="40" rx="8" fill="#e6e6e3"/>
+<rect x="462" y="752" width="128" height="20" rx="6" fill="#e6e6e3"/>
+<!-- left card -->
+<rect class="card" x="258" y="866" width="586" height="212" rx="12"/>
+<rect x="284" y="892" width="160" height="24" rx="6" fill="#e6e6e3"/>
+<rect x="284" y="928" width="534" height="16" rx="5" fill="#e6e6e3"/>
+<rect x="284" y="956" width="534" height="16" rx="5" fill="#e6e6e3"/>
+<rect x="284" y="984" width="356" height="16" rx="5" fill="#e6e6e3"/>
+<!-- right card -->
+<rect class="card" x="862" y="866" width="340" height="212" rx="12"/>
+<rect x="888" y="892" width="112" height="24" rx="6" fill="#e6e6e3"/>
+<rect x="888" y="928" width="288" height="56" rx="8" fill="#e6e6e3"/>
+<rect x="888" y="996" width="288" height="56" rx="8" fill="#e6e6e3"/>
+<text class="muted" x="1220" y="740">hero: аватар 144px, ім'я, роки</text>
+<text class="muted" x="1220" y="940">праворуч 340px</text>
+<use href="#callout" x="240" y="660"/><text class="note w b c" x="240" y="664">4</text>
+<use href="#callout" x="240" y="882"/><text class="note w b c" x="240" y="886">5</text>
+<use href="#callout" x="1218" y="882"/><text class="note w b c" x="1218" y="886">6</text>
+
+<text class="b" x="1500" y="540">Mobile 390</text>
+<rect class="frame" x="1500" y="552" width="390" height="730"/>
+<g clip-path="url(#mclip)">
+ <rect class="box" x="1500" y="552" width="390" height="64"/>
+ <rect class="card" x="1518" y="644" width="354" height="300" rx="12"/>
+ <circle cx="1620" cy="746" r="72" fill="#e6e6e3"/>
+ <rect x="1548" y="838" width="288" height="40" rx="8" fill="#e6e6e3"/>
+ <rect x="1548" y="890" width="128" height="20" rx="6" fill="#e6e6e3"/>
+ <rect class="card" x="1518" y="962" width="354" height="170" rx="12"/>
+ <rect x="1544" y="988" width="160" height="24" rx="6" fill="#e6e6e3"/>
+ <rect x="1544" y="1024" width="302" height="16" rx="5" fill="#e6e6e3"/>
+ <rect x="1544" y="1052" width="302" height="16" rx="5" fill="#e6e6e3"/>
+ <rect x="1544" y="1080" width="200" height="16" rx="5" fill="#e6e6e3"/>
+ <rect class="card" x="1518" y="1150" width="354" height="212" rx="12"/>
+ <rect x="1544" y="1176" width="112" height="24" rx="6" fill="#e6e6e3"/>
+ <rect x="1544" y="1212" width="302" height="56" rx="8" fill="#e6e6e3"/>
+ <rect x="1544" y="1280" width="302" height="56" rx="8" fill="#e6e6e3"/>
+</g>
+<text class="muted" x="1520" y="1300">одна колонка; лише початок показано</text>
+
+<!-- ============ TREE EMPTY ============ -->
+<text class="b" x="20" y="1340">Порожнє дерево: /</text>
+<rect class="frame" x="20" y="1350" width="700" height="260"/>
+<rect class="box" x="20" y="1350" width="700" height="56"/>
+<rect class="avatar" x="40" y="1364" width="26" height="26" rx="6"/>
+<text class="serif lg b" x="76" y="1383">Родинна історія</text>
+<rect class="btn" x="620" y="1362" width="84" height="32" rx="8"/><text class="sm c" x="662" y="1383">Вийти</text>
+<text class="title c" x="370" y="1500">Дерево поки порожнє</text>
+<use href="#callout" x="40" y="1430"/><text class="note w b c" x="40" y="1434">7</text>
+
+<!-- ============ NO SKELETON TABLE ============ -->
+<text class="b" x="740" y="1340">Де є стан завантаження і де його немає</text>
+<rect class="box" x="740" y="1350" width="720" height="260"/>
+<path d="M740 1382 H1460 M740 1418 H1460 M740 1454 H1460 M740 1490 H1460 M740 1526 H1460 M740 1562 H1460" stroke="#e3e3df" stroke-width="1"/>
+<path d="M740 1382 H1460" stroke="#bdbdb8" stroke-width="1.5"/>
+<text class="sm b" x="756" y="1371" style="fill:#777">Маршрут</text>
+<text class="sm b" x="1000" y="1371" style="fill:#777">Скелет завантаження</text>
+<text class="sm b" x="1220" y="1371" style="fill:#777">Межа помилки</text>
+<text class="sm" x="756" y="1405">/ (дерево)</text><text class="sm" x="1000" y="1405">немає</text><text class="sm" x="1220" y="1405">error.tsx (корінь)</text>
+<text class="sm" x="756" y="1441">/gate, /gate/years</text><text class="sm" x="1000" y="1441">немає</text><text class="sm" x="1220" y="1441">error.tsx (корінь)</text>
+<text class="sm b" x="756" y="1477">/person/[id]</text><text class="sm b" x="1000" y="1477">є (loading.tsx)</text><text class="sm" x="1220" y="1477">error.tsx (корінь)</text>
+<text class="sm" x="756" y="1513">/admin/login, /admin</text><text class="sm" x="1000" y="1513">немає</text><text class="sm" x="1220" y="1513">error.tsx (корінь)</text>
+<text class="sm" x="756" y="1549">/admin/* (вкладки)</text><text class="sm" x="1000" y="1549">немає</text><text class="sm" x="1220" y="1549">(dashboard)/error.tsx</text>
+<text class="sm" x="756" y="1585">невідомий URL</text><text class="sm" x="1000" y="1585">—</text><text class="sm" x="1220" y="1585">not-found.tsx</text>
+
+<!-- NOTES -->
+<text class="b" x="20" y="1650">Примітки</text>
+<text class="note" x="20" y="1672">1. Сторінка 404: логотип, заголовок «Сторінку не знайдено», пояснення, кнопка «До дерева» (посилання на /).   2. Загальна помилка: «Щось пішло не так», абзац role="alert", «Спробувати ще раз».</text>
+<text class="note" x="20" y="1690">3. Помилка адмін-розділу: червонувата картка з текстом помилки та кнопкою повтору.   4-6. Скелет сторінки людини повторює структуру: hero, ліва картка (біографія), права картка 340px (родина).</text>
+<text class="note" x="20" y="1708">7. Порожнє дерево: шапка та напис «Дерево поки порожнє».   Скелетон є лише в /person/[id]; у дерева, шлюзу та адмінки loading.tsx немає.</text>
+</svg>

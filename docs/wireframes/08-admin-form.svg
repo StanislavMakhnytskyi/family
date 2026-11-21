@@ -1,0 +1,238 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1930" height="2080" viewBox="0 0 1930 2080" role="img" aria-labelledby="t d">
+<title id="t">Адмін: форми редагування</title>
+<desc id="d">Каркас форми людини, desktop 1440 і mobile 390, та скорочені варіанти форм зв'язку, поховання, медіа і питання.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;font-size:14px;fill:#2b2b2b}
+.bg{fill:#f2f2f0}
+.frame{fill:#f2f2f0;stroke:#bdbdb8;stroke-width:1.5}
+.box{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.card{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn-primary{fill:#9c6446;stroke:#9c6446;stroke-width:1.5}
+.btn-disabled{fill:#e6e6e3;stroke:#d0d0cc;stroke-width:1.5}
+.input{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.avatar{fill:#d9d9d5;stroke:#bdbdb8;stroke-width:1.5}
+.ink{fill:#222}
+.line{stroke:#2b2b2b;stroke-width:2;fill:none}
+.dash{stroke:#777;stroke-width:2;stroke-dasharray:6 5;fill:none}
+.ring{fill:none;stroke:#9c6446;stroke-width:3}
+.call{fill:#9c6446}
+.accent{fill:#9c6446}
+.accent-t{fill:#9c6446}
+.muted{fill:#777;font-size:12px}
+.title{font-family:Georgia,serif;font-size:22px;font-weight:bold}
+.serif{font-family:Georgia,serif}
+.note{font-size:12px;fill:#2b2b2b}
+.b{font-weight:bold}
+.w{fill:#fff}
+.c{text-anchor:middle}
+.e{text-anchor:end}
+.sm{font-size:13px}
+.lg{font-size:16px}
+</style>
+<defs>
+ <g id="callout"><circle class="call" r="10"/></g>
+ <!-- calendar glyph -->
+ <g id="cal"><rect x="0" y="2" width="14" height="12" rx="2" fill="none" stroke="#777" stroke-width="1.5"/><path d="M0 6 H14 M4 0 V4 M10 0 V4" stroke="#777" stroke-width="1.5" fill="none"/></g>
+</defs>
+<rect class="bg" width="1930" height="2080"/>
+
+<text class="title" x="20" y="36">Адмін: форми редагування</text>
+<text class="note" x="20" y="58">Маршрути: /admin/people/new, /admin/people/[id] (і так само для зв'язків, поховань, медіа, питань)   ·   Бачать: адміністратор з обраним джерелом даних. Форма людини max 560px.</text>
+
+<!-- ============ DESKTOP PERSON FORM ============ -->
+<text class="b" x="20" y="100">Форма людини: desktop 1440</text>
+<rect class="frame" x="20" y="110" width="1440" height="970"/>
+<rect class="box" x="20" y="110" width="1440" height="104"/>
+<rect class="avatar" x="260" y="124" width="26" height="26" rx="6"/>
+<text class="serif lg b" x="296" y="143">Адміністрування</text>
+<text class="sm e" x="1120" y="143">Джерело: <tspan class="b">локальні файли</tspan> · <tspan style="text-decoration:underline">Змінити</tspan></text>
+<text class="sm e" x="1220" y="143">Вийти</text>
+<rect x="260" y="168" width="74" height="38" rx="8" fill="#ece9e2"/>
+<text class="sm b c" x="297" y="192">Люди</text>
+<text class="sm c" x="383" y="192">Зв'язки</text>
+<text class="sm c" x="487" y="192">Поховання</text>
+<text class="sm c" x="586" y="192">Медіа</text>
+<text class="sm c" x="675" y="192">Питання</text>
+<text class="muted" x="760" y="192">оболонка як у списку (07)</text>
+
+<text class="title" x="260" y="268">Редагувати: Василь Коваль</text>
+<!-- ID -->
+<text class="note b" x="260" y="307" style="fill:#555">ID</text>
+<rect class="input" x="260" y="314" width="560" height="44" rx="8"/><text class="sm" x="276" y="341">vasyl-koval</text>
+<!-- names -->
+<text class="note b" x="260" y="387" style="fill:#555">Ім'я</text>
+<rect class="input" x="260" y="394" width="178" height="44" rx="8"/><text class="sm" x="276" y="421">Василь</text>
+<text class="note b" x="450" y="387" style="fill:#555">Прізвище <tspan style="font-weight:normal;fill:#777">(необов'язково)</tspan></text>
+<rect class="input" x="450" y="394" width="178" height="44" rx="8"/><text class="sm" x="466" y="421">Коваль</text>
+<text class="note b" x="640" y="387" style="fill:#555">По батькові <tspan style="font-weight:normal;fill:#777">(необов'язково)</tspan></text>
+<rect class="input" x="640" y="394" width="178" height="44" rx="8"/>
+<!-- dates -->
+<text class="note b" x="260" y="467" style="fill:#555">Дата народження <tspan style="font-weight:normal;fill:#777">(необов'язково)</tspan></text>
+<rect class="input" x="260" y="474" width="274" height="44" rx="8"/><text class="sm" x="276" y="501">12.05.1910</text>
+<use href="#cal" x="504" y="489"/>
+<text class="note b" x="546" y="467" style="fill:#555">Дата смерті <tspan style="font-weight:normal;fill:#777">(необов'язково)</tspan></text>
+<rect class="input" x="546" y="474" width="274" height="44" rx="8"/><text class="muted sm" x="562" y="501">1928 або 12.05.1928</text>
+<use href="#cal" x="790" y="489"/>
+<!-- hidden checkbox -->
+<rect class="input" x="260" y="536" width="14" height="14" rx="3"/>
+<text class="sm" x="282" y="548">Приховати з дерева</text>
+<text class="muted" x="282" y="565">Дані зберігаються, сторінку людини й далі можна відкрити напряму або через родичів —</text>
+<text class="muted" x="282" y="580">просто не показується на загальному дереві.</text>
+<!-- bio -->
+<text class="note b" x="260" y="616" style="fill:#555">Біографія (абзаци через порожній рядок)</text>
+<rect class="input" x="260" y="623" width="560" height="120" rx="8"/>
+<path d="M276 648 H780 M276 666 H760 M276 684 H600" stroke="#d6d6d1" stroke-width="3" stroke-linecap="round"/>
+<!-- photo -->
+<text class="note b" x="260" y="772" style="fill:#555">Фото</text>
+<circle class="avatar" cx="300" cy="820" r="40"/>
+<rect class="btn" x="260" y="870" width="130" height="44" rx="8" fill="#f1ede4"/><text class="sm b c" x="325" y="897" style="fill:#555">Обрати фото</text>
+<rect class="input" x="260" y="928" width="14" height="14" rx="3"/><text class="sm" x="282" y="940" style="fill:#777">Прибрати фото</text>
+<!-- error -->
+<rect x="260" y="956" width="560" height="40" rx="8" fill="#f7ecea" stroke="#d9b8b0" stroke-width="1.5"/>
+<text class="sm" x="276" y="981" style="fill:#9c4a3a">Текст помилки з сервера (role="alert").</text>
+<rect class="btn-primary" x="260" y="1012" width="120" height="44" rx="8"/><text class="w b c sm" x="320" y="1039">Зберегти</text>
+<!-- annotations on the right -->
+<text class="note" x="860" y="340">ID: автослаг з імені та прізвища, доки поле не змінили вручну</text>
+<text class="note" x="860" y="420">На sm і вище: три колонки (Ім'я, Прізвище, По батькові)</text>
+<text class="note" x="860" y="500">Дві дати: показ дд.мм.рррр або лише рік, зберігається ISO; піктограма календаря відкриває вибір дати</text>
+<text class="note" x="860" y="548">Чекбокс «Приховати з дерева» з поясненням</text>
+<text class="note" x="860" y="690">Біографія: textarea, 6 рядків</text>
+<text class="note" x="860" y="820">Фото: поточний аватар, вибір файлу (після вибору: попередній перегляд і назва),</text>
+<text class="note" x="860" y="836">«Прибрати фото» лише коли фото вже є</text>
+<text class="note" x="860" y="981">Блок помилки над кнопкою, під час збереження кнопка вимкнена зі спінером</text>
+<text class="note" x="860" y="1039">Нова людина: заголовок «Нова людина», решта полів порожня</text>
+<use href="#callout" x="244" y="336"/><text class="note w b c" x="244" y="340">1</text>
+<use href="#callout" x="244" y="416"/><text class="note w b c" x="244" y="420">2</text>
+<use href="#callout" x="244" y="496"/><text class="note w b c" x="244" y="500">3</text>
+<use href="#callout" x="244" y="543"/><text class="note w b c" x="244" y="547">4</text>
+<use href="#callout" x="244" y="683"/><text class="note w b c" x="244" y="687">5</text>
+<use href="#callout" x="244" y="820"/><text class="note w b c" x="244" y="824">6</text>
+<use href="#callout" x="244" y="976"/><text class="note w b c" x="244" y="980">7</text>
+
+<!-- ============ MOBILE PERSON FORM ============ -->
+<text class="b" x="1500" y="100">Mobile 390 (скорочено)</text>
+<rect class="frame" x="1500" y="110" width="390" height="740"/>
+<rect class="box" x="1500" y="110" width="390" height="106"/>
+<rect class="avatar" x="1520" y="128" width="26" height="26" rx="6"/>
+<text class="serif b" x="1554" y="147" style="font-size:14px">Адміністрування</text>
+<text class="note e" x="1812" y="139">Джерело: локальні</text>
+<text class="note e" x="1812" y="155">файли · <tspan style="text-decoration:underline">Змінити</tspan></text>
+<text class="sm e" x="1872" y="147">Вийти</text>
+<rect x="1520" y="172" width="74" height="38" rx="8" fill="#ece9e2"/>
+<text class="sm b c" x="1557" y="196">Люди</text>
+<text class="sm c" x="1643" y="196">Зв'язки</text>
+<text class="sm c" x="1747" y="196">Поховання</text>
+<text class="sm c" x="1846" y="196">Медіа</text>
+<text class="title" x="1520" y="268">Редагувати: Василь Коваль</text>
+<text class="note b" x="1520" y="307" style="fill:#555">ID</text>
+<rect class="input" x="1520" y="314" width="350" height="44" rx="8"/><text class="sm" x="1536" y="341">vasyl-koval</text>
+<text class="note b" x="1520" y="387" style="fill:#555">Ім'я</text>
+<rect class="input" x="1520" y="394" width="350" height="44" rx="8"/><text class="sm" x="1536" y="421">Василь</text>
+<text class="note b" x="1520" y="467" style="fill:#555">Прізвище <tspan style="font-weight:normal;fill:#777">(необов'язково)</tspan></text>
+<rect class="input" x="1520" y="474" width="350" height="44" rx="8"/><text class="sm" x="1536" y="501">Коваль</text>
+<text class="note b" x="1520" y="547" style="fill:#555">По батькові <tspan style="font-weight:normal;fill:#777">(необов'язково)</tspan></text>
+<rect class="input" x="1520" y="554" width="350" height="44" rx="8"/>
+<text class="note b" x="1520" y="627" style="fill:#555">Дата народження <tspan style="font-weight:normal;fill:#777">(необов'язково)</tspan></text>
+<rect class="input" x="1520" y="634" width="350" height="44" rx="8"/><text class="sm" x="1536" y="661">12.05.1910</text>
+<use href="#cal" x="1840" y="649"/>
+<text class="note b" x="1520" y="707" style="fill:#555">Дата смерті <tspan style="font-weight:normal;fill:#777">(необов'язково)</tspan></text>
+<rect class="input" x="1520" y="714" width="350" height="44" rx="8"/><text class="muted sm" x="1536" y="741">1928 або 12.05.1928</text>
+<use href="#cal" x="1840" y="729"/>
+<path class="dash" d="M1520 782 H1870"/>
+<text class="muted" x="1520" y="802">далі в один стовпець без змін: чекбокс, біографія, фото,</text>
+<text class="muted" x="1520" y="818">блок помилки, «Зберегти»</text>
+<use href="#callout" x="1884" y="394"/><text class="note w b c" x="1884" y="398">8</text>
+
+<!-- ============ VARIANTS ============ -->
+<text class="b" x="20" y="1112">Інші форми (скорочено, max 480px)</text>
+
+<!-- relationship -->
+<text class="note" x="20" y="1128">Зв'язок: /admin/relationships/new, /[id]</text>
+<rect class="frame" x="20" y="1136" width="440" height="650"/>
+<text class="title" x="40" y="1170">Редагувати зв'язок</text>
+<text class="note b" x="40" y="1210" style="fill:#555">Тип</text>
+<rect class="input" x="40" y="1218" width="400" height="44" rx="8"/><text class="sm" x="56" y="1245">Батько/матір → дитина</text><text class="sm e" x="428" y="1245">▾</text>
+<text class="note b" x="40" y="1294" style="fill:#555">Особа 1 (батько/матір)</text>
+<rect class="input" x="40" y="1302" width="400" height="44" rx="8"/><text class="sm" x="56" y="1329">Василь Коваль</text><text class="sm e" x="428" y="1329">▾</text>
+<text class="note b" x="40" y="1378" style="fill:#555">Особа 2 (дитина)</text>
+<rect class="input" x="40" y="1386" width="400" height="44" rx="8"/><text class="muted sm" x="56" y="1413">Оберіть людину</text><text class="sm e" x="428" y="1413">▾</text>
+<rect class="btn-primary" x="40" y="1450" width="120" height="44" rx="8"/><text class="w b c sm" x="100" y="1477">Зберегти</text>
+<rect class="box" x="40" y="1520" width="400" height="150" rx="8"/>
+<text class="note b" x="54" y="1542">Підписи двох полів залежать від типу</text>
+<text class="note b" x="54" y="1566">Батько/матір → дитина</text><text class="muted" x="54" y="1581">Особа 1 (батько/матір), Особа 2 (дитина)</text>
+<text class="note b" x="54" y="1604">Подружжя</text><text class="muted" x="54" y="1619">Особа 1 (перший з подружжя), Особа 2 (другий з подружжя)</text>
+<text class="note b" x="54" y="1642">Брат/сестра</text><text class="muted" x="54" y="1657">Особа 1 (брат/сестра), Особа 2 (брат/сестра)</text>
+<text class="muted" x="40" y="1700">Новий: «Новий зв'язок». Вибір у «Тип»: Батько/матір → дитина,</text>
+<text class="muted" x="40" y="1716">Подружжя, Брат/сестра.</text>
+
+<!-- grave -->
+<text class="note" x="480" y="1128">Поховання: /admin/graves/new, /[id]</text>
+<rect class="frame" x="480" y="1136" width="440" height="650"/>
+<text class="title" x="500" y="1170">Редагувати запис про поховання</text>
+<text class="note b" x="500" y="1210" style="fill:#555">Людина</text>
+<rect class="btn-disabled" x="500" y="1218" width="400" height="44" rx="8"/><text class="sm" x="516" y="1245" style="fill:#777">Василь Коваль</text>
+<path d="M880 1235 v10 h12 v-10 z M883 1235 v-4 a3 3 0 0 1 6 0 v4" fill="#bdbdb8" stroke="#999" stroke-width="1"/>
+<text class="note b" x="500" y="1294" style="fill:#555">Широта</text>
+<rect class="input" x="500" y="1302" width="192" height="44" rx="8"/><text class="sm" x="516" y="1329">50.4501</text>
+<text class="note b" x="708" y="1294" style="fill:#555">Довгота</text>
+<rect class="input" x="708" y="1302" width="192" height="44" rx="8"/><text class="sm" x="724" y="1329">30.5234</text>
+<text class="note b" x="500" y="1378" style="fill:#555">Адреса</text>
+<rect class="input" x="500" y="1386" width="400" height="44" rx="8"/><text class="sm" x="516" y="1413">с. Берестя, цвинтар</text>
+<text class="note b" x="500" y="1462" style="fill:#555">Опис</text>
+<rect class="input" x="500" y="1470" width="400" height="44" rx="8"/><text class="muted sm" x="516" y="1497">ділянка, ряд...</text>
+<rect class="btn-primary" x="500" y="1534" width="120" height="44" rx="8"/><text class="w b c sm" x="560" y="1561">Зберегти</text>
+<text class="muted" x="500" y="1610">«Людина» заблокована під час редагування (вимкнений select +</text>
+<text class="muted" x="500" y="1626">приховане поле з реальним значенням); під час створення можна обрати.</text>
+<text class="muted" x="500" y="1650">Широта і Довгота: дві колонки з sm, на мобільному одна.</text>
+<text class="muted" x="500" y="1674">Новий: «Новий запис про поховання».</text>
+
+<!-- media -->
+<text class="note" x="940" y="1128">Медіа: /admin/media/new, /[id]</text>
+<rect class="frame" x="940" y="1136" width="440" height="650"/>
+<text class="title" x="960" y="1170">Редагувати медіа-файл</text>
+<text class="note b" x="960" y="1210" style="fill:#555">Люди на фото <tspan style="font-weight:normal;fill:#777">(можна обрати декількох)</tspan></text>
+<rect x="960" y="1218" width="400" height="140" rx="8" fill="#f7f7f5" stroke="#bdbdb8" stroke-width="1.5"/>
+<rect class="accent" x="976" y="1238" width="12" height="12" rx="2"/><text class="sm" x="996" y="1249">Василь Коваль</text>
+<rect class="input" x="1156" y="1238" width="12" height="12" rx="2"/><text class="sm" x="1176" y="1249">Ганна Коваль</text>
+<rect class="accent" x="976" y="1264" width="12" height="12" rx="2"/><text class="sm" x="996" y="1275">Петро Коваль</text>
+<rect class="input" x="1156" y="1264" width="12" height="12" rx="2"/><text class="sm" x="1176" y="1275">Марія Коваль</text>
+<rect class="input" x="976" y="1290" width="12" height="12" rx="2"/><text class="sm" x="996" y="1301">Андрій Коваль</text>
+<rect class="input" x="1156" y="1290" width="12" height="12" rx="2"/><text class="sm" x="1176" y="1301">Ірина Коваль</text>
+<rect class="input" x="976" y="1316" width="12" height="12" rx="2"/><text class="sm" x="996" y="1327">Степан Бойко</text>
+<rect x="1346" y="1226" width="5" height="60" rx="2" fill="#bdbdb8"/>
+<text class="muted" x="960" y="1374">2 колонки, max-h 56 (224px), далі прокрутка; мінімум одна людина</text>
+<text class="note b" x="960" y="1404" style="fill:#555">Тип</text>
+<rect class="input" x="960" y="1412" width="400" height="44" rx="8"/><text class="sm" x="976" y="1439">Фото</text><text class="sm e" x="1348" y="1439">▾</text>
+<text class="note b" x="960" y="1484" style="fill:#555">Підпис</text>
+<rect class="input" x="960" y="1492" width="400" height="44" rx="8"/><text class="sm" x="976" y="1519">Літо в селі</text>
+<text class="note b" x="960" y="1564" style="fill:#555">Рік</text>
+<rect class="input" x="960" y="1572" width="400" height="44" rx="8"/><text class="sm" x="976" y="1599">1952</text>
+<text class="note b" x="960" y="1644" style="fill:#555">Файл <tspan style="font-weight:normal;fill:#777">(залиште порожнім, щоб не змінювати)</tspan></text>
+<rect class="btn" x="960" y="1652" width="130" height="44" rx="8" fill="#f1ede4"/><text class="sm b c" x="1025" y="1679" style="fill:#555">Обрати файл</text>
+<rect class="btn-primary" x="960" y="1716" width="120" height="44" rx="8"/><text class="w b c sm" x="1020" y="1743">Зберегти</text>
+<text class="muted" x="1100" y="1679">фото або PDF</text>
+<text class="muted" x="1100" y="1743">Новий: «Новий медіа-файл»</text>
+
+<!-- question -->
+<text class="note" x="1400" y="1128">Питання: /admin/questions/new, /[id]</text>
+<rect class="frame" x="1400" y="1136" width="440" height="650"/>
+<text class="title" x="1420" y="1170">Редагувати питання</text>
+<text class="note b" x="1420" y="1210" style="fill:#555">Питання</text>
+<rect class="input" x="1420" y="1218" width="400" height="44" rx="8"/><text class="sm" x="1436" y="1245">Де народилась бабуся?</text>
+<text class="note b" x="1420" y="1294" style="fill:#555">Відповідь</text>
+<rect class="input" x="1420" y="1302" width="400" height="44" rx="8"/><text class="sm" x="1436" y="1329">житомир</text>
+<text class="note b" x="1420" y="1378" style="fill:#555">Варіанти відповіді (через кому)</text>
+<rect class="input" x="1420" y="1386" width="400" height="44" rx="8"/><text class="muted sm" x="1436" y="1413">варіант 1, варіант 2</text>
+<rect class="btn-primary" x="1420" y="1450" width="120" height="44" rx="8"/><text class="w b c sm" x="1480" y="1477">Зберегти</text>
+<text class="muted" x="1420" y="1526">Усі три поля текстові; «Питання» і «Відповідь» обов'язкові.</text>
+<text class="muted" x="1420" y="1544">Новий: «Нове питання».</text>
+
+<!-- NOTES -->
+<text class="b" x="20" y="1830">Примітки</text>
+<text class="note" x="20" y="1852">1. ID: автослаг (транслітерація імені та прізвища), перестає оновлюватись після ручного редагування. Перейменування ID каскадно оновлює зв'язки, поховання та медіа.</text>
+<text class="note" x="20" y="1870">2. Три колонки на sm (640px) і вище; на мобільному одна.   3. Дати: показ дд.мм.рррр або лише рік, у файлі зберігається ISO/рік; поруч кнопка календаря «Обрати дату».</text>
+<text class="note" x="20" y="1888">4. «Приховати з дерева»: дані зберігаються, сторінка людини відкривається напряму та через родичів.   5. Біографія: абзаци через порожній рядок.</text>
+<text class="note" x="20" y="1906">6. Фото: аватар (коли є), кнопка вибору, попередній перегляд вибраного, «Прибрати фото».   7. Помилки сервера: role="alert", вимкнена кнопка зі спінером під час збереження.</text>
+<text class="note" x="20" y="1924">8. Mobile: усі поля в один стовпець (три поля імені і дві дати йдуть одне під одним).   Усі форми повертаються на список із flash «Збережено.».</text>
+</svg>

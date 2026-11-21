@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="980" viewBox="0 0 1480 980" role="img" aria-labelledby="t d">
+<title id="t">Карта екранів і доступу</title>
+<desc id="d">Маршрути застосунку: шлюз, дерево, сторінка людини, лайтбокс і окрема адмін-зона.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;font-size:14px;fill:#2b2b2b}
+.bg{fill:#f2f2f0}
+.frame{fill:#f2f2f0;stroke:#bdbdb8;stroke-width:1.5}
+.box{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.card{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.btn-primary{fill:#9c6446;stroke:#9c6446;stroke-width:1.5}
+.btn-disabled{fill:#e6e6e3;stroke:#d0d0cc;stroke-width:1.5}
+.input{fill:#fff;stroke:#bdbdb8;stroke-width:1.5}
+.avatar{fill:#d9d9d5;stroke:#bdbdb8;stroke-width:1.5}
+.ink{fill:#222}
+.line{stroke:#2b2b2b;stroke-width:2;fill:none}
+.dash{stroke:#777;stroke-width:2;stroke-dasharray:6 5;fill:none}
+.ring{fill:none;stroke:#9c6446;stroke-width:3}
+.call{fill:#9c6446}
+.accent{fill:#9c6446}
+.accent-t{fill:#9c6446}
+.muted{fill:#777;font-size:12px}
+.title{font-family:Georgia,serif;font-size:22px;font-weight:bold}
+.serif{font-family:Georgia,serif}
+.note{font-size:12px;fill:#2b2b2b}
+.b{font-weight:bold}
+.w{fill:#fff}
+.c{text-anchor:middle}
+.e{text-anchor:end}
+.sm{font-size:13px}
+.lg{font-size:16px}
+</style>
+<defs>
+ <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2b2b2b"/></marker>
+</defs>
+<rect class="bg" width="1480" height="980"/>
+<text class="title" x="40" y="40">Карта екранів і доступу</text>
+<text class="note" x="40" y="62">Усі екрани, крім /gate і /admin/login, закриті proxy: без відповідної cookie запит перенаправляється на вхід.</text>
+
+<!-- Family lane -->
+<rect class="frame" x="20" y="80" width="1440" height="200" rx="10"/>
+<text class="b" x="40" y="106">Родинна зона (cookie family-session)</text>
+
+<rect class="card" x="40" y="140" width="220" height="70" rx="8"/>
+<text class="b" x="56" y="166">/gate</text><text class="muted" x="56" y="186">етап 1: спільне запитання</text>
+<rect class="card" x="330" y="140" width="220" height="70" rx="8"/>
+<text class="b" x="346" y="166">/gate/years</text><text class="muted" x="346" y="186">етап 2: три роки народження</text>
+<rect class="card" x="620" y="140" width="220" height="70" rx="8"/>
+<text class="b" x="636" y="166">/</text><text class="muted" x="636" y="186">дерево родини</text>
+<rect class="card" x="910" y="140" width="220" height="70" rx="8"/>
+<text class="b" x="926" y="166">/person/[id]</text><text class="muted" x="926" y="186">біографія, поховання, галерея</text>
+<rect class="card" x="1200" y="140" width="220" height="70" rx="8"/>
+<text class="b" x="1216" y="166">Лайтбокс</text><text class="muted" x="1216" y="186">діалог поверх сторінки людини</text>
+
+<path class="line" d="M260 175 H330" marker-end="url(#ar)"/>
+<path class="line" d="M550 175 H620" marker-end="url(#ar)"/>
+<path class="line" d="M840 165 H910" marker-end="url(#ar)"/>
+<path class="line" d="M910 195 H840" marker-end="url(#ar)"/>
+<path class="line" d="M1130 175 H1200" marker-end="url(#ar)"/>
+
+<text class="note c" x="295" y="162">вірна відповідь</text>
+<text class="note c" x="585" y="162">вірні роки</text>
+<text class="note c" x="875" y="158">клік</text>
+<text class="note c" x="875" y="212">← Дерево</text>
+<text class="note c" x="1165" y="162">фото</text>
+
+<rect class="box" x="330" y="228" width="220" height="38" rx="8"/>
+<text class="note" x="342" y="244">cookie family-gate-stage1</text><text class="muted" x="342" y="258">коротка; без неї /gate/years → /gate</text>
+<rect class="box" x="620" y="228" width="520" height="38" rx="8"/>
+<text class="note b" x="632" y="244">family-session cookie ставиться після етапу 2</text><text class="muted" x="632" y="258">кожен етап має власне блокування; спільного лічильника немає</text>
+<path class="dash" d="M440 228 V215 M730 228 V215"/>
+
+<!-- Admin lane -->
+<rect class="frame" x="20" y="310" width="1440" height="400" rx="10"/>
+<text class="b" x="40" y="336">Адмін-зона (окремий вхід, cookie admin-session)</text>
+
+<rect class="card" x="40" y="480" width="190" height="70" rx="8"/>
+<text class="b" x="56" y="506">/admin/login</text><text class="muted" x="56" y="526">логін і пароль</text>
+<rect class="card" x="310" y="470" width="280" height="90" rx="8"/>
+<text class="b" x="326" y="496">/admin</text>
+<text class="muted" x="326" y="516">вибір джерела даних:</text>
+<text class="muted" x="326" y="534">локальні файли | Vercel Global Config</text>
+<path class="line" d="M230 515 H310" marker-end="url(#ar)"/>
+
+<path class="line" d="M590 515 H640 M640 387 V643"/>
+<path class="line" d="M640 387 H680 M640 453 H680 M640 519 H680 M640 585 H680 M640 643 H680" marker-end="url(#ar)"/>
+<rect class="card" x="680" y="360" width="340" height="54" rx="8"/>
+<text class="b" x="696" y="384">/admin/people</text><text class="muted" x="696" y="402">/new · /[id]</text>
+<rect class="card" x="680" y="426" width="340" height="54" rx="8"/>
+<text class="b" x="696" y="450">/admin/relationships</text><text class="muted" x="696" y="468">/new · /[id]</text>
+<rect class="card" x="680" y="492" width="340" height="54" rx="8"/>
+<text class="b" x="696" y="516">/admin/graves</text><text class="muted" x="696" y="534">/new · /[id]</text>
+<rect class="card" x="680" y="558" width="340" height="54" rx="8"/>
+<text class="b" x="696" y="582">/admin/media</text><text class="muted" x="696" y="600">/new · /[id]</text>
+<rect class="card" x="680" y="624" width="340" height="54" rx="8"/>
+<text class="b" x="696" y="648">/admin/questions</text><text class="muted" x="696" y="666">/new · /[id]</text>
+
+<rect class="box" x="1080" y="400" width="340" height="130" rx="8"/>
+<text class="b sm" x="1094" y="424">Примітки до адмін-зони</text>
+<text class="note" x="1094" y="446">Admin: свої облікові дані та своє блокування,</text>
+<text class="note" x="1094" y="462">незалежні від родинного шлюзу.</text>
+<text class="note" x="1094" y="484">Локальні файли працюють лише в dev;</text>
+<text class="note" x="1094" y="500">на Vercel запис іде у Global Config.</text>
+<text class="note" x="1094" y="516">Кожен розділ: список, /new, /[id].</text>
+
+<!-- Errors -->
+<rect class="frame" x="20" y="730" width="1440" height="110" rx="10"/>
+<text class="b" x="40" y="756">Сторінки помилок</text>
+<rect class="card" x="40" y="770" width="300" height="54" rx="8"/>
+<text class="b" x="56" y="794">404 (not-found)</text><text class="muted" x="56" y="812">неіснуючий маршрут або людина</text>
+<rect class="card" x="370" y="770" width="300" height="54" rx="8"/>
+<text class="b" x="386" y="794">Глобальна помилка (error)</text><text class="muted" x="386" y="812">збій рендеру; можна повторити</text>
+<text class="note" x="700" y="800">Див. 09-states: дизайн сторінок 404, помилки та скелета завантаження.</text>
+
+<!-- Demo -->
+<rect class="box" x="20" y="860" width="1440" height="64" rx="8" style="stroke:#9c6446;stroke-width:2"/>
+<text class="b accent-t" x="40" y="886">Demo mode</text>
+<text class="note" x="40" y="906">Шлюз приймає будь-який (навіть порожній) ввід, інтерфейс англійською з вигаданими людьми; /admin/* повертає 404.</text>
+<text class="muted" x="40" y="950">Стрілки показують основні переходи; прямі посилання на /person/[id] без сесії також ведуть на /gate.</text>
+</svg>
