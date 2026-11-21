@@ -381,6 +381,58 @@ describe("computeFamilyTreeLayout", () => {
     expect([...first.nodes.entries()]).toEqual([...second.nodes.entries()]);
   });
 
+  describe("co-parents without a spouse record", () => {
+    const names = ["A", "V", "L", "K", "P", "N", "C"];
+    const parentChild = (
+      a: string,
+      b: string,
+    ): Relationship => ({ id: `pc-${a}-${b}`, type: "parent-child", person1Id: a, person2Id: b });
+    const baseRels: Relationship[] = [
+      { id: "s-LK", type: "spouse", person1Id: "L", person2Id: "K" },
+      parentChild("A", "L"),
+      parentChild("V", "L"),
+      parentChild("P", "K"),
+      parentChild("N", "K"),
+      parentChild("L", "C"),
+      parentChild("K", "C"),
+    ];
+
+    function check(order: string[], rels: Relationship[]) {
+      const { nodes } = computeFamilyTreeLayout(order.map((n) => person(n)), rels);
+      const col = (id: string) => nodes.get(id)!.column;
+      const gen = (id: string) => nodes.get(id)!.generation;
+      expect(gen("A")).toBe(gen("V"));
+      expect(gen("P")).toBe(gen("N"));
+      expect(gen("A")).toBe(gen("L") - 1);
+      expect(gen("P")).toBe(gen("K") - 1);
+      expect(Math.abs(col("A") - col("V"))).toBe(1);
+      expect(Math.abs(col("P") - col("N"))).toBe(1);
+      expect((col("A") + col("V")) / 2).toBe(col("L"));
+      expect((col("P") + col("N")) / 2).toBe(col("K"));
+      expectNoOverlapWithinGeneration(nodes);
+      return nodes;
+    }
+
+    it("groups implicit co-parents adjacent and centered over their shared child", () => {
+      check(names, baseRels);
+    });
+
+    it("gives the same structure regardless of which family comes first in the people array", () => {
+      const a = check(["A", "V", "L", "K", "P", "N", "C"], baseRels);
+      const b = check(["P", "N", "K", "L", "A", "V", "C"], baseRels);
+      const gap = (n: typeof a) => Math.abs(n.get("L")!.column - n.get("K")!.column);
+      expect(gap(a)).toBe(gap(b));
+    });
+
+    it("still works when the co-parents are also recorded as spouses", () => {
+      check(names, [
+        ...baseRels,
+        { id: "s-AV", type: "spouse", person1Id: "A", person2Id: "V" },
+        { id: "s-PN", type: "spouse", person1Id: "P", person2Id: "N" },
+      ]);
+    });
+  });
+
   it("handles an empty family", () => {
     const { nodes } = computeFamilyTreeLayout([], []);
     expect(nodes.size).toBe(0);

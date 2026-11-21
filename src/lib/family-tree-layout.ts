@@ -16,6 +16,12 @@ type Graph = {
   parentsOf: Map<string, string[]>;
   childrenOf: Map<string, string[]>;
   spousesOf: Map<string, string[]>;
+  /**
+   * Layout-only pairing: real spouses plus *implicit* co-parents (two people
+   * who are parents of the same child with no spouse record between them,
+   * e.g. one died). Never used for drawing marriage lines.
+   */
+  partnersOf: Map<string, string[]>;
   siblingsOf: Map<string, string[]>;
 };
 
@@ -49,7 +55,18 @@ function buildGraph(people: Person[], relationships: Relationship[]): Graph {
     }
   }
 
-  return { parentsOf, childrenOf, spousesOf, siblingsOf };
+  const partnersOf = new Map<string, string[]>();
+  for (const [id, list] of spousesOf) partnersOf.set(id, [...list]);
+  for (const parents of parentsOf.values()) {
+    for (let i = 0; i < parents.length; i++) {
+      for (let j = i + 1; j < parents.length; j++) {
+        push(partnersOf, parents[i], parents[j]);
+        push(partnersOf, parents[j], parents[i]);
+      }
+    }
+  }
+
+  return { parentsOf, childrenOf, spousesOf, partnersOf, siblingsOf };
 }
 
 /**
@@ -199,7 +216,7 @@ function assignColumns(
       if (visited.has(id)) return;
       visited.add(id);
       order.push(id);
-      const spouses = graph.spousesOf.get(id) ?? [];
+      const spouses = graph.partnersOf.get(id) ?? [];
       const idChildren = new Set(graph.childrenOf.get(id) ?? []);
       const attributed = new Set<string>();
       for (const spouseId of spouses) {
@@ -245,11 +262,21 @@ function assignColumns(
   const membersOf = new Map<string, string[]>();
   const groupsOf = new Map<string, ChildGroup[]>();
   const widthOf = new Map<string, number>();
+  // Per-unit row geometry: each member's offset (in columns) from the first
+  // member, plus the unit's row extent relative to the first member. A
+  // married-in member whose own parents aren't placed yet gets those parents
+  // as a "bridge" unit centered above them (see computeWidth), which needs
+  // more room than one column per member.
+  type Bridge = { memberIndex: number; root: string };
+  const geometryOf = new Map<
+    string,
+    { offsets: number[]; left: number; right: number; bridges: Bridge[]; hasBridges: boolean }
+  >();
 
   function computeWidth(id: string): number {
     if (widthOf.has(id)) return widthOf.get(id)!;
     claimed.add(id);
-    const spouses = (graph.spousesOf.get(id) ?? []).filter((s) => !claimed.has(s));
+    const spouses = (graph.partnersOf.get(id) ?? []).filter((s) => !claimed.has(s));
     for (const s of spouses) claimed.add(s);
     // Sibling satellites sit adjacent exactly like a spouse for placement
     // purposes, but (unlike spouses) never contribute a children group --
@@ -290,7 +317,48 @@ function assignColumns(
     childrenWidth += remaining.reduce((sum, c) => sum + computeWidth(c), 0);
 
     groupsOf.set(id, groups);
-    const width = Math.max(membersOf.get(id)!.length, childrenWidth);
+
+    // Married-in members (spouses / implicit co-parents) whose own parents
+    // haven't been claimed by any unit yet: give those parents their own
+    // unit, placed centered above the member. The unit's row then has to be
+    // wide enough for each such parent unit, so they never overlap the
+    // parents above the first member, nor each other.
+    const members = membersOf.get(id)!;
+    const bridges: Bridge[] = [];
+    const bridgeWidths = new Map<number, number>();
+    members.forEach((memberId, memberIndex) => {
+      if (memberIndex === 0) return;
+      const unclaimedParents = (graph.parentsOf.get(memberId) ?? []).filter(
+        (p) => !claimed.has(p),
+      );
+      if (unclaimedParents.length === 0) return;
+      const root = unclaimedParents[0];
+      bridgeWidths.set(memberIndex, computeWidth(root));
+      bridges.push({ memberIndex, root });
+    });
+    const hasBridges = bridges.length > 0;
+
+    const offsets: number[] = [];
+    let offset = 0;
+    members.forEach((_, i) => {
+      if (i > 0) offset += bridgeWidths.has(i) ? 2 : 1;
+      offsets.push(offset);
+    });
+    let left = Infinity;
+    let right = -Infinity;
+    offsets.forEach((o, i) => {
+      let extent = 0.5;
+      if (i === 0 && hasBridges) {
+        extent = Math.max(0.5, (graph.parentsOf.get(id) ?? []).length / 2);
+      } else if (bridgeWidths.has(i)) {
+        extent = Math.max(0.5, bridgeWidths.get(i)! / 2);
+      }
+      left = Math.min(left, o - extent);
+      right = Math.max(right, o + extent);
+    });
+    geometryOf.set(id, { offsets, left, right, bridges, hasBridges });
+
+    const width = Math.max(right - left, childrenWidth);
     widthOf.set(id, width);
     return width;
   }
@@ -324,8 +392,17 @@ function assignColumns(
     }
 
     const blockCenter = groupCenters.length > 0 ? average(groupCenters) : leftEdge + width / 2;
-    const startX = blockCenter - (members.length - 1) / 2;
-    members.forEach((memberId, i) => column.set(memberId, startX + i));
+    const geometry = geometryOf.get(id)!;
+    let startX = blockCenter - (geometry.left + geometry.right) / 2;
+    if (geometry.hasBridges) {
+      startX = Math.min(startX, leftEdge + width - geometry.right);
+      startX = Math.max(startX, leftEdge - geometry.left);
+    }
+    members.forEach((memberId, i) => column.set(memberId, startX + geometry.offsets[i]));
+    for (const bridge of geometry.bridges) {
+      const memberColumn = column.get(members[bridge.memberIndex])!;
+      place(bridge.root, memberColumn - (widthOf.get(bridge.root) ?? 1) / 2);
+    }
   }
 
   function average(values: number[]): number {
