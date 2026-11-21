@@ -38,7 +38,7 @@ text{font-family:Arial,Helvetica,sans-serif;font-size:14px;fill:#2b2b2b}
 <circle class="avatar" cx="260" cy="290" r="72"/>
 <text class="serif b" style="font-size:40px" x="360" y="278">Петро Коваль</text>
 <text class="muted lg" style="font-size:16px" x="360" y="308">нар. 1938 · пом. 2011</text>
-<rect class="btn-primary" x="360" y="330" width="200" height="44" rx="8"/><text class="w b sm c" x="460" y="357">Знайти на дереві</text>
+<rect class="btn-primary" x="360" y="330" width="200" height="44" rx="8"/><text class="w b sm c" x="460" y="357">До родинного дерева</text>
 <circle class="call" cx="580" cy="330" r="10"/><text class="note w b c" x="580" y="334">1</text>
 <rect class="card" x="140" y="410" width="836" height="250" rx="12"/>
 <text class="serif b" style="font-size:20px" x="164" y="446">Біографія</text>
@@ -64,7 +64,7 @@ text{font-family:Arial,Helvetica,sans-serif;font-size:14px;fill:#2b2b2b}
 <circle class="avatar" cx="1695" cy="286" r="72"/>
 <text class="serif b c" style="font-size:32px" x="1695" y="400">Петро Коваль</text>
 <text class="muted c" style="font-size:16px" x="1695" y="428">нар. 1938 · пом. 2011</text>
-<rect class="btn-primary" x="1536" y="450" width="318" height="44" rx="8"/><text class="w b sm c" x="1695" y="477">Знайти на дереві</text>
+<rect class="btn-primary" x="1536" y="450" width="318" height="44" rx="8"/><text class="w b sm c" x="1695" y="477">До родинного дерева</text>
 <rect class="card" x="1512" y="536" width="366" height="170" rx="12"/>
 <text class="serif b" style="font-size:20px" x="1536" y="572">Біографія</text>
 <rect x="1536" y="592" width="318" height="8" rx="4" fill="#dcdcd8"/><rect x="1536" y="610" width="318" height="8" rx="4" fill="#dcdcd8"/><rect x="1536" y="628" width="318" height="8" rx="4" fill="#dcdcd8"/><rect x="1536" y="646" width="318" height="8" rx="4" fill="#dcdcd8"/><rect x="1536" y="664" width="190.79999999999998" height="8" rx="4" fill="#dcdcd8"/>
@@ -96,7 +96,7 @@ text{font-family:Arial,Helvetica,sans-serif;font-size:14px;fill:#2b2b2b}
 <circle cx="1010" cy="1420" r="40" fill="#e4e4e0"/><rect x="1070" y="1396" width="240" height="22" rx="6" fill="#e4e4e0"/><rect x="1070" y="1430" width="140" height="12" rx="6" fill="#e4e4e0"/>
 <rect x="964" y="1478" width="330" height="36" rx="8" fill="#e4e4e0"/><rect x="1310" y="1478" width="130" height="36" rx="8" fill="#e4e4e0"/>
 <text class="b" x="20" y="1580">Примітки</text>
-<text class="note" x="20" y="1602">1. «Знайти на дереві» веде на / з виділеною карткою; для людей, прихованих із дерева, кнопка не показується.</text>
+<text class="note" x="20" y="1602">1. «До родинного дерева» веде на / з виділеною карткою; для людей, прихованих із дерева, кнопка не показується.</text>
 <text class="note" x="20" y="1620">2. Desktop: сітка 1fr | 340px (від 1024px). Ліворуч Біографія, Фотогалерея; праворуч Місце поховання, Родина.</text>
 <text class="note" x="20" y="1638">3. Mobile: одна колонка, порядок: Біографія, Місце поховання, Родина, Фотогалерея (мініатюри в 2 колонки).</text>
 <text class="note" x="20" y="1656">Секції родини: Батьки, Подружжя, Брати/сестри, Діти; картка родича: аватар 40px, ім'я, роки. Порожня секція не показується.</text>
