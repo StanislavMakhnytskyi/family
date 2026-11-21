@@ -718,6 +718,52 @@ describe("computeFamilyTreeLayout", () => {
     });
   });
 
+  describe("reading order", () => {
+    const parentChild = (a: string, b: string): Relationship => ({
+      id: `${a}>${b}`,
+      type: "parent-child",
+      person1Id: a,
+      person2Id: b,
+    });
+    const spouse = (a: string, b: string): Relationship => ({
+      id: `${a}+${b}`,
+      type: "spouse",
+      person1Id: a,
+      person2Id: b,
+    });
+
+    it("keeps a simple couple in canonical order, lower rank on the left", () => {
+      const { nodes } = computeFamilyTreeLayout(
+        [person("b", "1950"), person("a", "1951"), person("kid", "1980")],
+        [spouse("a", "b"), parentChild("a", "kid"), parentChild("b", "kid")],
+      );
+      expect(nodes.get("b")!.column).toBeLessThan(nodes.get("a")!.column);
+    });
+
+    it("places the canonically first root's family to the left of a later one", () => {
+      const people = [
+        person("x1", "1900"),
+        person("x2", "1901"),
+        person("y1", "1910"),
+        person("y2", "1911"),
+        person("xk", "1930"),
+        person("yk", "1935"),
+      ];
+      const relationships = [
+        spouse("x1", "x2"),
+        spouse("y1", "y2"),
+        parentChild("x1", "xk"),
+        parentChild("x2", "xk"),
+        parentChild("y1", "yk"),
+        parentChild("y2", "yk"),
+        spouse("xk", "yk"),
+      ];
+      const { nodes } = computeFamilyTreeLayout(people, relationships);
+      expect(nodes.get("x1")!.column).toBeLessThan(nodes.get("y1")!.column);
+      expect(nodes.get("xk")!.column).toBeLessThan(nodes.get("yk")!.column);
+    });
+  });
+
   it("handles an empty family", () => {
     const { nodes } = computeFamilyTreeLayout([], []);
     expect(nodes.size).toBe(0);

@@ -201,6 +201,8 @@ type Ctx = {
 /** A rigid run of cards, exactly one column apart in `members` order. */
 type Block = {
   members: string[];
+  /** The member order a freshly built block starts in (blood relative first); preferred whenever a flip changes nothing. */
+  preferred: string[];
   gen: number;
   /** Canonical rank of the best-ranked member: the deterministic tie-break. */
   rank: number;
@@ -301,7 +303,12 @@ function orderBlockMembers(
  * canonical rank, then a person's partners, then the children of each
  * couple, then the rest of their children.
  */
-function walkOrder(members: string[], ctx: Ctx, firstRoot?: string): Map<string, number> {
+function walkOrder(
+  members: string[],
+  ctx: Ctx,
+  firstRoot?: string,
+  reverseKids = false,
+): Map<string, number> {
   const { graph, anchorOf, satellitesOf } = ctx;
   const index = new Map<string, number>();
   const expanded = new Set<string>();
@@ -332,6 +339,7 @@ function walkOrder(members: string[], ctx: Ctx, firstRoot?: string): Map<string,
     for (const kid of kids) {
       if (!ordered.includes(kid)) ordered.push(kid);
     }
+    if (reverseKids) ordered.reverse();
     for (const kid of ordered) claim(kid);
 
     // A married-in partner's own family is walked right here, so it lands
@@ -439,6 +447,7 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
     };
     const block: Block = {
       members: ordered,
+      preferred: ordered,
       gen: genOf(id),
       rank: ctx.rank.get(component[0])!,
       parents: distinct(graph.parentsOf),
@@ -613,8 +622,8 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
    * can beat the walk or settle somewhere worse, so they are kept only if
    * they cross fewer lines; finally blocks are moved and flipped one at a time.
    */
-  function arrange(firstRoot: string | undefined): number {
-    seedRows(walkOrder(members, ctx, firstRoot));
+  function arrange(firstRoot: string | undefined, reverseKids: boolean): number {
+    seedRows(walkOrder(members, ctx, firstRoot, reverseKids));
     polish(1, false);
     const walked = snapshot();
     const walkedCost = cost(0, rows.length);
@@ -635,15 +644,65 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
   );
   let bestCost = Infinity;
   let best: ReturnType<typeof snapshot> | null = null;
-  for (const root of roots.length > 0 ? roots.slice(0, MAX_STARTS) : [undefined]) {
-    const c = arrange(root);
-    if (c < bestCost - EPSILON) {
-      bestCost = c;
-      best = snapshot();
+  search: for (const root of roots.length > 0 ? roots.slice(0, MAX_STARTS) : [undefined]) {
+    // A walk can only list siblings one way round; when that traps a branch
+    // between two others, the opposite sibling order is planar.
+    for (const reverseKids of [false, true]) {
+      const c = arrange(root, reverseKids);
+      if (c < bestCost - EPSILON) {
+        bestCost = c;
+        best = snapshot();
+      }
+      if (bestCost < CROSSING) break search;
     }
-    if (bestCost < CROSSING) break;
   }
   if (best) restore(best);
+
+  /**
+   * Cost is mirror-symmetric, so the best order and its mirror image are
+   * equally good. Keep the one that reads in canonical order: the canonically
+   * first root as far left in its row as possible, then (as a tie-break)
+   * lower-ranked people left of higher-ranked ones summed over every pair in
+   * a row; a remaining tie keeps the order as found. Then un-flip any couple
+   * whose flip bought nothing, so a pair is only ever reversed when keeping a
+   * spouse next to the family it joins requires it.
+   */
+  const firstRoot = roots[0];
+  function orientation(): [number, number] {
+    let pairs = 0;
+    let rootFraction = 0.5;
+    for (const row of rows) {
+      const flat = row.flatMap((b) => b.members);
+      const at = firstRoot === undefined ? -1 : flat.indexOf(firstRoot);
+      if (at >= 0) rootFraction = (at + 0.5) / flat.length;
+      const ranks = flat.map((m) => ctx.rank.get(m)!);
+      for (let i = 0; i < ranks.length; i++) {
+        for (let j = i + 1; j < ranks.length; j++) pairs += ranks[i] < ranks[j] ? 1 : -1;
+      }
+    }
+    return [rootFraction, pairs];
+  }
+  const mirror = () => {
+    for (let i = 0; i < rows.length; i++) rows[i] = [...rows[i]].reverse();
+    for (const b of blocks) b.members = [...b.members].reverse();
+  };
+  const [rootBefore, pairsBefore] = orientation();
+  mirror();
+  const [rootAfter, pairsAfter] = orientation();
+  const mirroredReadsBetter =
+    Math.abs(rootAfter - rootBefore) > EPSILON
+      ? rootAfter < rootBefore
+      : pairsAfter > pairsBefore;
+  if (!mirroredReadsBetter) mirror();
+  for (let r = 0; r < rows.length; r++) {
+    for (const b of rows[r]) {
+      if (b.members.length < 2 || b.members.every((m, i) => m === b.preferred[i])) continue;
+      const current = b.members;
+      const now = cost(r - 1, r);
+      b.members = b.preferred;
+      if (cost(r - 1, r) > now + EPSILON) b.members = current;
+    }
+  }
 
   // --- Coordinates ---------------------------------------------------------
   const left = new Map<Block, number>();
