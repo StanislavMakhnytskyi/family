@@ -1,29 +1,115 @@
 import { describe, expect, it } from "vitest";
 import { computeFamilyTreeLayout } from "@/lib/family-tree-layout";
 import type { Person, Relationship } from "@/lib/schemas";
+import { treeStructurePeople, treeStructureRelationships } from "./fixtures/tree-structure";
 
 function person(id: string, birthDate = "2000"): Person {
   return { id, firstName: id, lastName: id, birthDate };
 }
 
-/**
- * The real invariant that matters for avoiding visual overlap: two people
- * on the *same row* (generation) must never land on the same column.
- * People on different rows sharing a column is fine — they render at
- * different heights and can't collide.
- */
-function expectNoOverlapWithinGeneration(nodes: ReturnType<typeof computeFamilyTreeLayout>["nodes"]) {
-  const byGeneration = new Map<number, number[]>();
+type Nodes = ReturnType<typeof computeFamilyTreeLayout>["nodes"];
+
+/** Cards render 156px wide on a 178px column pitch, so columns closer than 1 overlap. */
+const EPS = 1e-9;
+
+/** Returns one message per same-row pair of neighbours that sit closer than one column. */
+function separationProblems(nodes: Nodes): string[] {
+  const byGeneration = new Map<number, { id: string; column: number }[]>();
   for (const node of nodes.values()) {
     const list = byGeneration.get(node.generation) ?? [];
-    list.push(node.column);
+    list.push({ id: node.id, column: node.column });
     byGeneration.set(node.generation, list);
   }
-  for (const [generation, columns] of byGeneration) {
-    expect(new Set(columns).size, `generation ${generation} has overlapping columns`).toBe(
-      columns.length,
-    );
+  const problems: string[] = [];
+  for (const [generation, row] of byGeneration) {
+    row.sort((a, b) => a.column - b.column || a.id.localeCompare(b.id));
+    for (let i = 1; i < row.length; i++) {
+      const gap = row[i].column - row[i - 1].column;
+      if (gap < 1 - EPS) {
+        problems.push(
+          `generation ${generation}: ${row[i - 1].id} and ${row[i].id} are only ${gap} columns apart (need >= 1)`,
+        );
+      }
+    }
   }
+  return problems;
+}
+
+/**
+ * The real invariant for avoiding visual overlap: neighbours in the same row
+ * (generation) must be at least one full column apart. Cards on different rows
+ * render at different heights and cannot collide.
+ */
+function expectNoOverlapWithinGeneration(nodes: Nodes) {
+  expect(separationProblems(nodes), "overlapping cards").toEqual([]);
+}
+
+function spouseGapProblems(nodes: Nodes, relationships: Relationship[]): string[] {
+  const problems: string[] = [];
+  for (const rel of relationships) {
+    if (rel.type !== "spouse") continue;
+    const a = nodes.get(rel.person1Id)!;
+    const b = nodes.get(rel.person2Id)!;
+    if (a.generation !== b.generation) continue;
+    const gap = Math.abs(a.column - b.column);
+    if (Math.abs(gap - 1) > EPS) {
+      problems.push(`spouses ${a.id} and ${b.id} are ${gap} columns apart (need exactly 1)`);
+    }
+  }
+  return problems;
+}
+
+/** Relative layout: shift so the smallest generation and column are 0. */
+function normalised(nodes: Nodes): Map<string, { generation: number; column: number }> {
+  const all = [...nodes.values()];
+  const minGeneration = Math.min(...all.map((n) => n.generation));
+  const minColumn = Math.min(...all.map((n) => n.column));
+  return new Map(
+    all.map((n) => [
+      n.id,
+      { generation: n.generation - minGeneration, column: n.column - minColumn },
+    ]),
+  );
+}
+
+function orderIndependenceProblems(
+  people: Person[],
+  relationships: Relationship[],
+  shuffled: Person[],
+): string[] {
+  const base = normalised(computeFamilyTreeLayout(people, relationships).nodes);
+  const other = normalised(computeFamilyTreeLayout(shuffled, relationships).nodes);
+  const problems: string[] = [];
+  for (const [id, a] of base) {
+    const b = other.get(id)!;
+    if (a.generation !== b.generation || Math.abs(a.column - b.column) > EPS) {
+      problems.push(
+        `${id}: gen ${a.generation} col ${a.column} vs shuffled gen ${b.generation} col ${b.column}`,
+      );
+    }
+  }
+  return problems;
+}
+
+/** Small deterministic PRNG so property-test failures are reproducible by seed. */
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffle<T>(items: T[], rand: () => number): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
 }
 
 describe("computeFamilyTreeLayout", () => {
@@ -407,8 +493,9 @@ describe("computeFamilyTreeLayout", () => {
       expect(gen("P")).toBe(gen("K") - 1);
       expect(Math.abs(col("A") - col("V"))).toBe(1);
       expect(Math.abs(col("P") - col("N"))).toBe(1);
-      expect((col("A") + col("V")) / 2).toBe(col("L"));
-      expect((col("P") + col("N")) / 2).toBe(col("K"));
+      // Soft constraint: roughly centred over the child, not necessarily exact.
+      expect(Math.abs((col("A") + col("V")) / 2 - col("L"))).toBeLessThanOrEqual(1);
+      expect(Math.abs((col("P") + col("N")) / 2 - col("K"))).toBeLessThanOrEqual(1);
       expectNoOverlapWithinGeneration(nodes);
       return nodes;
     }
@@ -430,6 +517,204 @@ describe("computeFamilyTreeLayout", () => {
         { id: "s-AV", type: "spouse", person1Id: "A", person2Id: "V" },
         { id: "s-PN", type: "spouse", person1Id: "P", person2Id: "N" },
       ]);
+    });
+  });
+
+  describe("anonymous family structure fixture", () => {
+    const people = treeStructurePeople;
+    const relationships = treeStructureRelationships;
+    const nodes = computeFamilyTreeLayout(people, relationships).nodes;
+    const col = (id: string) => nodes.get(id)!.column;
+
+    const parentsOf = (id: string) =>
+      relationships
+        .filter((r) => r.type === "parent-child" && r.person2Id === id)
+        .map((r) => r.person1Id);
+    const siblingsOf = (id: string) => {
+      const mine = parentsOf(id).sort().join(",");
+      if (mine === "") return [];
+      return people
+        .map((p) => p.id)
+        .filter((other) => other !== id && parentsOf(other).sort().join(",") === mine);
+    };
+    const partnersOf = (id: string) =>
+      relationships
+        .filter((r) => r.type === "spouse" && (r.person1Id === id || r.person2Id === id))
+        .map((r) => (r.person1Id === id ? r.person2Id : r.person1Id));
+
+    it("places every person", () => {
+      expect(nodes.size).toBe(people.length);
+      for (const p of people) {
+        expect(Number.isFinite(nodes.get(p.id)?.column), `${p.id} has no column`).toBe(true);
+      }
+    });
+
+    it("never lets two cards in a row overlap", () => {
+      expectNoOverlapWithinGeneration(nodes);
+    });
+
+    it("keeps every pair of spouses in a row exactly one column apart", () => {
+      expect(spouseGapProblems(nodes, relationships)).toEqual([]);
+    });
+
+    it("keeps a married-in partner's siblings contiguous with that partner", () => {
+      // For every couple, each partner's sibling group (themselves plus their
+      // siblings) must not have a foreign card between its members; only the
+      // group's own partners may sit inside it.
+      const problems: string[] = [];
+      for (const rel of relationships) {
+        if (rel.type !== "spouse") continue;
+        for (const member of [rel.person1Id, rel.person2Id]) {
+          const group = [member, ...siblingsOf(member)];
+          if (group.length < 2) continue;
+          const allowed = new Set([...group, ...group.flatMap(partnersOf)]);
+          const columns = group.map(col);
+          const lo = Math.min(...columns);
+          const hi = Math.max(...columns);
+          for (const p of people) {
+            const n = nodes.get(p.id)!;
+            if (n.generation !== nodes.get(member)!.generation) continue;
+            if (n.column > lo && n.column < hi && !allowed.has(p.id)) {
+              problems.push(`${p.id} sits between the siblings of ${member}`);
+            }
+          }
+        }
+      }
+      expect(problems).toEqual([]);
+    });
+
+    it("centres each parent pair within one column of the middle of their children", () => {
+      const problems: string[] = [];
+      const seen = new Set<string>();
+      for (const p of people) {
+        const parents = parentsOf(p.id).sort();
+        const key = parents.join(",");
+        if (parents.length !== 2 || seen.has(key)) continue;
+        seen.add(key);
+        const kids = people.filter((q) => parentsOf(q.id).sort().join(",") === key);
+        const kidColumns = kids.map((k) => col(k.id));
+        const kidMiddle = (Math.min(...kidColumns) + Math.max(...kidColumns)) / 2;
+        const parentMiddle = (col(parents[0]) + col(parents[1])) / 2;
+        if (Math.abs(parentMiddle - kidMiddle) > 1 + EPS) {
+          problems.push(
+            `${parents.join("+")} centre ${parentMiddle} vs children centre ${kidMiddle}`,
+          );
+        }
+      }
+      expect(problems).toEqual([]);
+    });
+
+    it("gives identical relative positions whatever order the people array is in", () => {
+      for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+        const shuffled = shuffle(people, mulberry32(seed));
+        expect(
+          orderIndependenceProblems(people, relationships, shuffled),
+          `shuffle seed ${seed}`,
+        ).toEqual([]);
+      }
+      const reversed = [...people].reverse();
+      expect(orderIndependenceProblems(people, relationships, reversed), "reversed").toEqual([]);
+    });
+  });
+
+  describe("random small families (seeded property test)", () => {
+    type Family = { people: Person[]; relationships: Relationship[] };
+
+    /**
+     * Levels are fixed up front so generations are consistent by construction:
+     * spouses and siblings share a level, children sit one level below a parent.
+     */
+    function randomFamily(seed: number): Family {
+      const rand = mulberry32(seed);
+      const int = (n: number) => Math.floor(rand() * n);
+      const count = 3 + int(13);
+      const levelOf = Array.from({ length: count }, () => int(4)).sort((a, b) => a - b);
+      const ids = levelOf.map((_, i) => `q${String(i + 1).padStart(2, "0")}`);
+      const idsAtLevel = (level: number) => ids.filter((_, i) => levelOf[i] === level);
+      const relationships: Relationship[] = [];
+      let nextId = 0;
+      const rid = () => `r${nextId++}`;
+
+      const partner = new Map<string, string>();
+      for (let level = 0; level < 4; level++) {
+        const row = shuffle(idsAtLevel(level), rand);
+        for (let i = 0; i + 1 < row.length; i += 2) {
+          if (rand() > 0.6) continue;
+          partner.set(row[i], row[i + 1]);
+          partner.set(row[i + 1], row[i]);
+          if (rand() < 0.7) {
+            relationships.push({
+              id: rid(),
+              type: "spouse",
+              person1Id: row[i],
+              person2Id: row[i + 1],
+            });
+          }
+        }
+      }
+
+      for (let i = 0; i < count; i++) {
+        if (levelOf[i] === 0 || rand() < 0.1) continue;
+        const candidates = idsAtLevel(levelOf[i] - 1);
+        if (candidates.length === 0) continue;
+        const parent = candidates[int(candidates.length)];
+        const other = partner.get(parent);
+        const parents = other && rand() < 0.7 ? [parent, other] : [parent];
+        for (const p of parents) {
+          relationships.push({ id: rid(), type: "parent-child", person1Id: p, person2Id: ids[i] });
+        }
+      }
+
+      const singles = ids.filter((id) => !partner.has(id));
+      for (let n = 0; n < 2; n++) {
+        if (rand() > 0.3) continue;
+        const a = singles[int(singles.length)];
+        const b = singles[int(singles.length)];
+        if (!a || a === b || levelOf[ids.indexOf(a)] !== levelOf[ids.indexOf(b)]) continue;
+        const exists = relationships.some(
+          (r) =>
+            r.type === "sibling" &&
+            [r.person1Id, r.person2Id].sort().join() === [a, b].sort().join(),
+        );
+        if (!exists) relationships.push({ id: rid(), type: "sibling", person1Id: a, person2Id: b });
+      }
+
+      return { people: ids.map((id) => ({ id, firstName: id })), relationships };
+    }
+
+    function isConnected({ people, relationships }: Family): boolean {
+      const parent = new Map(people.map((p) => [p.id, p.id]));
+      const find = (x: string): string => (parent.get(x) === x ? x : find(parent.get(x)!));
+      for (const r of relationships) parent.set(find(r.person1Id), find(r.person2Id));
+      return new Set(people.map((p) => find(p.id))).size === 1;
+    }
+
+    it("places everyone, separates cards, keeps spouses adjacent, ignores people order", () => {
+      let connected = 0;
+      for (let seed = 1; seed <= 300; seed++) {
+        const family = randomFamily(seed);
+        const { nodes } = computeFamilyTreeLayout(family.people, family.relationships);
+        const label = `seed ${seed}`;
+
+        expect(nodes.size, label).toBe(family.people.length);
+        for (const p of family.people) {
+          expect(Number.isFinite(nodes.get(p.id)?.column), `${label}: ${p.id} unplaced`).toBe(true);
+        }
+        expect(separationProblems(nodes), label).toEqual([]);
+        expect(spouseGapProblems(nodes, family.relationships), label).toEqual([]);
+
+        // Separate components are free to be ordered by their own roots, so
+        // order independence is only required for a single connected family.
+        if (isConnected(family)) {
+          connected++;
+          const shuffled = shuffle(family.people, mulberry32(seed * 7919));
+          expect(
+            orderIndependenceProblems(family.people, family.relationships, shuffled),
+            label,
+          ).toEqual([]);
+        }
+      }
+      expect(connected).toBeGreaterThan(30);
     });
   });
 
