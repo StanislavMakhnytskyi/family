@@ -104,26 +104,33 @@ function buildGraph(
  * without it being recorded) their shared parents, e.g. a
  * cousin-grandparent added as a sibling of an actual grandparent.
  *
- * Preference order: attach to a sibling who already has real parents (a
- * proper place in the tree) over one who's also parentless; if both are
- * parentless, break the tie by id so a mutually-isolated pair still ends
- * up clustered together instead of neither being chosen. Only direct
+ * Preference order: attach to a sibling who already has a real tree context
+ * (parents, children, or a partner) over one who's otherwise isolated; if
+ * both are isolated, break the tie by id so a mutually-isolated pair still
+ * ends up clustered together instead of neither being chosen. Only direct
  * sibling edges are resolved -- a chain of satellites-of-satellites (no
  * one in the chain otherwise anchored) isn't something the described use
  * case produces, so it isn't specially handled here.
  */
 function computeSiblingAnchors(people: Person[], graph: Graph): Map<string, string> {
   const isParentless = (id: string) => (graph.parentsOf.get(id) ?? []).length === 0;
+  const hasTreeContext = (id: string) =>
+    !isParentless(id) ||
+    (graph.childrenOf.get(id) ?? []).length > 0 ||
+    (graph.partnersOf.get(id) ?? []).length > 0;
   const anchorOf = new Map<string, string>();
 
   for (const person of people) {
-    if (anchorOf.has(person.id) || !isParentless(person.id)) continue;
+    // Someone already connected through family or marriage is the natural
+    // anchor. Treating them as a satellite can put their siblings on both
+    // sides of their spouse instead of keeping the couple intact.
+    if (anchorOf.has(person.id) || hasTreeContext(person.id)) continue;
     for (const siblingId of graph.siblingsOf.get(person.id) ?? []) {
       // Don't attach to someone who is themselves already our satellite --
       // that would just swap which end of the pair is "the anchor" for no
       // reason, or (in a 3+-way case) create a cycle.
       if (anchorOf.get(siblingId) === person.id) continue;
-      if (!isParentless(siblingId) || siblingId < person.id) {
+      if (hasTreeContext(siblingId) || siblingId < person.id) {
         anchorOf.set(person.id, siblingId);
         break;
       }
@@ -269,47 +276,108 @@ function connectedComponents(people: Person[], graph: Graph, ctx: Ctx): string[]
 }
 
 /**
- * Orders one block's members so that every partner/satellite edge joins
- * neighbours wherever a line allows it (always for couples and for
- * remarriage chains of up to two partners per person). Deterministic:
- * starts from the best-connected member, ties broken by walk order, then rank.
+ * Orders one block's members so partner edges join neighbours wherever a
+ * line allows it (always for couples and for remarriage chains of up to two
+ * partners per person). Parentless sibling satellites are deliberately kept
+ * out of that partner core: a sibling run goes at an outside edge, never
+ * between a person and their spouse. Deterministic: starts from the
+ * best-connected member, ties broken by walk order, then rank.
  */
 function orderBlockMembers(
   members: string[],
   adjacency: Map<string, string[]>,
   byRank: (a: string, b: string) => number,
   walked: Map<string, number>,
+  anchorOf: Map<string, string>,
 ): string[] {
   if (members.length < 2) return members;
-  const degree = (id: string) => adjacency.get(id)!.length;
-  // A person reached first by the family walk (the blood relative) leads;
-  // their married-in partner follows.
-  const start = [...members].sort(
-    (a, b) =>
-      degree(b) - degree(a) || walked.get(a)! - walked.get(b)! || byRank(a, b),
-  )[0];
-  const placed = new Set([start]);
-  const leftSide: string[] = [];
-  const rightSide: string[] = [];
+
+  // `adjacency` contains both partner and anchor/satellite links so it can
+  // identify one rigid block. Only partners belong in its inner core though:
+  // treating a sibling satellite as another generic neighbour lets a BFS put
+  // it between an anchor and spouse (the bug this guards against).
+  const satellitesByAnchor = new Map<string, string[]>();
+  const satelliteIds = new Set<string>();
+  for (const id of members) {
+    const anchor = anchorOf.get(id);
+    if (!anchor || !adjacency.has(anchor)) continue;
+    satelliteIds.add(id);
+    const list = satellitesByAnchor.get(anchor) ?? [];
+    list.push(id);
+    satellitesByAnchor.set(anchor, list);
+  }
+  const core = members.filter((id) => !satelliteIds.has(id));
+  if (core.length === 0) return members;
+
+  const coreSet = new Set(core);
+  const partnerAdjacency = new Map<string, string[]>();
+  for (const id of core) {
+    partnerAdjacency.set(
+      id,
+      (adjacency.get(id) ?? []).filter((other) => coreSet.has(other)),
+    );
+  }
+
+  const degree = (id: string) => partnerAdjacency.get(id)!.length;
+  const placed = new Set<string>();
   const queue: { id: string; side: "left" | "right" }[] = [];
 
-  const first = adjacency.get(start)!;
-  first.forEach((id, i) => {
-    const side = first.length === 1 || i % 2 === 1 ? "right" : "left";
-    placed.add(id);
-    (side === "left" ? leftSide : rightSide).push(id);
-    queue.push({ id, side });
-  });
-  while (queue.length > 0) {
-    const { id, side } = queue.shift()!;
-    for (const next of adjacency.get(id)!) {
-      if (placed.has(next)) continue;
-      placed.add(next);
-      (side === "left" ? leftSide : rightSide).push(next);
-      queue.push({ id: next, side });
+  // Removing satellites can leave several partner components. Lay each out
+  // in the same deterministic order rather than dropping anything that was
+  // previously only connected through a sibling link.
+  const starts = [...core].sort(
+    (a, b) =>
+      degree(b) - degree(a) || walked.get(a)! - walked.get(b)! || byRank(a, b),
+  );
+  const orderedCore: string[] = [];
+  for (const start of starts) {
+    if (placed.has(start)) continue;
+    placed.add(start);
+    const componentLeft: string[] = [];
+    const componentRight: string[] = [];
+    const first = partnerAdjacency.get(start)!;
+    first.forEach((id, i) => {
+      const side = first.length === 1 || i % 2 === 1 ? "right" : "left";
+      placed.add(id);
+      (side === "left" ? componentLeft : componentRight).push(id);
+      queue.push({ id, side });
+    });
+    while (queue.length > 0) {
+      const { id, side } = queue.shift()!;
+      for (const next of partnerAdjacency.get(id)!) {
+        if (placed.has(next)) continue;
+        placed.add(next);
+        (side === "left" ? componentLeft : componentRight).push(next);
+        queue.push({ id: next, side });
+      }
+    }
+    orderedCore.push(...componentLeft.reverse(), start, ...componentRight);
+  }
+
+  let ordered = orderedCore;
+  const anchors = [...satellitesByAnchor.keys()].sort(
+    (a, b) => orderedCore.indexOf(a) - orderedCore.indexOf(b) || byRank(a, b),
+  );
+  for (const anchor of anchors) {
+    const satellites = satellitesByAnchor
+      .get(anchor)!
+      .sort((a, b) => walked.get(a)! - walked.get(b)! || byRank(a, b));
+    const at = ordered.indexOf(anchor);
+    // At an endpoint, the run stays directly beside its anchor and opposite
+    // the spouse. For a rare remarriage chain where the anchor is internal,
+    // keep the run outside the partner core rather than breaking either
+    // adjacent spouse pair; choose the closer outside edge deterministically.
+    if (at === 0) {
+      ordered = [...satellites, ...ordered];
+    } else if (at === ordered.length - 1) {
+      ordered = [...ordered, ...satellites];
+    } else if (at * 2 < ordered.length - 1) {
+      ordered = [...satellites, ...ordered];
+    } else {
+      ordered = [...ordered, ...satellites];
     }
   }
-  return [...leftSide.reverse(), start, ...rightSide];
+  return ordered;
 }
 
 /**
@@ -483,7 +551,7 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
       }
     }
     component.sort(byRank);
-    const ordered = orderBlockMembers(component, adjacency, byRank, baseWalk);
+    const ordered = orderBlockMembers(component, adjacency, byRank, baseWalk, ctx.anchorOf);
     const own = new Set(ordered);
     const distinct = (map: Map<string, string[]>) => {
       const result: string[] = [];

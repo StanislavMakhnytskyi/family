@@ -28,5 +28,9 @@
   { "id": "r22", "type": "parent-child", "person1Id": "nancy-hughes", "person2Id": "diane-hughes" },
 
   { "id": "r23", "type": "spouse", "person1Id": "laura-chen", "person2Id": "david-chen" },
-  { "id": "r24", "type": "spouse", "person1Id": "karen-foster", "person2Id": "james-foster" }
+  { "id": "r24", "type": "spouse", "person1Id": "karen-foster", "person2Id": "james-foster" },
+
+  { "id": "r25", "type": "spouse", "person1Id": "ivan-petrov", "person2Id": "zinaida-petrova" },
+  { "id": "r26", "type": "sibling", "person1Id": "ivan-petrov", "person2Id": "anatolii-petrov" },
+  { "id": "r27", "type": "sibling", "person1Id": "ivan-petrov", "person2Id": "vasyl-petrov" }
 ]
