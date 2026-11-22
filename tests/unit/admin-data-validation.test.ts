@@ -33,6 +33,14 @@ describe("validateRawData", () => {
       }),
     );
     expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.settings).toEqual({ showFullDates: false });
+    }
+  });
+
+  it("rejects malformed settings while accepting a missing legacy settings object", () => {
+    expect(validateRawData(baseData()).success).toBe(true);
+    expect(validateRawData(baseData({ settings: { showFullDates: "yes" } })).success).toBe(false);
   });
 
   it("rejects data that isn't an object", () => {

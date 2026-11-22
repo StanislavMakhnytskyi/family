@@ -5,6 +5,7 @@ import {
   gravesSchema,
   mediaListSchema,
   questionsSchema,
+  settingsSchema,
 } from "@/lib/schemas";
 
 describe("personSchema", () => {
@@ -133,5 +134,19 @@ describe("questionSchema", () => {
       { id: "q1", question: "?", normalizedAnswer: "рекс" },
     ]);
     expect(result.success).toBe(true);
+  });
+});
+
+describe("settingsSchema", () => {
+  it("defaults legacy datasets to compact year-only dates", () => {
+    expect(settingsSchema.parse(undefined)).toEqual({ showFullDates: false });
+  });
+
+  it("accepts the full-date display preference", () => {
+    expect(settingsSchema.parse({ showFullDates: true })).toEqual({ showFullDates: true });
+  });
+
+  it("rejects a malformed setting", () => {
+    expect(settingsSchema.safeParse({ showFullDates: "yes" }).success).toBe(false);
   });
 });

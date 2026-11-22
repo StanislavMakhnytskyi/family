@@ -9,11 +9,13 @@ import {
   gravesSchema,
   mediaListSchema,
   questionsSchema,
+  settingsSchema,
   type Person,
   type Relationship,
   type Grave,
   type Media,
   type Question,
+  type Settings,
 } from "@/lib/schemas";
 import { DATA_DIR, GLOBAL_CONFIG_KEY, readLocalData, type RawData } from "@/lib/data";
 
@@ -44,6 +46,7 @@ export type FullData = {
   graves: Grave[];
   media: Media[];
   questions: Question[];
+  settings: Settings;
 };
 
 export function isLocalSourceAvailable(): boolean {
@@ -101,13 +104,18 @@ export function validateRawData(value: unknown): ValidationResult {
   if (!questionsResult.success) {
     errors.push(`questions: ${formatZodError(questionsResult.error)}`);
   }
+  const settingsResult = settingsSchema.safeParse(raw.settings);
+  if (!settingsResult.success) {
+    errors.push(`settings: ${formatZodError(settingsResult.error)}`);
+  }
 
   if (
     !peopleResult.success ||
     !relationshipsResult.success ||
     !gravesResult.success ||
     !mediaResult.success ||
-    !questionsResult.success
+    !questionsResult.success ||
+    !settingsResult.success
   ) {
     return { success: false, errors };
   }
@@ -117,6 +125,7 @@ export function validateRawData(value: unknown): ValidationResult {
   const graves = gravesResult.data;
   const media = mediaResult.data;
   const questions = questionsResult.data;
+  const settings = settingsResult.data;
 
   const personIds = new Set(people.map((person) => person.id));
   for (const rel of relationships) {
@@ -144,7 +153,7 @@ export function validateRawData(value: unknown): ValidationResult {
     return { success: false, errors };
   }
 
-  return { success: true, data: { people, relationships, graves, media, questions } };
+  return { success: true, data: { people, relationships, graves, media, questions, settings } };
 }
 
 /**
@@ -266,6 +275,7 @@ async function writeLocalData(value: FullData): Promise<void> {
     ["graves.json", value.graves],
     ["media.json", value.media],
     ["questions.json", value.questions],
+    ["settings.json", value.settings],
   ];
   await Promise.all(
     entries.map(async ([fileName, data]) => {

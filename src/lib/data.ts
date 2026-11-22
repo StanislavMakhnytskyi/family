@@ -10,11 +10,13 @@ import {
   gravesSchema,
   mediaListSchema,
   questionsSchema,
+  settingsSchema,
   type Person,
   type Relationship,
   type Grave,
   type Media,
   type Question,
+  type Settings,
 } from "@/lib/schemas";
 
 // DATA_DIR is the real app's directory -- used unconditionally by the admin
@@ -32,6 +34,7 @@ export type RawData = {
   graves: unknown;
   media: unknown;
   questions: unknown;
+  settings: unknown;
 };
 
 async function readLocalJson(dir: string, fileName: string): Promise<unknown> {
@@ -42,17 +45,18 @@ async function readLocalJson(dir: string, fileName: string): Promise<unknown> {
 
 export async function readLocalData(): Promise<RawData> {
   const dir = (await demoModeFlag()) ? DEMO_DATA_DIR : DATA_DIR;
-  const [people, relationships, graves, media, questions] = await Promise.all([
+  const [people, relationships, graves, media, questions, settings] = await Promise.all([
     readLocalJson(dir, "people.json"),
     readLocalJson(dir, "relationships.json"),
     readLocalJson(dir, "graves.json"),
     readLocalJson(dir, "media.json"),
     readLocalJson(dir, "questions.json"),
+    readLocalJson(dir, "settings.json"),
   ]);
-  return { people, relationships, graves, media, questions };
+  return { people, relationships, graves, media, questions, settings };
 }
 
-// Reads the combined { people, relationships, graves, media, questions }
+// Reads the combined { people, relationships, graves, media, questions, settings }
 // object from Vercel Global Config when GLOBAL_CONFIG is configured (both in
 // production and in local dev after `vercel env pull`), falling back to the
 // local src/data/*.json files otherwise — keeps them usable offline and as
@@ -93,6 +97,10 @@ export const getMedia = cache(async (): Promise<Media[]> => {
 
 export const getQuestions = cache(async (): Promise<Question[]> => {
   return questionsSchema.parse((await loadRawData()).questions);
+});
+
+export const getSettings = cache(async (): Promise<Settings> => {
+  return settingsSchema.parse((await loadRawData()).settings);
 });
 
 export async function getPersonById(id: string): Promise<Person | null> {

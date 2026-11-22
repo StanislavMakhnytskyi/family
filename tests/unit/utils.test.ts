@@ -34,4 +34,11 @@ describe("lifespan", () => {
   it("uses whatever labels are passed in, e.g. for a different locale", () => {
     expect(lifespan("1928", undefined, { born: "b.", died: "d." })).toBe("b. 1928");
   });
+
+  it("shows full ISO dates when the setting is enabled, while retaining year-only dates", () => {
+    expect(lifespan("1928-05-12", "1996-11-03", labels, true)).toBe(
+      "12.05.1928 – 03.11.1996",
+    );
+    expect(lifespan("1928", "1996-11-03", labels, true)).toBe("1928 – 03.11.1996");
+  });
 });

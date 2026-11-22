@@ -34,6 +34,16 @@ export const personSchema = z.object({
 export type Person = z.infer<typeof personSchema>;
 export const peopleSchema = z.array(personSchema);
 
+// Settings live alongside the rest of the family dataset so local JSON and
+// Vercel Global Config always describe the same public experience. `default`
+// keeps older, pre-settings datasets readable without a migration.
+export const settingsSchema = z
+  .object({
+    showFullDates: z.boolean().default(false),
+  })
+  .default({ showFullDates: false });
+export type Settings = z.infer<typeof settingsSchema>;
+
 export const relationshipSchema = z.object({
   id: z.string().min(1),
   // "sibling" is deliberately not fed into the tree layout algorithm

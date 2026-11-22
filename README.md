@@ -44,6 +44,7 @@ All content lives in JSON files under [src/data/](src/data/), validated by Zod s
 - `graves.json` — burial places (coordinates, address)
 - `media.json` — photo gallery per person
 - `questions.json` — login questions (`normalizedAnswer` + optional `variants`)
+- `settings.json` — family-wide display preferences (currently whether public pages show full dates)
 
 To add a new person, either edit these files by hand, or use the admin panel (below) — pages and the tree pick up changes automatically. Photos aren't required: if `avatar` is unset, an initials placeholder is shown instead.
 

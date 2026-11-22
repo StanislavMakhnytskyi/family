@@ -5,7 +5,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Person } from "@/lib/schemas";
 import { initials, lifespan } from "@/lib/utils";
 
-export async function PersonCard({ person }: { person: Person }) {
+export async function PersonCard({
+  person,
+  showFullDates = false,
+}: {
+  person: Person;
+  showFullDates?: boolean;
+}) {
   const t = await getTranslations();
   return (
     <Link
@@ -23,10 +29,15 @@ export async function PersonCard({ person }: { person: Person }) {
           {person.firstName} {person.lastName}
         </div>
         <div className="text-caption tabular-nums text-muted-3">
-          {lifespan(person.birthDate, person.deathDate, {
-            born: t("Common.bornPrefix"),
-            died: t("Common.diedPrefix"),
-          })}
+          {lifespan(
+            person.birthDate,
+            person.deathDate,
+            {
+              born: t("Common.bornPrefix"),
+              died: t("Common.diedPrefix"),
+            },
+            showFullDates,
+          )}
         </div>
       </div>
     </Link>

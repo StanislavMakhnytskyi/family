@@ -13,6 +13,7 @@ import {
   getMediaByPersonId,
   getPersonById,
   getRelatives,
+  getSettings,
 } from "@/lib/data";
 import { formatCoords, initials, lifespan } from "@/lib/utils";
 
@@ -24,10 +25,11 @@ export default async function PersonPage({
   if (!person) notFound();
 
   const t = await getTranslations();
-  const [relatives, grave, media] = await Promise.all([
+  const [relatives, grave, media, settings] = await Promise.all([
     getRelatives(id),
     getGraveByPersonId(id),
     getMediaByPersonId(id),
+    getSettings(),
   ]);
 
   return (
@@ -58,7 +60,7 @@ export default async function PersonPage({
               {lifespan(person.birthDate, person.deathDate, {
                 born: t("Common.bornPrefix"),
                 died: t("Common.diedPrefix"),
-              })}
+              }, settings.showFullDates)}
             </p>
             {!person.hidden && (
               <Button variant="ghost" asChild className="mt-4 text-sm">
@@ -151,24 +153,28 @@ export default async function PersonPage({
                     <RelativeSection
                       label={t("Person.parents")}
                       people={relatives.parents}
+                      showFullDates={settings.showFullDates}
                     />
                   )}
                   {relatives.spouses.length > 0 && (
                     <RelativeSection
                       label={t("Person.spouses")}
                       people={relatives.spouses}
+                      showFullDates={settings.showFullDates}
                     />
                   )}
                   {relatives.siblings.length > 0 && (
                     <RelativeSection
                       label={t("Person.siblings")}
                       people={relatives.siblings}
+                      showFullDates={settings.showFullDates}
                     />
                   )}
                   {relatives.children.length > 0 && (
                     <RelativeSection
                       label={t("Person.children")}
                       people={relatives.children}
+                      showFullDates={settings.showFullDates}
                     />
                   )}
                 </div>
@@ -184,9 +190,11 @@ export default async function PersonPage({
 function RelativeSection({
   label,
   people,
+  showFullDates,
 }: {
   label: string;
   people: Awaited<ReturnType<typeof getRelatives>>["parents"];
+  showFullDates: boolean;
 }) {
   return (
     <div>
@@ -195,7 +203,7 @@ function RelativeSection({
       </h3>
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
         {people.map((person) => (
-          <PersonCard key={person.id} person={person} />
+          <PersonCard key={person.id} person={person} showFullDates={showFullDates} />
         ))}
       </div>
     </div>

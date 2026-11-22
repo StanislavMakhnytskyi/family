@@ -24,6 +24,7 @@ const COLLECTIONS = [
   "graves",
   "media",
   "questions",
+  "settings",
 ];
 
 async function main() {

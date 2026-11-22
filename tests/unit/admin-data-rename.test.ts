@@ -14,6 +14,7 @@ function baseData(): FullData {
     graves: [{ personId: "ivan", latitude: 49.4, longitude: 28.5 }],
     media: [{ id: "m1", personIds: ["ivan", "hanna"], url: "/x.svg", type: "photo" }],
     questions: [],
+    settings: { showFullDates: false },
   };
 }
 
