@@ -189,5 +189,31 @@
       "small": "https://randomuser.me/api/portraits/thumb/women/72.jpg",
       "large": "https://randomuser.me/api/portraits/women/72.jpg"
     }
+  },
+  {
+    "id": "anatolii-petrov",
+    "firstName": "Anatolii",
+    "lastName": "Petrov",
+    "birthDate": "1925"
+  },
+  {
+    "id": "ivan-petrov",
+    "firstName": "Ivan",
+    "lastName": "Petrov",
+    "birthDate": "1927",
+    "deathDate": "1997"
+  },
+  {
+    "id": "zinaida-petrova",
+    "firstName": "Zinaida",
+    "lastName": "Petrova",
+    "birthDate": "1928",
+    "deathDate": "2012"
+  },
+  {
+    "id": "vasyl-petrov",
+    "firstName": "Vasyl",
+    "lastName": "Petrov",
+    "birthDate": "1930"
   }
 ]

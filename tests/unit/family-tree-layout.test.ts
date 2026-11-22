@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { computeFamilyTreeLayout } from "@/lib/family-tree-layout";
 import type { Person, Relationship } from "@/lib/schemas";
 import { treeStructurePeople, treeStructureRelationships } from "./fixtures/tree-structure";
+import demoPeople from "../../src/data/demo/people.json";
+import demoRelationships from "../../src/data/demo/relationships.json";
 
 function person(id: string, birthDate = "2000"): Person {
   return { id, firstName: id, lastName: id, birthDate };
@@ -225,6 +227,38 @@ describe("computeFamilyTreeLayout", () => {
     expect(nodes.get("b")!.generation).toBe(nodes.get("a")!.generation);
     expect(nodes.get("c")!.generation).toBe(nodes.get("a")!.generation);
     expectNoOverlapWithinGeneration(nodes);
+  });
+
+  it("keeps parentless siblings together outside a married anchor's couple", () => {
+    // Regression for a sibling being placed between Ivan and his wife. The
+    // sibling links have no recorded parents, so both brothers are satellites
+    // of Ivan and must occupy the same side of him, opposite Zinaida.
+    const ids = new Set([
+      "ivan-petrov",
+      "zinaida-petrova",
+      "anatolii-petrov",
+      "vasyl-petrov",
+    ]);
+    const people = demoPeople.filter((person) => ids.has(person.id));
+    const relationships = demoRelationships.filter(
+      (relationship) =>
+        relationship.type === "spouse" || relationship.type === "sibling",
+    ) as Relationship[];
+    const { nodes } = computeFamilyTreeLayout(people, relationships);
+    const column = (id: string) => nodes.get(id)!.column;
+
+    const ivanGeneration = nodes.get("ivan-petrov")!.generation;
+    for (const id of ids) expect(nodes.get(id)!.generation).toBe(ivanGeneration);
+
+    const spouseDirection = Math.sign(column("zinaida-petrova") - column("ivan-petrov"));
+    expect(Math.abs(column("zinaida-petrova") - column("ivan-petrov"))).toBe(1);
+    for (const sibling of ["anatolii-petrov", "vasyl-petrov"]) {
+      expect(Math.sign(column(sibling) - column("ivan-petrov"))).toBe(-spouseDirection);
+    }
+    expectNoOverlapWithinGeneration(nodes);
+
+    const shuffled = [...people].reverse();
+    expect(orderIndependenceProblems(people, relationships, shuffled)).toEqual([]);
   });
 
   it("assigns every person a node, including those only reachable through a marriage bridge", () => {
