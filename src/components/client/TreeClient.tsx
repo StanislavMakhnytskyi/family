@@ -82,6 +82,30 @@ function buildParentGroups(relationships: Relationship[]): ParentGroup[] {
   }));
 }
 
+/**
+ * An explicit sibling link exists for relatives whose common parents are not
+ * known. Once both people have a recorded parent in common, the parent-child
+ * connector already explains that relationship; drawing the sibling bracket
+ * too would show two conflicting visual treatments for the same siblings.
+ */
+function haveRecordedCommonParent(
+  firstId: string,
+  secondId: string,
+  relationships: Relationship[],
+): boolean {
+  const firstParents = new Set(
+    relationships
+      .filter((rel) => rel.type === "parent-child" && rel.person2Id === firstId)
+      .map((rel) => rel.person1Id),
+  );
+  return relationships.some(
+    (rel) =>
+      rel.type === "parent-child" &&
+      rel.person2Id === secondId &&
+      firstParents.has(rel.person1Id),
+  );
+}
+
 export function TreeClient({
   people,
   relationships,
@@ -284,7 +308,12 @@ export function TreeClient({
       .slice(0, 6);
   }, [people, trimmedQuery, positionOf]);
 
-  const hasSiblingLinks = relationships.some((r) => r.type === "sibling");
+  const visibleSiblingLinks = relationships.filter(
+    (rel) =>
+      rel.type === "sibling" &&
+      !haveRecordedCommonParent(rel.person1Id, rel.person2Id, relationships),
+  );
+  const hasSiblingLinks = visibleSiblingLinks.length > 0;
   const hasSpouseLinks = relationships.some((r) => r.type === "spouse");
 
   function distanceBetween(a: { x: number; y: number }, b: { x: number; y: number }) {
@@ -460,17 +489,15 @@ export function TreeClient({
                   />
                 );
               })}
-            {relationships
-              .filter((rel) => rel.type === "sibling")
-              .map((rel) => {
+            {visibleSiblingLinks.map((rel) => {
                 const a = positionOf.get(rel.person1Id);
                 const b = positionOf.get(rel.person2Id);
                 if (!a || !b || a.y !== b.y) return null;
                 const [left, right] = a.x < b.x ? [a, b] : [b, a];
                 // A bracket over the pair -- "|---|" -- with no line
                 // extending further up to a parent, since a sibling
-                // relationship exists specifically for when there isn't
-                // one on record. Deliberately distinct from the spouse
+                // relationship is only drawn when no common parent is on
+                // record. Deliberately distinct from the spouse
                 // connector (a plain line through the cards' vertical
                 // center) so the two read as different kinds of link.
                 const busY = a.y - 16;
@@ -487,7 +514,7 @@ export function TreeClient({
                     strokeDasharray="4 3"
                   />
                 );
-              })}
+            })}
           </svg>
 
           {positioned.map(({ id, x, y }) => {
