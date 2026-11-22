@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { TreeClient } from "@/components/client/TreeClient";
+import type { Person, Relationship } from "@/lib/schemas";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
@@ -59,5 +60,30 @@ describe("TreeClient", () => {
     expect(viewport.className).toContain("flex-1");
     expect(canvas.className).toContain("absolute");
     expect(canvas.className).toContain("inset-0");
+  });
+
+  it("does not draw a sibling bracket when common parents already explain the relationship", () => {
+    const people: Person[] = [
+      { id: "parent", firstName: "Parent" },
+      { id: "ivan", firstName: "Ivan" },
+      { id: "anatolii", firstName: "Anatolii" },
+    ];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "parent-child", person1Id: "parent", person2Id: "ivan" },
+      { id: "r2", type: "parent-child", person1Id: "parent", person2Id: "anatolii" },
+      { id: "r3", type: "sibling", person1Id: "ivan", person2Id: "anatolii" },
+    ];
+
+    render(
+      <TreeClient
+        people={people}
+        relationships={relationships}
+        hint="перетягніть"
+        lifespanLabels={{ born: "нар.", died: "пом." }}
+      />,
+    );
+
+    expect(screen.queryByTestId("tree-legend")).toBeNull();
+    expect(document.querySelector(".tree-connector-sibling")).toBeNull();
   });
 });
