@@ -71,12 +71,19 @@ export function lifespan(
   birthDate: string | undefined,
   deathDate: string | undefined,
   labels: { born: string; died: string },
+  showFullDates = false,
 ): string {
-  const birthYear = birthDate?.slice(0, 4);
-  const deathYear = deathDate?.slice(0, 4);
-  if (birthYear && deathYear) return `${birthYear} – ${deathYear}`;
-  if (birthYear) return `${labels.born} ${birthYear}`;
-  if (deathYear) return `${labels.died} ${deathYear}`;
+  const formatDate = (date: string | undefined) => {
+    if (!date) return undefined;
+    if (!showFullDates) return date.slice(0, 4);
+    const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return match ? `${match[3]}.${match[2]}.${match[1]}` : date;
+  };
+  const birth = formatDate(birthDate);
+  const death = formatDate(deathDate);
+  if (birth && death) return `${birth} – ${death}`;
+  if (birth) return `${labels.born} ${birth}`;
+  if (death) return `${labels.died} ${death}`;
   return "";
 }
 

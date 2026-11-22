@@ -36,7 +36,10 @@ describe("readDataSafe", () => {
     readLocalDataMock.mockResolvedValue(validRawData());
     const { readDataSafe } = await import("@/lib/admin-data");
     const result = await readDataSafe("local");
-    expect(result).toEqual({ success: true, data: validRawData() });
+    expect(result).toEqual({
+      success: true,
+      data: { ...validRawData(), settings: { showFullDates: false } },
+    });
   });
 
   it("returns a typed error instead of throwing when the underlying read rejects", async () => {

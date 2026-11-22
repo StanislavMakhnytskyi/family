@@ -60,6 +60,9 @@ function buildGraph(
   }
 
   for (const rel of relationships) {
+    // A record naming someone who isn't in `people` can't be laid out; keeping
+    // it would put a phantom id into the graph and break every rank lookup.
+    if (!parentsOf.has(rel.person1Id) || !parentsOf.has(rel.person2Id)) continue;
     if (rel.type === "parent-child") {
       push(childrenOf, rel.person1Id, rel.person2Id);
       push(parentsOf, rel.person2Id, rel.person1Id);
@@ -156,8 +159,8 @@ function assignGenerations(
     if (generation.has(start.id) || siblingAnchorOf.has(start.id)) continue;
     generation.set(start.id, 0);
     const queue = [start.id];
-    while (queue.length > 0) {
-      const id = queue.shift()!;
+    for (let head = 0; head < queue.length; head++) {
+      const id = queue[head];
       const g = generation.get(id)!;
       for (const parentId of graph.parentsOf.get(id) ?? []) {
         if (!generation.has(parentId)) {
@@ -208,6 +211,9 @@ type Block = {
   rank: number;
   parents: string[];
   children: string[];
+  /** Cached numeric card ids for `members` (valid while `idsFor === members`). */
+  ids?: number[];
+  idsFor?: string[];
 };
 
 const SWEEPS = 4;
@@ -218,6 +224,14 @@ const EPSILON = 1e-9;
 const COORDINATE_ROUNDS = 10;
 /** Columns are snapped to this grid so rigid blocks keep their gaps bit-exact. */
 const GRID = 1024;
+/**
+ * Deterministic cap on the order-search effort per family, counted in cards
+ * visited by `cost()` (never wall-clock time, so the result does not depend on
+ * machine speed). Ordinary families use a tiny fraction of it; only very wide
+ * rows run out, after which the remaining search (block moves and extra
+ * starting roots) is skipped and the order found so far is kept.
+ */
+export const LAYOUT_WORK_BUDGET = 1_500_000;
 
 function mean(values: number[]): number {
   return values.reduce((a, b) => a + b, 0) / values.length;
@@ -313,56 +327,91 @@ function walkOrder(
   const index = new Map<string, number>();
   const expanded = new Set<string>();
 
+  // Iterative (explicit stacks) so a very deep family cannot overflow the call
+  // stack, and every loop is guarded by `index`/`expanded` so cyclic records
+  // cannot spin forever.
   function claim(id: string) {
-    if (index.has(id)) return;
-    index.set(id, index.size);
-    for (const satellite of satellitesOf.get(id) ?? []) claim(satellite);
+    const pending = [id];
+    while (pending.length > 0) {
+      const current = pending.pop()!;
+      if (index.has(current)) continue;
+      index.set(current, index.size);
+      const satellites = satellitesOf.get(current) ?? [];
+      for (let i = satellites.length - 1; i >= 0; i--) pending.push(satellites[i]);
+    }
   }
 
-  function expand(id: string) {
-    if (expanded.has(id)) return;
-    expanded.add(id);
-    const kids = graph.childrenOf.get(id) ?? [];
-    const partners = graph.partnersOf.get(id) ?? [];
-    const satellites = satellitesOf.get(id) ?? [];
-    for (const partner of partners) claim(partner);
+  type Task = { kind: "expand" | "parent"; id: string };
+  function run(rootId: string) {
+    const stack: Task[] = [{ kind: "expand", id: rootId }];
+    while (stack.length > 0) {
+      const task = stack.pop()!;
+      if (task.kind === "parent") {
+        // A married-in partner's own family is walked right here, so it lands
+        // beside the family it joins instead of wherever its root sorts to.
+        if (!index.has(task.id)) {
+          const top = topAncestor(task.id);
+          claim(top);
+          stack.push({ kind: "expand", id: top });
+        }
+        continue;
+      }
+      const id = task.id;
+      if (expanded.has(id)) continue;
+      expanded.add(id);
+      const kids = graph.childrenOf.get(id) ?? [];
+      const partners = graph.partnersOf.get(id) ?? [];
+      const satellites = satellitesOf.get(id) ?? [];
+      for (const partner of partners) claim(partner);
 
-    // Children are listed couple by couple, then the rest; all of them are
-    // claimed before any is explored, so siblings stay together.
-    const ordered: string[] = [];
-    for (const partner of partners) {
-      const partnerKids = new Set(graph.childrenOf.get(partner) ?? []);
+      // Children are listed couple by couple, then the rest; all of them are
+      // claimed before any is explored, so siblings stay together.
+      const ordered: string[] = [];
+      const listed = new Set<string>();
+      for (const partner of partners) {
+        const partnerKids = new Set(graph.childrenOf.get(partner) ?? []);
+        for (const kid of kids) {
+          if (partnerKids.has(kid) && !listed.has(kid)) {
+            listed.add(kid);
+            ordered.push(kid);
+          }
+        }
+      }
       for (const kid of kids) {
-        if (partnerKids.has(kid) && !ordered.includes(kid)) ordered.push(kid);
+        if (!listed.has(kid)) {
+          listed.add(kid);
+          ordered.push(kid);
+        }
       }
-    }
-    for (const kid of kids) {
-      if (!ordered.includes(kid)) ordered.push(kid);
-    }
-    if (reverseKids) ordered.reverse();
-    for (const kid of ordered) claim(kid);
+      if (reverseKids) ordered.reverse();
+      for (const kid of ordered) claim(kid);
 
-    // A married-in partner's own family is walked right here, so it lands
-    // beside the family it joins instead of wherever its root sorts to.
-    for (const partner of partners) {
-      for (const parent of graph.parentsOf.get(partner) ?? []) {
-        if (!index.has(parent)) visit(topAncestor(parent));
+      // Work to do after this prelude, in order; pushed reversed onto the stack.
+      const next: Task[] = [];
+      for (const partner of partners) {
+        for (const parent of graph.parentsOf.get(partner) ?? []) {
+          next.push({ kind: "parent", id: parent });
+        }
       }
+      for (const kid of ordered) next.push({ kind: "expand", id: kid });
+      for (const partner of partners) next.push({ kind: "expand", id: partner });
+      for (const satellite of satellites) next.push({ kind: "expand", id: satellite });
+      for (let i = next.length - 1; i >= 0; i--) stack.push(next[i]);
     }
-    for (const kid of ordered) expand(kid);
-    for (const partner of partners) expand(partner);
-    for (const satellite of satellites) expand(satellite);
   }
 
   function visit(id: string) {
     claim(id);
-    expand(id);
+    run(id);
   }
 
+  /** Walks up to the first ancestor chain end not yet placed; `seen` stops it looping on cyclic ancestry. */
   function topAncestor(id: string): string {
+    const seen = new Set<string>();
     let current = id;
     for (;;) {
-      const up = (graph.parentsOf.get(current) ?? []).find((p) => !index.has(p));
+      seen.add(current);
+      const up = (graph.parentsOf.get(current) ?? []).find((p) => !index.has(p) && !seen.has(p));
       if (up === undefined) return current;
       current = up;
     }
@@ -460,12 +509,13 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
   // --- Order within each row ---------------------------------------------
   const generations = [...new Set(blocks.map((b) => b.gen))].sort((a, b) => a - b);
   const rows: Block[][] = generations.map(() => []);
+  const rowOfGeneration = new Map(generations.map((g, i) => [g, i]));
   function seedRows(walk: Map<string, number>) {
     const walkKey = (b: Block) => Math.min(...b.members.map((m) => walk.get(m)!));
-    generations.forEach((g, i) => {
-      rows[i] = blocks
-        .filter((b) => b.gen === g)
-        .sort((x, y) => walkKey(x) - walkKey(y) || x.rank - y.rank);
+    const grouped: Block[][] = generations.map(() => []);
+    for (const b of blocks) grouped[rowOfGeneration.get(b.gen)!].push(b);
+    grouped.forEach((row, i) => {
+      rows[i] = row.sort((x, y) => walkKey(x) - walkKey(y) || x.rank - y.rank);
     });
   }
 
@@ -490,8 +540,8 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
     return Math.round(mean(pick.map((p) => fx.get(p)!)) * 1e6);
   }
 
-  function sweepRow(r: number, direction: "down" | "up") {
-    const fx = fractions();
+  /** `fx` is the current fractions of every row; only row `r` changes here, so only it is refreshed. */
+  function sweepRow(r: number, direction: "down" | "up", fx: Map<string, number>) {
     rows[r] = rows[r]
       .map((b) => ({ b, key: neighbourKey(b, direction, fx) }))
       .sort((x, y) => x.key - y.key || x.b.rank - y.b.rank)
@@ -503,18 +553,42 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
       b.members = [...original].reverse();
       if (cost(r - 1, r) >= before - EPSILON) b.members = original;
     }
+    const total = rowWidth[r];
+    let cursor = 0;
+    for (const b of rows[r]) {
+      b.members.forEach((m, i) => fx.set(m, (cursor + i + 0.5) / total));
+      cursor += b.members.length;
+    }
   }
 
-  const rowIndexOf = new Map(generations.map((g, i) => [g, i]));
-  /** Per layer: each child with the parents above it, as TreeClient draws them. */
-  const linesBelow: { parents: string[]; child: string }[][] = rows.map(() => []);
+  const rowIndexOf = rowOfGeneration;
+  const cardNumber = new Map(members.map((id, i) => [id, i]));
+  const rowWidth = rows.map(() => 0);
+  for (const b of blocks) rowWidth[rowIndexOf.get(b.gen)!] += b.members.length;
+  /** Per layer: each child with the parents above it, as TreeClient draws them (numeric card ids). */
+  const linesBelow: { parents: number[]; child: number }[][] = rows.map(() => []);
   for (const id of members) {
     const row = rowIndexOf.get(genOf(id))!;
     if (row === 0) continue;
     const above = (graph.parentsOf.get(id) ?? []).filter(
       (p) => memberSet.has(p) && rowIndexOf.get(genOf(p)) === row - 1,
     );
-    if (above.length > 0) linesBelow[row - 1].push({ parents: above, child: id });
+    if (above.length > 0) {
+      linesBelow[row - 1].push({ parents: above.map((p) => cardNumber.get(p)!), child: cardNumber.get(id)! });
+    }
+  }
+  const position = new Float64Array(members.length);
+  const fraction = new Float64Array(members.length);
+  /** Cards visited by cost() so far; compared with LAYOUT_WORK_BUDGET to bound the search. */
+  let work = 0;
+  const outOfBudget = () => work >= LAYOUT_WORK_BUDGET;
+
+  function cardIds(b: Block): number[] {
+    if (b.idsFor !== b.members) {
+      b.ids = b.members.map((m) => cardNumber.get(m)!);
+      b.idsFor = b.members;
+    }
+    return b.ids!;
   }
 
   /**
@@ -526,15 +600,14 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
   function cost(from: number, to: number): number {
     const lo = Math.max(0, from);
     const hi = Math.min(rows.length - 2, to);
-    const position = new Map<string, number>();
-    const fraction = new Map<string, number>();
     for (let r = lo; r <= hi + 1; r++) {
-      const total = rows[r].reduce((sum, b) => sum + b.members.length, 0);
+      const total = rowWidth[r];
+      work += total;
       let cursor = 0;
       for (const b of rows[r]) {
-        for (const m of b.members) {
-          position.set(m, cursor);
-          fraction.set(m, (cursor + 0.5) / total);
+        for (const id of cardIds(b)) {
+          position[id] = cursor;
+          fraction[id] = (cursor + 0.5) / total;
           cursor++;
         }
       }
@@ -542,14 +615,21 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
     let crossings = 0;
     let length = 0;
     for (let k = lo; k <= hi; k++) {
+      work += linesBelow[k].length;
       const lines = linesBelow[k].map(({ parents, child }) => {
-        length += Math.abs(mean(parents.map((p) => fraction.get(p)!)) - fraction.get(child)!);
-        return [mean(parents.map((p) => position.get(p)!)), position.get(child)!] as const;
+        let fractionSum = 0;
+        let positionSum = 0;
+        for (const p of parents) {
+          fractionSum += fraction[p];
+          positionSum += position[p];
+        }
+        length += Math.abs(fractionSum / parents.length - fraction[child]);
+        return [positionSum / parents.length, position[child]] as const;
       });
       // Two lines cross when their ends are in opposite order: count strict
       // inversions of the lower ends after sorting by upper end (Fenwick tree).
       lines.sort((x, y) => x[0] - y[0] || x[1] - y[1]);
-      const width = rows[k + 1].reduce((sum, b) => sum + b.members.length, 0);
+      const width = rowWidth[k + 1];
       const tree = new Array<number>(width + 1).fill(0);
       lines.forEach(([, bottom], inserted) => {
         let notAfter = 0;
@@ -593,11 +673,12 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
             }
             block.members = startMembers;
           }
-          if (allowMoves) {
+          if (allowMoves && !outOfBudget()) {
             const at = startOrder.indexOf(block);
             const rest = startOrder.filter((b) => b !== block);
             for (let j = 0; j <= rest.length; j++) {
               if (j === at) continue;
+              if (outOfBudget()) break;
               rows[r] = [...rest.slice(0, j), block, ...rest.slice(j)];
               const trial = cost(r - 1, r);
               if (trial < best - EPSILON) {
@@ -627,9 +708,10 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
     polish(1, false);
     const walked = snapshot();
     const walkedCost = cost(0, rows.length);
+    const fx = fractions();
     for (let i = 0; i < SWEEPS; i++) {
-      for (let r = 1; r < rows.length; r++) sweepRow(r, "down");
-      for (let r = rows.length - 2; r >= 0; r--) sweepRow(r, "up");
+      for (let r = 1; r < rows.length; r++) sweepRow(r, "down", fx);
+      for (let r = rows.length - 2; r >= 0; r--) sweepRow(r, "up", fx);
     }
     if (cost(0, rows.length) >= walkedCost - EPSILON) restore(walked);
     polish(POLISH_PASSES, true);
@@ -653,7 +735,7 @@ function layoutComponent(members: string[], ctx: Ctx): Map<string, number> {
         bestCost = c;
         best = snapshot();
       }
-      if (bestCost < CROSSING) break search;
+      if (bestCost < CROSSING || outOfBudget()) break search;
     }
   }
   if (best) restore(best);

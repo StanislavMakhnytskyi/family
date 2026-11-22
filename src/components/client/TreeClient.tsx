@@ -90,6 +90,7 @@ export function TreeClient({
   zoomLabels = { zoomIn: "Збільшити", zoomOut: "Зменшити", fit: "Вмістити все дерево" },
   labels: labelsProp,
   initialFocusId,
+  showFullDates = false,
 }: {
   people: Person[];
   relationships: Relationship[];
@@ -98,6 +99,7 @@ export function TreeClient({
   zoomLabels?: { zoomIn: string; zoomOut: string; fit: string };
   labels?: Partial<TreeLabels>;
   initialFocusId?: string;
+  showFullDates?: boolean;
 }) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp };
   const [query, setQuery] = useState("");
@@ -513,7 +515,7 @@ export function TreeClient({
                     {person.firstName} {person.lastName}
                   </div>
                   <div className="mt-0.5 text-caption tabular-nums text-muted-2">
-                    {lifespan(person.birthDate, person.deathDate, lifespanLabels)}
+                    {lifespan(person.birthDate, person.deathDate, lifespanLabels, showFullDates)}
                   </div>
                 </div>
               </Link>

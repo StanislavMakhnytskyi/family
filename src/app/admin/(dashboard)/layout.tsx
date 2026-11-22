@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { href: "/admin/graves", label: "Поховання" },
   { href: "/admin/media", label: "Медіа" },
   { href: "/admin/questions", label: "Питання" },
+  { href: "/admin/settings", label: "Налаштування" },
 ];
 
 export default async function AdminDashboardLayout({

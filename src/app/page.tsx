@@ -4,14 +4,15 @@ import { logout } from "@/app/actions/auth";
 import { HomeLink, SiteHeader } from "@/components/SiteHeader";
 import { TreeClient } from "@/components/client/TreeClient";
 import { Button } from "@/components/ui/button";
-import { getPeople, getRelationships } from "@/lib/data";
+import { getPeople, getRelationships, getSettings } from "@/lib/data";
 
 export default async function TreePage({ searchParams }: PageProps<"/">) {
   const { focus } = await searchParams;
   const t = await getTranslations();
-  const [allPeople, allRelationships] = await Promise.all([
+  const [allPeople, allRelationships, settings] = await Promise.all([
     getPeople(),
     getRelationships(),
+    getSettings(),
   ]);
 
   // A person marked "hidden" in the admin panel keeps their own page and
@@ -57,6 +58,7 @@ export default async function TreePage({ searchParams }: PageProps<"/">) {
         }}
         zoomLabels={{ zoomIn: t("Tree.zoomIn"), zoomOut: t("Tree.zoomOut"), fit: t("Tree.fit") }}
         lifespanLabels={{ born: t("Common.bornPrefix"), died: t("Common.diedPrefix") }}
+        showFullDates={settings.showFullDates}
       />
     </div>
   );

@@ -42,6 +42,22 @@ test("creating and deleting a question round-trips through local src/data files"
   ).toHaveCount(0);
 });
 
+test("full-date preference is saved and can be restored", async ({ page }) => {
+  await loginAsAdmin(page);
+  await page.goto("/admin/settings");
+
+  const preference = page.getByRole("checkbox", { name: "Показувати повні дати" });
+  await expect(preference).not.toBeChecked();
+  await preference.check();
+  await page.getByRole("button", { name: "Зберегти" }).click();
+  await expect(page).toHaveURL(/\/admin\/settings$/);
+  await expect(preference).toBeChecked();
+
+  await preference.uncheck();
+  await page.getByRole("button", { name: "Зберегти" }).click();
+  await expect(preference).not.toBeChecked();
+});
+
 // The birth/death date fields accept a bare year (legacy convention) or a
 // full date -- the admin form's date picker is a convenience for typing the
 // latter, but the field itself stays free text either way. The visible
