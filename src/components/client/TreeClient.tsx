@@ -548,12 +548,22 @@ export function TreeClient({
               const busY = left.y - 16;
               const leftX = left.x + CARD_WIDTH / 2;
               const rightX = right.x + CARD_WIDTH / 2;
+              // The outer stems form the bracket and every sibling between
+              // them gets its own stem. Without the latter, middle siblings
+              // sit under the bus but are not visibly connected to it.
+              const interiorStems = orderedMembers
+                .slice(1, -1)
+                .map((member) => {
+                  const centerX = member.x + CARD_WIDTH / 2;
+                  return ` M ${centerX} ${busY} V ${member.y}`;
+                })
+                .join("");
               return (
                 <path
                   key={group.id}
                   data-testid="tree-connector"
                   className="tree-connector tree-connector-sibling"
-                  d={`M ${leftX} ${left.y} V ${busY} H ${rightX} V ${right.y}`}
+                  d={`M ${leftX} ${left.y} V ${busY} H ${rightX} V ${right.y}${interiorStems}`}
                   fill="none"
                   strokeWidth={2}
                   strokeDasharray="4 3"
