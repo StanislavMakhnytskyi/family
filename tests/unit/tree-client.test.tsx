@@ -115,8 +115,9 @@ describe("TreeClient", () => {
     });
     const left = Math.min(...cardCenters);
     const right = Math.max(...cardCenters);
+    const middle = cardCenters.find((center) => center !== left && center !== right);
     expect(siblingConnectors[0].getAttribute("d")).toBe(
-      `M ${left} 0 V -16 H ${right} V 0`,
+      `M ${left} 0 V -16 H ${right} V 0 M ${middle} -16 V 0`,
     );
   });
 });
