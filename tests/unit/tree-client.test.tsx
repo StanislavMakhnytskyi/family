@@ -86,4 +86,37 @@ describe("TreeClient", () => {
     expect(screen.queryByTestId("tree-legend")).toBeNull();
     expect(document.querySelector(".tree-connector-sibling")).toBeNull();
   });
+
+  it("draws one sibling bracket for a transitive group instead of overlapping pair brackets", () => {
+    const people: Person[] = [
+      { id: "anatolii", firstName: "Anatolii" },
+      { id: "ivan", firstName: "Ivan" },
+      { id: "vasyl", firstName: "Vasyl" },
+    ];
+    const relationships: Relationship[] = [
+      { id: "r1", type: "sibling", person1Id: "anatolii", person2Id: "ivan" },
+      { id: "r2", type: "sibling", person1Id: "ivan", person2Id: "vasyl" },
+    ];
+
+    render(
+      <TreeClient
+        people={people}
+        relationships={relationships}
+        hint="перетягніть"
+        lifespanLabels={{ born: "нар.", died: "пом." }}
+      />,
+    );
+
+    const siblingConnectors = document.querySelectorAll(".tree-connector-sibling");
+    expect(siblingConnectors).toHaveLength(1);
+    const cardCenters = people.map((person) => {
+      const card = screen.getByRole("link", { name: new RegExp(person.firstName) });
+      return Number.parseFloat((card as HTMLElement).style.left) + 78;
+    });
+    const left = Math.min(...cardCenters);
+    const right = Math.max(...cardCenters);
+    expect(siblingConnectors[0].getAttribute("d")).toBe(
+      `M ${left} 0 V -16 H ${right} V 0`,
+    );
+  });
 });

@@ -106,6 +106,48 @@ function haveRecordedCommonParent(
   );
 }
 
+type SiblingGroup = { id: string; personIds: string[] };
+
+/**
+ * A list of pairwise sibling records describes one sibling group, not a set
+ * of independent visual links. For example, A--B and B--C must render as one
+ * bracket spanning A, B, and C; drawing both brackets gives B two overlapping
+ * stems and makes the line look inconsistently solid/dashed.
+ */
+function buildSiblingGroups(relationships: Relationship[]): SiblingGroup[] {
+  const adjacent = new Map<string, Set<string>>();
+  for (const relationship of relationships) {
+    if (relationship.type !== "sibling") continue;
+    const first = adjacent.get(relationship.person1Id) ?? new Set<string>();
+    const second = adjacent.get(relationship.person2Id) ?? new Set<string>();
+    first.add(relationship.person2Id);
+    second.add(relationship.person1Id);
+    adjacent.set(relationship.person1Id, first);
+    adjacent.set(relationship.person2Id, second);
+  }
+
+  const visited = new Set<string>();
+  const groups: SiblingGroup[] = [];
+  for (const firstPersonId of adjacent.keys()) {
+    if (visited.has(firstPersonId)) continue;
+    const personIds: string[] = [];
+    const pending = [firstPersonId];
+    visited.add(firstPersonId);
+    while (pending.length > 0) {
+      const personId = pending.pop();
+      if (!personId) continue;
+      personIds.push(personId);
+      for (const siblingId of adjacent.get(personId) ?? []) {
+        if (visited.has(siblingId)) continue;
+        visited.add(siblingId);
+        pending.push(siblingId);
+      }
+    }
+    groups.push({ id: [...personIds].sort().join("-"), personIds });
+  }
+  return groups;
+}
+
 export function TreeClient({
   people,
   relationships,
@@ -313,7 +355,8 @@ export function TreeClient({
       rel.type === "sibling" &&
       !haveRecordedCommonParent(rel.person1Id, rel.person2Id, relationships),
   );
-  const hasSiblingLinks = visibleSiblingLinks.length > 0;
+  const siblingGroups = buildSiblingGroups(visibleSiblingLinks);
+  const hasSiblingLinks = siblingGroups.length > 0;
   const hasSpouseLinks = relationships.some((r) => r.type === "spouse");
 
   function distanceBetween(a: { x: number; y: number }, b: { x: number; y: number }) {
@@ -489,31 +532,33 @@ export function TreeClient({
                   />
                 );
               })}
-            {visibleSiblingLinks.map((rel) => {
-                const a = positionOf.get(rel.person1Id);
-                const b = positionOf.get(rel.person2Id);
-                if (!a || !b || a.y !== b.y) return null;
-                const [left, right] = a.x < b.x ? [a, b] : [b, a];
-                // A bracket over the pair -- "|---|" -- with no line
-                // extending further up to a parent, since a sibling
-                // relationship is only drawn when no common parent is on
-                // record. Deliberately distinct from the spouse
-                // connector (a plain line through the cards' vertical
-                // center) so the two read as different kinds of link.
-                const busY = a.y - 16;
-                const leftX = left.x + CARD_WIDTH / 2;
-                const rightX = right.x + CARD_WIDTH / 2;
-                return (
-                  <path
-                    key={rel.id}
-                    data-testid="tree-connector"
-                    className="tree-connector tree-connector-sibling"
-                    d={`M ${leftX} ${left.y} V ${busY} H ${rightX} V ${right.y}`}
-                    fill="none"
-                    strokeWidth={2}
-                    strokeDasharray="4 3"
-                  />
-                );
+            {siblingGroups.map((group) => {
+              const members = group.personIds
+                .map((personId) => positionOf.get(personId))
+                .filter((position): position is Positioned => position !== undefined);
+              if (members.length < 2 || new Set(members.map((member) => member.y)).size !== 1) {
+                return null;
+              }
+              const orderedMembers = [...members].sort((a, b) => a.x - b.x);
+              const left = orderedMembers[0];
+              const right = orderedMembers[orderedMembers.length - 1];
+              // One bracket for a complete sibling group. Sibling records are
+              // pairwise in the data model, but their transitive closure is
+              // the family relationship the tree needs to communicate.
+              const busY = left.y - 16;
+              const leftX = left.x + CARD_WIDTH / 2;
+              const rightX = right.x + CARD_WIDTH / 2;
+              return (
+                <path
+                  key={group.id}
+                  data-testid="tree-connector"
+                  className="tree-connector tree-connector-sibling"
+                  d={`M ${leftX} ${left.y} V ${busY} H ${rightX} V ${right.y}`}
+                  fill="none"
+                  strokeWidth={2}
+                  strokeDasharray="4 3"
+                />
+              );
             })}
           </svg>
 
